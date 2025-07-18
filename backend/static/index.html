@@ -445,6 +445,14 @@
                         </div>
                     </div>
                     
+                    <!-- ✅ НОВОЕ: Информация о текущем режиме и таймфрейме -->
+                    <div id="modeInfo" class="mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            Режим: Средний | Таймфрейм: 15m
+                        </small>
+                    </div>
+                    
                     <div class="indicator-grid" id="indicatorsGrid">
                         <!-- Индикаторы будут добавлены через JavaScript -->
                     </div>
@@ -615,20 +623,28 @@
                 apiText.textContent = 'Отключен';
             }
             
-            // Обновляем режим торговли в селекторе, если он изменился
+            // ✅ ИСПРАВЛЕНИЕ: Обновляем режим торговли только если не выбран
             if (status.mode) {
                 const modeSelect = document.getElementById('tradingMode');
-                if (modeSelect.value !== status.mode) {
+                // Защищаем от перезаписи - устанавливаем только если не выбран
+                if (modeSelect.selectedIndex === -1) {
                     modeSelect.value = status.mode;
+                    modeSelect.selectedIndex = Array.from(modeSelect.options).findIndex(opt => opt.value === status.mode);
+                    console.log('✅ Обновлен режим через WebSocket:', status.mode);
                 }
             }
         }
         
-        // Универсальная функция обновления статуса
+        // ✅ ИСПРАВЛЕНИЕ: Универсальная функция обновления статуса с защитой
         function updateStatus(statusData) {
             if (statusData.mode) {
                 const modeSelect = document.getElementById('tradingMode');
-                modeSelect.value = statusData.mode;
+                // Защищаем от перезаписи - устанавливаем только если не выбран
+                if (modeSelect.selectedIndex === -1) {
+                    modeSelect.value = statusData.mode;
+                    modeSelect.selectedIndex = Array.from(modeSelect.options).findIndex(opt => opt.value === statusData.mode);
+                    console.log('✅ Обновлен режим через updateStatus:', statusData.mode);
+                }
             }
             
             // Можно добавить обновление других элементов статуса
@@ -704,6 +720,22 @@
             const mode = document.getElementById('tradingMode').value;
             const modeSelect = document.getElementById('tradingMode');
             const modeDescription = document.getElementById('modeDescription');
+            
+                    // ✅ ИСПРАВЛЕНИЕ: Принудительно устанавливаем значение и защищаем от перезаписи
+        if (modeSelect.selectedIndex === -1 && mode) {
+            modeSelect.value = mode;
+            modeSelect.selectedIndex = Array.from(modeSelect.options).findIndex(opt => opt.value === mode);
+            console.log('✅ Принудительно установлен режим:', mode);
+        }
+        
+        // ✅ ИСПРАВЛЕНИЕ: Дополнительная защита от перезаписи
+        setTimeout(() => {
+            if (modeSelect.selectedIndex === -1 && mode) {
+                modeSelect.value = mode;
+                modeSelect.selectedIndex = Array.from(modeSelect.options).findIndex(opt => opt.value === mode);
+                console.log('✅ Дополнительно установлен режим после задержки:', mode);
+            }
+        }, 100);
             
             // Показываем индикатор загрузки
             modeSelect.disabled = true;
@@ -1090,6 +1122,22 @@
         // Загрузка начальных данных
         async function loadInitialData() {
             try {
+                // ✅ ИСПРАВЛЕНИЕ: Принудительная инициализация режима по умолчанию
+                const modeSelect = document.getElementById('tradingMode');
+                if (modeSelect) {
+                    // Принудительно устанавливаем средний режим по умолчанию
+                    modeSelect.value = 'medium';
+                    modeSelect.selectedIndex = 1; // Индекс среднего режима
+                    
+                    // Обновляем описание режима
+                    const modeDescription = document.getElementById('modeDescription');
+                    if (modeDescription) {
+                        modeDescription.textContent = 'Средний режим: Moving Average Crossover + Trend Following (15м-1ч, 3-5x плечо)';
+                    }
+                    
+                    console.log('✅ Принудительно инициализирован средний режим по умолчанию');
+                }
+                
                 // ✅ ИСПРАВЛЕНИЕ: Безопасная загрузка статуса
                 try {
                     const statusResponse = await fetch('/api/status');
@@ -1195,9 +1243,42 @@
             }
         }
 
+        // ✅ НОВАЯ ФУНКЦИЯ: Получение текущего режима с сервера
+        async function getCurrentModeFromServer() {
+            try {
+                const response = await fetch('/api/signals');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.current_mode) {
+                        const modeSelect = document.getElementById('tradingMode');
+                        if (modeSelect) {
+                            modeSelect.value = data.current_mode;
+                            modeSelect.selectedIndex = Array.from(modeSelect.options).findIndex(opt => opt.value === data.current_mode);
+                            console.log(`✅ Синхронизирован режим с сервером: ${data.current_mode}`);
+                            
+                            // Обновляем описание режима
+                            updateModeDescription(data.current_mode);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка получения режима с сервера:', error);
+                // Fallback к среднему режиму
+                const modeSelect = document.getElementById('tradingMode');
+                if (modeSelect) {
+                    modeSelect.value = 'medium';
+                    modeSelect.selectedIndex = 1;
+                    console.log('✅ Установлен средний режим по умолчанию');
+                }
+            }
+        }
+
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Инициализация веб-интерфейса...');
+            
+            // ✅ НОВОЕ: Получаем текущий режим с сервера
+            getCurrentModeFromServer();
             
             // Подключаем WebSocket
             connectWebSocket();
@@ -1210,6 +1291,16 @@
             
             // Загружаем начальные данные
             loadInitialData();
+            
+            // ✅ ИСПРАВЛЕНИЕ: Дополнительная инициализация режима с задержкой
+            setTimeout(() => {
+                const modeSelect = document.getElementById('tradingMode');
+                if (modeSelect && modeSelect.selectedIndex === -1) {
+                    modeSelect.value = 'medium';
+                    modeSelect.selectedIndex = 1;
+                    console.log('✅ Дополнительно инициализирован средний режим с задержкой');
+                }
+            }, 1000);
             
             // Добавляем начальные логи
             addLogEntry('success', '🌐 Веб-интерфейс загружен');
@@ -1290,6 +1381,21 @@
                     '<div class="text-center text-muted">Нет данных сигналов</div>';
                 updateSignalStrength(0);
                 return;
+            }
+            
+            // ✅ НОВОЕ: Отображаем информацию о текущем режиме и таймфрейме
+            if (signalsData.current_mode && signalsData.timeframe) {
+                const modeInfo = document.getElementById('modeInfo');
+                if (modeInfo) {
+                    modeInfo.innerHTML = `
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            Режим: ${signalsData.mode_name || signalsData.current_mode} 
+                            | Таймфрейм: ${signalsData.timeframe}
+                        </small>
+                    `;
+                }
+                console.log(`📊 Режим: ${signalsData.current_mode}, Таймфрейм: ${signalsData.timeframe}`);
             }
             
             // Получаем сигналы для текущего символа

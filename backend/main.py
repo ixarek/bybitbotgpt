@@ -377,16 +377,32 @@ async def get_all_signals():
         raise HTTPException(status_code=500, detail="Trading engine not initialized")
     
     try:
-        # Получаем текущую конфигурацию риска для определения таймфрейма
-        risk_config = get_risk_config(trading_engine.risk_manager.mode)
-        timeframe = risk_config["timeframe"]
+        # ✅ ИСПРАВЛЕНИЕ: Получаем таймфрейм из текущего торгового режима
+        if trading_engine.strategy_manager:
+            current_mode = trading_engine.strategy_manager.get_current_mode()
+            mode_config = trading_engine.strategy_manager.get_current_config()
+            timeframe = mode_config.timeframes[0] if mode_config.timeframes else "5m"
+            
+            # Конвертируем таймфрейм в формат API
+            timeframe_map = {
+                "1m": "1", "5m": "5", "15m": "15", "30m": "30",
+                "1h": "60", "4h": "240", "1d": "D"
+            }
+            api_timeframe = timeframe_map.get(timeframe, "5")
+            logger.info(f"🎯 Используем таймфрейм режима: {timeframe} → API: {api_timeframe}")
+        else:
+            # Fallback к риску если strategy_manager недоступен
+            risk_config = get_risk_config(trading_engine.risk_manager.mode)
+            timeframe = risk_config["timeframe"]
+            api_timeframe = timeframe
+            logger.warning(f"⚠️ StrategyManager недоступен, используем риск-таймфрейм: {timeframe}")
         
         all_signals = {}
         enhanced_signals = {}
         
         for symbol in settings.trading_pairs:
-            # Подробные сигналы с числовыми значениями и сигналами
-            detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol, timeframe)
+            # ✅ ИСПРАВЛЕНИЕ: Используем правильный таймфрейм
+            detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol, api_timeframe)
             all_signals[symbol] = detailed_signals
             
             # Phase 1 Enhanced signals
@@ -451,11 +467,26 @@ async def get_signals_for_symbol(symbol: str):
             }
         }
     try:
-        # Получаем текущую конфигурацию риска для определения таймфрейма
-        risk_config = get_risk_config(trading_engine.risk_manager.mode)
-        timeframe = risk_config["timeframe"]
-        # Получаем сигналы для конкретной валютной пары с правильным таймфреймом
-        raw_signals = trading_engine.signal_processor.get_signals(symbol, timeframe)
+        # ✅ ИСПРАВЛЕНИЕ: Получаем таймфрейм из текущего торгового режима
+        if trading_engine.strategy_manager:
+            current_mode = trading_engine.strategy_manager.get_current_mode()
+            mode_config = trading_engine.strategy_manager.get_current_config()
+            timeframe = mode_config.timeframes[0] if mode_config.timeframes else "5m"
+            
+            # Конвертируем таймфрейм в формат API
+            timeframe_map = {
+                "1m": "1", "5m": "5", "15m": "15", "30m": "30",
+                "1h": "60", "4h": "240", "1d": "D"
+            }
+            api_timeframe = timeframe_map.get(timeframe, "5")
+        else:
+            # Fallback к риску если strategy_manager недоступен
+            risk_config = get_risk_config(trading_engine.risk_manager.mode)
+            timeframe = risk_config["timeframe"]
+            api_timeframe = timeframe
+        
+        # ✅ ИСПРАВЛЕНИЕ: Используем правильный таймфрейм
+        raw_signals = trading_engine.signal_processor.get_signals(symbol, api_timeframe)
         signals_array = []
         active_count = 0
         buy_signals = 0
@@ -522,9 +553,15 @@ async def get_chart_data_for_symbol(symbol: str):
         raise HTTPException(status_code=500, detail="Trading engine not initialized")
     
     try:
-        # Получаем текущую конфигурацию риска для определения таймфрейма
-        risk_config = get_risk_config(trading_engine.risk_manager.mode)
-        timeframe = risk_config["timeframe"]
+        # ✅ ИСПРАВЛЕНИЕ: Получаем таймфрейм из текущего торгового режима
+        if trading_engine.strategy_manager:
+            current_mode = trading_engine.strategy_manager.get_current_mode()
+            mode_config = trading_engine.strategy_manager.get_current_config()
+            timeframe = mode_config.timeframes[0] if mode_config.timeframes else "5m"
+        else:
+            # Fallback к риску если strategy_manager недоступен
+            risk_config = get_risk_config(trading_engine.risk_manager.mode)
+            timeframe = risk_config["timeframe"]
         
         logger.info(f"📊 Getting real chart data for {symbol} {timeframe}")
         

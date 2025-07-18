@@ -9,7 +9,8 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 import pandas as pd
 import math
-from decimal import Decimal, ROUND_DOWN
+from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP
+import requests
 
 from .signal_processor import SignalProcessor
 from .risk_manager import RiskManager
@@ -211,6 +212,47 @@ class TradingEngine:
         summary = f"{symbol}: {signal_strength['BUY']} buy, {signal_strength['SELL']} sell, {signal_strength['HOLD']} hold"
         return f"{details}\n{summary}"
     
+    def round_position_to_nearest_100(self, symbol: str, qty: float, current_price: float, leverage: float) -> float:
+        """
+        Округляет размер позиции до ближайших 100$ с учетом плеча
+        
+        Args:
+            symbol: Торговая пара
+            qty: Количество актива
+            current_price: Текущая цена
+            leverage: Плечо
+            
+        Returns:
+            float: Округленное количество актива
+        """
+        # Рассчитываем текущую стоимость позиции с учетом плеча
+        position_value = qty * current_price * leverage
+        
+        # Округляем до ближайших 100$
+        rounded_value = round(position_value / 100) * 100
+        
+        # Рассчитываем новое количество актива
+        new_qty = rounded_value / (current_price * leverage)
+        
+        # Округляем по параметрам биржи
+        adjusted_qty = self.adjust_qty(symbol, new_qty)
+        
+        # Проверяем, что итоговая стоимость не меньше 100$
+        final_value = adjusted_qty * current_price * leverage
+        if final_value < 100:
+            # Если меньше 100$, увеличиваем до минимальных 100$
+            min_qty_for_100 = 100 / (current_price * leverage)
+            adjusted_qty = self.adjust_qty(symbol, min_qty_for_100)
+        
+        logger.info(f"🔢 [round_position_to_nearest_100] {symbol}:")
+        logger.info(f"   Исходное qty: {qty:.6f}")
+        logger.info(f"   Исходная стоимость: {position_value:.2f} USDT")
+        logger.info(f"   Округленная стоимость: {rounded_value:.2f} USDT")
+        logger.info(f"   Новое qty: {adjusted_qty:.6f}")
+        logger.info(f"   Итоговая стоимость: {adjusted_qty * current_price * leverage:.2f} USDT")
+        
+        return adjusted_qty
+
     def calc_tp_sl(self, entry_price, side, mode):
         logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
         
@@ -270,78 +312,148 @@ class TradingEngine:
 
     def adjust_qty(self, symbol, qty):
         import math
-        from decimal import Decimal, ROUND_DOWN
+        from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP
+        import requests
         
-        lot_size = self.LOT_SIZE.get(symbol, 0.01)
         qty = abs(qty)
+        
+        # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи
+        try:
+            api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+            params = {"category": "linear", "symbol": symbol}
+            response = requests.get(api_url, params=params, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('retCode') == 0 and data.get('result', {}).get('list'):
+                    instrument = data['result']['list'][0]
+                    lot_size_filter = instrument.get('lotSizeFilter', {})
+                    
+                    min_order_qty = float(lot_size_filter.get('minOrderQty', '0.1'))
+                    qty_step = float(lot_size_filter.get('qtyStep', '0.1'))
+                    
+                    logger.info(f"[adjust_qty] Получены параметры с биржи: minOrderQty={min_order_qty}, qtyStep={qty_step}")
+                else:
+                    # Fallback к статическим значениям
+                    min_order_qty = 0.1
+                    qty_step = 0.1
+                    logger.warning(f"[adjust_qty] Не удалось получить параметры с биржи, используем fallback")
+            else:
+                # Fallback к статическим значениям
+                min_order_qty = 0.1
+                qty_step = 0.1
+                logger.warning(f"[adjust_qty] Ошибка запроса к бирже, используем fallback")
+        except Exception as e:
+            # Fallback к статическим значениям
+            min_order_qty = 0.1
+            qty_step = 0.1
+            logger.warning(f"[adjust_qty] Исключение при получении параметров: {e}, используем fallback")
         
         # Используем Decimal для точных вычислений
         qty_decimal = Decimal(str(qty))
-        lot_size_decimal = Decimal(str(lot_size))
+        qty_step_decimal = Decimal(str(qty_step))
+        min_order_qty_decimal = Decimal(str(min_order_qty))
         
-        # Округляем до ближайшего кратного лот-сайза
-        qty_adjusted = (qty_decimal / lot_size_decimal).quantize(Decimal('1'), rounding=ROUND_DOWN) * lot_size_decimal
+        # Округляем до ближайшего кратного qtyStep
+        qty_adjusted = (qty_decimal / qty_step_decimal).quantize(Decimal('1'), rounding=ROUND_HALF_UP) * qty_step_decimal
         
-        # Минимальное количество не может быть меньше лот-сайза
-        if qty_adjusted < lot_size_decimal:
-            qty_adjusted = lot_size_decimal
+        # Минимальное количество не может быть меньше minOrderQty
+        if qty_adjusted < min_order_qty_decimal:
+            qty_adjusted = min_order_qty_decimal
         
         # Конвертируем обратно в float
         qty_result = float(qty_adjusted)
         
         # Для целых лотов возвращаем int
-        if lot_size >= 1:
+        if qty_step >= 1:
             qty_result = int(qty_result)
         
-        logger.info(f"🔢 [adjust_qty] {symbol}: {qty:.6f} → {qty_result} (lot_size={lot_size})")
+        logger.info(f"🔢 [adjust_qty] {symbol}: {qty:.6f} → {qty_result} (qtyStep={qty_step}, minOrderQty={min_order_qty})")
         return qty_result
 
     def format_qty_for_bybit(self, symbol: str, qty: float, price: float = None) -> str:
         """
-        Форматирует qty для Bybit: кратен lot_size, не меньше lot_size, форматируется по LOT_PRECISION, убирает лишние нули/точку, всегда строка.
+        Форматирует qty для Bybit: кратен qtyStep, не меньше minOrderQty, форматируется по LOT_PRECISION, убирает лишние нули/точку, всегда строка.
         
-        Добавлена строгая валидация: qty округляется до нужной точности, проверяется кратность lot_size.
+        Добавлена строгая валидация: qty округляется до нужной точности, проверяется кратность qtyStep.
         """
-        from decimal import Decimal, ROUND_DOWN
-        lot_size = Decimal(str(self.LOT_SIZE.get(symbol, 0.01)))
-        precision = self.LOT_PRECISION.get(symbol, 3)
+        from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP
+        import requests
+        
         qty_orig = qty
         qty = Decimal(str(qty))
-        logger.info(f"[format_qty_for_bybit] symbol={symbol}, qty_in={qty_orig}, lot_size={lot_size}, precision={precision}, price={price}")
+        logger.info(f"[format_qty_for_bybit] symbol={symbol}, qty_in={qty_orig}, price={price}")
         
-        # qty не может быть меньше lot_size
-        if qty < lot_size:
-            logger.info(f"[format_qty_for_bybit] qty < lot_size: {qty} < {lot_size}, set to lot_size")
-            qty = lot_size
+        # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи
+        try:
+            api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+            params = {"category": "linear", "symbol": symbol}
+            response = requests.get(api_url, params=params, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('retCode') == 0 and data.get('result', {}).get('list'):
+                    instrument = data['result']['list'][0]
+                    lot_size_filter = instrument.get('lotSizeFilter', {})
+                    
+                    min_order_qty = Decimal(str(lot_size_filter.get('minOrderQty', '0.1')))
+                    qty_step = Decimal(str(lot_size_filter.get('qtyStep', '0.1')))
+                    min_notional_value = Decimal(str(lot_size_filter.get('minNotionalValue', '5')))
+                    
+                    logger.info(f"[format_qty_for_bybit] Получены параметры с биржи: minOrderQty={min_order_qty}, qtyStep={qty_step}, minNotionalValue={min_notional_value}")
+                else:
+                    # Fallback к статическим значениям
+                    min_order_qty = Decimal('0.1')
+                    qty_step = Decimal('0.1')
+                    min_notional_value = Decimal('5')
+                    logger.warning(f"[format_qty_for_bybit] Не удалось получить параметры с биржи, используем fallback")
+            else:
+                # Fallback к статическим значениям
+                min_order_qty = Decimal('0.1')
+                qty_step = Decimal('0.1')
+                min_notional_value = Decimal('5')
+                logger.warning(f"[format_qty_for_bybit] Ошибка запроса к бирже, используем fallback")
+        except Exception as e:
+            # Fallback к статическим значениям
+            min_order_qty = Decimal('0.1')
+            qty_step = Decimal('0.1')
+            min_notional_value = Decimal('5')
+            logger.warning(f"[format_qty_for_bybit] Исключение при получении параметров: {e}, используем fallback")
         
-        # qty обязательно кратен lot_size (до precision знаков)
-        if lot_size > 0:
-            qty = (qty // lot_size) * lot_size
+        # qty не может быть меньше minOrderQty
+        if qty < min_order_qty:
+            logger.info(f"[format_qty_for_bybit] qty < minOrderQty: {qty} < {min_order_qty}, set to minOrderQty")
+            qty = min_order_qty
         
-        logger.info(f"[format_qty_for_bybit] qty after lot_size rounding: {qty}")
+        # ✅ ИСПРАВЛЕНИЕ: qty обязательно кратен qtyStep
+        if qty_step > 0:
+            # Округляем до ближайшего кратного qtyStep
+            qty = (qty / qty_step).quantize(Decimal('1'), rounding=ROUND_HALF_UP) * qty_step
         
-        # ✅ ИСПРАВЛЕНИЕ: Проверяем минимальную сумму ордера (5 USDT)
+        logger.info(f"[format_qty_for_bybit] qty after qtyStep rounding: {qty}")
+        
+        # ✅ ИСПРАВЛЕНИЕ: Проверяем минимальную сумму ордера (minNotionalValue USDT)
         if price is not None and price > 0:
-            min_qty = (Decimal('5') / Decimal(str(price))).quantize(lot_size, rounding=ROUND_DOWN)
-            logger.info(f"[format_qty_for_bybit] min_qty for 5 USDT: {min_qty}")
-            if qty < min_qty:
+            price_decimal = Decimal(str(price))
+            min_qty_for_value = (min_notional_value / price_decimal).quantize(qty_step, rounding=ROUND_HALF_UP)
+            logger.info(f"[format_qty_for_bybit] min_qty for {min_notional_value} USDT: {min_qty_for_value}")
+            if qty < min_qty_for_value:
                 # Увеличиваем до минимального количества
-                qty = ((min_qty // lot_size) + 1) * lot_size
-                logger.info(f"[format_qty_for_bybit] qty increased to meet 5 USDT minimum: {qty}")
+                qty = min_qty_for_value
+                logger.info(f"[format_qty_for_bybit] qty increased to meet {min_notional_value} USDT minimum: {qty}")
         
-        # ✅ ИСПРАВЛЕНИЕ: Дополнительная проверка для ETHUSDT (минимум 0.1)
-        if symbol == "ETHUSDT" and qty < Decimal('0.1'):
-            qty = Decimal('0.1')
-            logger.info(f"[format_qty_for_bybit] ETHUSDT minimum qty set to 0.1")
-        
-        # Проверка кратности lot_size
-        remainder = (qty / lot_size) % 1
-        logger.info(f"[format_qty_for_bybit] qty/lot_size={qty/lot_size}, remainder={remainder}")
+        # Проверка кратности qtyStep
+        remainder = (qty / qty_step) % 1
+        logger.info(f"[format_qty_for_bybit] qty/qtyStep={qty/qty_step}, remainder={remainder}")
         if remainder != 0:
-            logger.warning(f"[format_qty_for_bybit] WARNING: qty={qty} не кратен lot_size={lot_size} (remainder={remainder}) — Bybit не примет!")
+            logger.warning(f"[format_qty_for_bybit] WARNING: qty={qty} не кратен qtyStep={qty_step} (remainder={remainder}) — Bybit не примет!")
+            # Принудительно округляем
+            qty = (qty / qty_step).quantize(Decimal('1'), rounding=ROUND_HALF_UP) * qty_step
+            logger.info(f"[format_qty_for_bybit] Принудительно округлено до: {qty}")
         
-        # Форматируем результат
-        qty_str = f"{qty:.{precision}f}".rstrip('0').rstrip('.')
+        # Форматируем результат - убираем лишние нули и точку
+        qty_str = f"{qty}".rstrip('0').rstrip('.')
+        if qty_str == '':
+            qty_str = '0'
+        
         logger.info(f"[format_qty_for_bybit] qty_str result: {qty_str}, qty*price={qty*Decimal(str(price or 1)):.5f}")
         return qty_str
 
@@ -371,21 +483,46 @@ class TradingEngine:
             leverage = 1
             if 'leverage_range' in mode_config and isinstance(mode_config['leverage_range'], tuple):
                 leverage = float(mode_config['leverage_range'][1])
+            
+            # Рассчитываем базовое количество
             qty = min_position_value / (current_price * leverage)
             qty = max(qty, 0.001)
-            min_qty = math.ceil(5 / float(current_price) * 1000) / 1000
-            if qty * current_price < 5:
-                logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {qty} → {min_qty} (to meet minimum order value >= 5 USDT)")
+            
+            # ✅ ИСПРАВЛЕНИЕ: Округляем до ближайших 100$ с учетом плеча
+            qty = self.round_position_to_nearest_100(symbol, qty, current_price, leverage)
+            
+            # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи для расчета min_qty
+            try:
+                api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+                params = {"category": "linear", "symbol": symbol}
+                response = requests.get(api_url, params=params, timeout=5)
+                min_notional_value = 5  # По умолчанию
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('retCode') == 0 and data.get('result', {}).get('list'):
+                        instrument = data['result']['list'][0]
+                        lot_size_filter = instrument.get('lotSizeFilter', {})
+                        min_notional_value = float(lot_size_filter.get('minNotionalValue', '5'))
+                        logger.info(f"[_execute_trade] Получен minNotionalValue с биржи: {min_notional_value}")
+                    else:
+                        logger.warning(f"[_execute_trade] Не удалось получить параметры с биржи, используем fallback")
+                else:
+                    logger.warning(f"[_execute_trade] Ошибка запроса к бирже, используем fallback")
+            except Exception as e:
+                logger.warning(f"[_execute_trade] Исключение при получении параметров: {e}, используем fallback")
+            
+            min_qty = math.ceil(min_notional_value / float(current_price) * 1000) / 1000
+            if qty * current_price < min_notional_value:
+                logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {qty} → {min_qty} (to meet minimum order value >= {min_notional_value} USDT)")
                 qty = min_qty
-            # Округляем qty по шагу лота
+            
+            # Округляем qty по актуальным параметрам биржи
             qty_final = self.adjust_qty(symbol, qty)
-            # Для логирования форматируем qty как строку с нужной точностью
-            if self.LOT_SIZE.get(symbol, 0.01) >= 1:
-                qty_str = str(int(qty_final))
-            else:
-                precision = 3 if self.LOT_SIZE.get(symbol, 0.01) == 0.001 else 2
-                qty_str = f"{qty_final:.{precision}f}"
-            logger.info(f"🔢 [lot_size] Итоговое qty для {symbol}: {qty_str} (lot_size={self.LOT_SIZE.get(symbol, 1)})")
+            
+            # ✅ ИСПРАВЛЕНИЕ: Форматируем qty для логирования используя актуальные параметры
+            qty_str = self.format_qty_for_bybit(symbol, qty_final, current_price)
+            logger.info(f"🔢 [lot_size] Итоговое qty для {symbol}: {qty_str}")
+            
             side = "Buy" if decision == "BUY" else "Sell"
             # Для market order передаем текущую цену, чтобы избежать ошибок типов
             order_price = current_price if "market" else None
@@ -493,20 +630,47 @@ class TradingEngine:
             leverage = 1
             if hasattr(mode_config, 'leverage_range') and isinstance(mode_config.leverage_range, tuple):
                 leverage = float(mode_config.leverage_range[1])
-            # Проверка минимальной суммы ордера (Bybit требует >= 5 USDT на заявку)
-            min_qty = math.ceil(5 / float(current_price) * 1000) / 1000
+            
+            # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи для проверки минимальной суммы
+            min_notional_value = 5  # По умолчанию
+            try:
+                api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+                params = {"category": "linear", "symbol": symbol}
+                response = requests.get(api_url, params=params, timeout=5)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('retCode') == 0 and data.get('result', {}).get('list'):
+                        instrument = data['result']['list'][0]
+                        lot_size_filter = instrument.get('lotSizeFilter', {})
+                        min_notional_value = float(lot_size_filter.get('minNotionalValue', '5'))
+                        logger.info(f"[place_order] Получен minNotionalValue с биржи: {min_notional_value}")
+                    else:
+                        logger.warning(f"[place_order] Не удалось получить параметры с биржи, используем fallback")
+                else:
+                    logger.warning(f"[place_order] Ошибка запроса к бирже, используем fallback")
+            except Exception as e:
+                logger.warning(f"[place_order] Исключение при получении параметров: {e}, используем fallback")
+            
+            # Проверка минимальной суммы ордера (Bybit требует >= minNotionalValue USDT на заявку)
+            min_qty = math.ceil(min_notional_value / float(current_price) * 1000) / 1000
             if amount < min_qty:
-                logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {amount} → {min_qty} (to meet minimum order value >= 5 USDT)")
+                logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {amount} → {min_qty} (to meet minimum order value >= {min_notional_value} USDT)")
                 amount = min_qty
             min_order_value = float(amount) * float(current_price)
-            if min_order_value < 5:
-                logger.warning(f"⚠️ Сумма ордера {min_order_value:.2f} USDT меньше минимальной 5 USDT (Bybit). Ордер не отправлен.")
-                return {"success": False, "error": f"Сумма ордера {min_order_value:.2f} USDT меньше минимальной 5 USDT (Bybit)"}
+            if min_order_value < min_notional_value:
+                logger.warning(f"⚠️ Сумма ордера {min_order_value:.2f} USDT меньше минимальной {min_notional_value} USDT (Bybit). Ордер не отправлен.")
+                return {"success": False, "error": f"Сумма ордера {min_order_value:.2f} USDT меньше минимальной {min_notional_value} USDT (Bybit)"}
+            # ✅ ИСПРАВЛЕНИЕ: Округляем размер позиции до ближайших 100$ с учетом плеча
+            original_amount = amount
+            amount = self.round_position_to_nearest_100(symbol, amount, current_price, leverage)
+            
             # Проверка минимальной суммы позиции с учетом плеча (стратегия)
             order_value = float(amount) * float(current_price) * leverage
             if order_value < 100:
                 logger.warning(f"⚠️ Сумма позиции с учетом плеча {order_value:.2f} USDT меньше минимальной 100 USDT. Ордер не отправлен.")
                 return {"success": False, "error": f"Сумма позиции с учетом плеча {order_value:.2f} USDT меньше минимальной 100 USDT"}
+            
+            logger.info(f"🔢 [place_order] Размер позиции округлен: {original_amount:.6f} → {amount:.6f} (стоимость: {order_value:.2f} USDT)")
             # Проверка маржи (баланса)
             margin_required = float(amount) * float(current_price) / leverage
             balance = self.bybit_client.get_balance()
@@ -526,9 +690,7 @@ class TradingEngine:
                 logger.info(f"🎯 [Попытка {attempt+1}] Executing {side} order for {amount} {symbol} at {current_price}")
                 qty_final = self.adjust_qty(symbol, amount)
                 qty_str = self.format_qty_for_bybit(symbol, qty_final, price=current_price)
-                lot_size = self.LOT_SIZE.get(symbol, 0.01)
-                precision = self.LOT_PRECISION.get(symbol, 3)
-                logger.info(f"🔢 [lot_size] Итоговое qty для {symbol}: {qty_str} (lot_size={lot_size}, precision={precision})")
+                logger.info(f"🔢 [lot_size] Итоговое qty для {symbol}: {qty_str}")
                 order_kwargs = dict(
                     symbol=symbol,
                     side=side.capitalize(),
@@ -611,10 +773,9 @@ class TradingEngine:
             close_side = "Sell" if position["side"] == "Buy" else "Buy"
             
             # Place closing order
-            lot_size = self.LOT_SIZE.get(symbol, 0.01)
             qty_final = self.adjust_qty(symbol, position["size"])
             qty_str = self.format_qty_for_bybit(symbol, qty_final)
-            logger.info(f"🔢 [lot_size] Закрытие позиции {symbol}: qty={qty_str} (lot_size={lot_size})")
+            logger.info(f"🔢 [lot_size] Закрытие позиции {symbol}: qty={qty_str}")
             order_kwargs = dict(
                 symbol=symbol,
                 side=close_side,

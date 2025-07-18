@@ -127,33 +127,59 @@ async def get_all_signals(trading_engine = Depends(get_trading_engine)):
         if not trading_engine.strategy_manager:
             raise HTTPException(status_code=503, detail="Strategy manager not initialized")
         
+        # Получаем текущий режим и его конфигурацию
+        current_mode = trading_engine.strategy_manager.get_current_mode()
+        mode_config = trading_engine.strategy_manager.get_current_config()
+        
+        # Получаем таймфрейм для текущего режима
+        timeframe = mode_config.timeframes[0] if mode_config.timeframes else "5m"
+        
+        # Конвертируем таймфрейм в формат API
+        timeframe_map = {
+            "1m": "1",
+            "5m": "5", 
+            "15m": "15",
+            "30m": "30",
+            "1h": "60",
+            "4h": "240",
+            "1d": "D"
+        }
+        api_timeframe = timeframe_map.get(timeframe, "5")
+        
+        logger.info(f"🎯 Получение сигналов для режима: {current_mode.value} ({mode_config.name})")
+        logger.info(f"📊 Используемый таймфрейм: {timeframe} → API: {api_timeframe}")
+        
         # Получаем детальные сигналы для всех торговых пар
         trading_pairs = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "XRPUSDT"]
         all_signals = {}
         
         for symbol in trading_pairs:
             try:
-                # Получаем детальные сигналы с числовыми значениями
-                detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol)
+                # ✅ ИСПРАВЛЕНИЕ: Используем таймфрейм текущего режима
+                detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol, api_timeframe)
                 if detailed_signals:
                     all_signals[symbol] = detailed_signals
-                    logger.info(f"✅ Generated detailed signals for {symbol}: {len(detailed_signals)} indicators")
+                    logger.info(f"✅ Generated detailed signals for {symbol} on {timeframe}: {len(detailed_signals)} indicators")
                 else:
-                    # Fallback к обычным сигналам
-                    signals = await trading_engine.strategy_manager.get_signals_for_mode(symbol)
-                    if signals and "signals" in signals:
-                        all_signals[symbol] = signals["signals"]
-                        logger.info(f"✅ Generated fallback signals for {symbol}: {len(signals['signals'])} indicators")
-                    else:
+                    # Fallback к обычным сигналам с правильным таймфреймом
+                    signals = trading_engine.signal_processor.get_signals(symbol, api_timeframe)
+                    if signals:
                         all_signals[symbol] = signals
-                        logger.info(f"✅ Generated basic signals for {symbol}")
+                        logger.info(f"✅ Generated fallback signals for {symbol} on {timeframe}: {len(signals)} indicators")
+                    else:
+                        all_signals[symbol] = {}
+                        logger.warning(f"⚠️ No signals generated for {symbol} on {timeframe}")
             except Exception as e:
-                logger.warning(f"Error getting signals for {symbol}: {e}")
+                logger.warning(f"Error getting signals for {symbol} on {timeframe}: {e}")
                 all_signals[symbol] = {}
         
         return {
             "signals": all_signals,
-            "enhanced_features_enabled": True
+            "enhanced_features_enabled": True,
+            "current_mode": current_mode.value,
+            "mode_name": mode_config.name,
+            "timeframe": timeframe,
+            "api_timeframe": api_timeframe
         }
     except Exception as e:
         logger.error(f"Error getting all signals: {e}")
