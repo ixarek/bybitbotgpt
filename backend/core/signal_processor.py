@@ -447,6 +447,225 @@ class SignalProcessor:
             "OBV": {"value": "12345678", "signal": "SELL"}
         }
     
+    def _calculate_detailed_indicators(self, df: pd.DataFrame) -> Dict[str, Dict[str, str]]:
+        """
+        Calculate technical indicators with both numeric values and signals
+        """
+        detailed_signals = {}
+        
+        try:
+            # Ensure we have enough data
+            if len(df) < 50:
+                logger.warning("Not enough data for indicators, using mock signals")
+                return self._generate_mock_detailed_signals()
+            
+            close = df['close']
+            high = df['high']
+            low = df['low']
+            volume = df['volume']
+            
+            # RSI (Relative Strength Index)
+            rsi = self._calculate_rsi(close, 14)
+            if not rsi.empty and not pd.isna(rsi.iloc[-1]):
+                rsi_val = rsi.iloc[-1]
+                if rsi_val < 30:
+                    signal = "BUY"
+                elif rsi_val > 70:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["RSI"] = {
+                    "value": f"{rsi_val:.2f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["RSI"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # MACD
+            macd_line, macd_signal_line, _ = self._calculate_macd(close, 12, 26, 9)
+            if len(macd_line) > 1 and len(macd_signal_line) > 1:
+                if not pd.isna(macd_line.iloc[-1]) and not pd.isna(macd_signal_line.iloc[-1]):
+                    macd_val = macd_line.iloc[-1]
+                    if (macd_line.iloc[-1] > macd_signal_line.iloc[-1] and 
+                        macd_line.iloc[-2] <= macd_signal_line.iloc[-2]):
+                        signal = "BUY"
+                    elif (macd_line.iloc[-1] < macd_signal_line.iloc[-1] and 
+                          macd_line.iloc[-2] >= macd_signal_line.iloc[-2]):
+                        signal = "SELL"
+                    else:
+                        signal = "HOLD"
+                    detailed_signals["MACD"] = {
+                        "value": f"{macd_val:.4f}",
+                        "signal": signal
+                    }
+                else:
+                    detailed_signals["MACD"] = {"value": "N/A", "signal": "HOLD"}
+            else:
+                detailed_signals["MACD"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # Simple Moving Average
+            sma_20 = close.rolling(window=20).mean()
+            sma_50 = close.rolling(window=50).mean()
+            if not pd.isna(sma_20.iloc[-1]) and not pd.isna(sma_50.iloc[-1]):
+                sma_val = sma_20.iloc[-1]
+                if sma_20.iloc[-1] > sma_50.iloc[-1]:
+                    signal = "BUY"
+                elif sma_20.iloc[-1] < sma_50.iloc[-1]:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["SMA"] = {
+                    "value": f"{sma_val:.2f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["SMA"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # Exponential Moving Average
+            ema_12 = close.ewm(span=12).mean()
+            ema_26 = close.ewm(span=26).mean()
+            if not pd.isna(ema_12.iloc[-1]) and not pd.isna(ema_26.iloc[-1]):
+                ema_val = ema_12.iloc[-1]
+                if ema_12.iloc[-1] > ema_26.iloc[-1]:
+                    signal = "BUY"
+                elif ema_12.iloc[-1] < ema_26.iloc[-1]:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["EMA"] = {
+                    "value": f"{ema_val:.2f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["EMA"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # Bollinger Bands
+            bb_upper, bb_lower = self._calculate_bollinger_bands(close, 20, 2)
+            if not pd.isna(bb_upper.iloc[-1]) and not pd.isna(bb_lower.iloc[-1]):
+                current_price = close.iloc[-1]
+                bb_position = (current_price - bb_lower.iloc[-1]) / (bb_upper.iloc[-1] - bb_lower.iloc[-1]) * 100
+                if current_price < bb_lower.iloc[-1]:
+                    signal = "BUY"
+                elif current_price > bb_upper.iloc[-1]:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["BB"] = {
+                    "value": f"{bb_position:.1f}%",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["BB"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # Stochastic Oscillator
+            stoch_k, stoch_d = self._calculate_stochastic(high, low, close, 14, 3)
+            if not pd.isna(stoch_k.iloc[-1]) and not pd.isna(stoch_d.iloc[-1]):
+                stoch_val = stoch_k.iloc[-1]
+                if stoch_k.iloc[-1] < 20 and stoch_d.iloc[-1] < 20:
+                    signal = "BUY"
+                elif stoch_k.iloc[-1] > 80 and stoch_d.iloc[-1] > 80:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["STOCH"] = {
+                    "value": f"{stoch_val:.2f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["STOCH"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # Williams %R
+            williams_r = self._calculate_williams_r(high, low, close, 14)
+            if not pd.isna(williams_r.iloc[-1]):
+                willr_val = williams_r.iloc[-1]
+                if willr_val < -80:
+                    signal = "BUY"
+                elif willr_val > -20:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["WILLIAMS"] = {
+                    "value": f"{willr_val:.2f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["WILLIAMS"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # ATR (Average True Range)
+            atr = self._calculate_atr(high, low, close, 14)
+            if len(atr) > 1 and not pd.isna(atr.iloc[-1]) and not pd.isna(atr.iloc[-2]):
+                atr_val = atr.iloc[-1]
+                if atr.iloc[-1] > atr.iloc[-2]:
+                    signal = "SELL"  # High volatility = caution
+                else:
+                    signal = "BUY"   # Low volatility = opportunity
+                detailed_signals["ATR"] = {
+                    "value": f"{atr_val:.2f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["ATR"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # ADX (simplified version)
+            ema_short = close.ewm(span=10).mean()
+            ema_long = close.ewm(span=20).mean()
+            trend_strength = abs(ema_short.iloc[-1] - ema_long.iloc[-1]) / ema_long.iloc[-1] * 100
+            if trend_strength > 2:  # Strong trend
+                if ema_short.iloc[-1] > ema_long.iloc[-1]:
+                    signal = "BUY"
+                else:
+                    signal = "SELL"
+            else:
+                signal = "HOLD"
+            detailed_signals["ADX"] = {
+                "value": f"{trend_strength:.1f}%",
+                "signal": signal
+            }
+            
+            # MFI (Money Flow Index) - simplified
+            typical_price = (high + low + close) / 3
+            money_flow = typical_price * volume
+            mf_ratio = money_flow.rolling(14).sum() / volume.rolling(14).sum()
+            mf_normalized = (mf_ratio - mf_ratio.rolling(14).min()) / (mf_ratio.rolling(14).max() - mf_ratio.rolling(14).min()) * 100
+            
+            if not pd.isna(mf_normalized.iloc[-1]):
+                mfi_val = mf_normalized.iloc[-1]
+                if mfi_val < 20:
+                    signal = "BUY"
+                elif mfi_val > 80:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["MFI"] = {
+                    "value": f"{mfi_val:.1f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["MFI"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # OBV (On-Balance Volume)
+            obv = self._calculate_obv(close, volume)
+            if len(obv) > 1 and not pd.isna(obv.iloc[-1]) and not pd.isna(obv.iloc[-2]):
+                obv_val = obv.iloc[-1]
+                if obv.iloc[-1] > obv.iloc[-2]:
+                    signal = "BUY"
+                elif obv.iloc[-1] < obv.iloc[-2]:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["OBV"] = {
+                    "value": f"{obv_val:.0f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["OBV"] = {"value": "N/A", "signal": "HOLD"}
+            
+            return detailed_signals
+            
+        except Exception as e:
+            logger.error(f"Error calculating detailed indicators: {e}")
+            return self._generate_mock_detailed_signals()
+
     def get_signal_strength(self, signals: Dict[str, str]) -> Dict[str, int]:
         """
         Calculate signal strength based on indicator consensus

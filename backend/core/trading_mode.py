@@ -65,7 +65,7 @@ TRADING_MODE_CONFIGS = {
         leverage_range=(3.0, 5.0),
         tp_range=(5.0, 5.0),  # 5%
         sl_range=(3.0, 3.0),  # 3%
-        trading_pairs=["BTC/USDT", "ETH/USDT", "BNB/USDT", "SOL/USDT", "ADA/USDT"],
+        trading_pairs=["BTC/USDT", "ETH/USDT", "BNB/USDT", "SOL/USDT"],
         risk_level="MEDIUM",
         strategy_type="TREND_FOLLOWING"
     ),
