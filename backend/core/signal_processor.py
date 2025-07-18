@@ -38,14 +38,18 @@ class SignalProcessor:
                 (now - self.last_update[cache_key]).seconds < 30):
                 logger.debug(f"Using cached signals for {symbol} {timeframe}")
                 return self.signal_cache[cache_key]
-            from backend.integrations.bybit_client import bybit_client
+            
+            # Получаем bybit_client из main.py вместо прямого импорта
+            from backend.main import bybit_client
             if bybit_client is None:
                 logger.warning("Bybit client not available, using mock signals")
                 return self._generate_mock_signals()
+            
             df = bybit_client.get_kline(symbol, timeframe, limit=100)
             if df is None or df.empty:
                 logger.warning(f"No market data for {symbol} {timeframe}, using mock signals")
                 return self._generate_mock_signals()
+            
             signals = self._calculate_indicators(df)
             self.signal_cache[cache_key] = signals
             self.last_update[cache_key] = now
@@ -60,7 +64,8 @@ class SignalProcessor:
         Get the actual value of a specific indicator
         """
         try:
-            from backend.integrations.bybit_client import bybit_client
+            # Получаем bybit_client из main.py вместо прямого импорта
+            from backend.main import bybit_client
             
             if bybit_client is None:
                 return "N/A"
@@ -133,6 +138,31 @@ class SignalProcessor:
         except Exception as e:
             logger.error(f"Error getting indicator value for {indicator}: {e}")
             return "N/A"
+    
+    def get_detailed_signals(self, symbol: str, timeframe: str = "5") -> Dict[str, Dict[str, str]]:
+        """
+        Get detailed trading signals with both numeric values and signals
+        """
+        try:
+            logger.info(f"📊 Generating detailed signals for {symbol} {timeframe}")
+            
+            # Получаем bybit_client из main.py вместо прямого импорта
+            from backend.main import bybit_client
+            if bybit_client is None:
+                logger.warning("Bybit client not available, using mock signals")
+                return self._generate_mock_detailed_signals()
+            
+            df = bybit_client.get_kline(symbol, timeframe, limit=100)
+            if df is None or df.empty:
+                logger.warning(f"No market data for {symbol} {timeframe}, using mock signals")
+                return self._generate_mock_detailed_signals()
+            
+            detailed_signals = self._calculate_detailed_indicators(df)
+            logger.info(f"✅ Generated {len(detailed_signals)} detailed signals for {symbol} {timeframe}")
+            return detailed_signals
+        except Exception as e:
+            logger.error(f"❌ Error generating detailed signals for {symbol} {timeframe}: {e}")
+            return self._generate_mock_detailed_signals()
     
     def _calculate_indicators(self, df: pd.DataFrame) -> Dict[str, str]:
         """
@@ -398,6 +428,24 @@ class SignalProcessor:
             signals[indicator] = random.choices(signal_types, weights=weights)[0]
         
         return signals
+    
+    def _generate_mock_detailed_signals(self) -> Dict[str, Dict[str, str]]:
+        """
+        Generate mock detailed signals for testing
+        """
+        return {
+            "RSI": {"value": "45.67", "signal": "HOLD"},
+            "MACD": {"value": "0.0123", "signal": "HOLD"},
+            "SMA": {"value": "98765.43", "signal": "BUY"},
+            "EMA": {"value": "98432.12", "signal": "SELL"},
+            "BB": {"value": "67.3%", "signal": "HOLD"},
+            "STOCH": {"value": "56.78", "signal": "BUY"},
+            "WILLIAMS": {"value": "-45.67", "signal": "BUY"},
+            "ATR": {"value": "1234.56", "signal": "BUY"},
+            "ADX": {"value": "3.2%", "signal": "SELL"},
+            "MFI": {"value": "65.4", "signal": "BUY"},
+            "OBV": {"value": "12345678", "signal": "SELL"}
+        }
     
     def get_signal_strength(self, signals: Dict[str, str]) -> Dict[str, int]:
         """

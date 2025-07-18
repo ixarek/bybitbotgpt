@@ -423,7 +423,6 @@
                             <button type="button" class="btn btn-outline-primary" data-symbol="ETHUSDT">ETH/USDT</button>
                             <button type="button" class="btn btn-outline-primary" data-symbol="SOLUSDT">SOL/USDT</button>
                             <button type="button" class="btn btn-outline-primary" data-symbol="BNBUSDT">BNB/USDT</button>
-                            <button type="button" class="btn btn-outline-primary" data-symbol="ADAUSDT">ADA/USDT</button>
                             <button type="button" class="btn btn-outline-primary" data-symbol="DOGEUSDT">DOGE/USDT</button>
                             <button type="button" class="btn btn-outline-primary" data-symbol="XRPUSDT">XRP/USDT</button>
                         </div>
@@ -536,7 +535,7 @@
                     // Реактивное обновление сигналов при смене режима
                     if (data.data.signals) {
                         updateAllSignals(data.data.signals, data.data.timeframe, data.data.mode);
-                        addLogEntry('info', `🔄 Индикаторы обновлены через WebSocket (${data.data.mode}, ${data.data.timeframe})`);
+                        addLogEntry('info', `🔄 Indicators updated via WebSocket (${data.data.mode}, ${data.data.timeframe})`);
                     } else {
                         updateSignals(data.data);
                     }
@@ -723,7 +722,7 @@
             modeDescription.textContent = descriptions[mode] || '';
             
             try {
-                const response = await fetch('/api/trading-mode', {
+                const response = await fetch('/api/mode', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mode: mode })
@@ -825,24 +824,16 @@
                 // Получаем текущий режим
                 const mode = document.getElementById('tradingMode').value;
                 
-                // Получаем сигналы для текущего символа и режима
-                const response = await fetch(`/api/signals/${currentSymbol}/mode/${mode}`);
+                // Получаем все сигналы через работающий эндпоинт
+                const response = await fetch('/api/signals');
                 if (response.ok) {
                     const result = await response.json();
-                    if (result.status === 'success' && result.data) {
-                        updateSignalsFromModeData(result.data);
-                        addLogEntry('info', `🔄 Обновлены индикаторы для ${currentSymbol} в режиме ${mode}`);
+                    if (result.signals && result.signals[currentSymbol]) {
+                        updateSignals(result.signals[currentSymbol]);
+                        addLogEntry('info', `🔄 Indicators updated for ${currentSymbol} in ${mode} mode`);
                     }
                 } else {
-                    // Fallback к обычному API если специальный не работает
-                    const fallbackResponse = await fetch(`/api/signals/${currentSymbol}`);
-                    if (fallbackResponse.ok) {
-                        const fallbackResult = await fallbackResponse.json();
-                        if (fallbackResult.data) {
-                            updateSignals(fallbackResult.data);
-                            addLogEntry('warning', `⚠️ Используется fallback API для ${currentSymbol}`);
-                        }
-                    }
+                    addLogEntry('error', `❌ Failed to fetch signals for ${currentSymbol}`);
                 }
             } catch (error) {
                 console.error('Ошибка загрузки сигналов:', error);
@@ -912,7 +903,7 @@
             }
             // Обновляем силу сигнала
             updateSignalStrength(totalActive);
-            addLogEntry('info', `📈 Обновлено ${totalIndicators} индикаторов для ${currentPair} (${totalActive} активных)`);
+            addLogEntry('info', `📈 Updated ${totalIndicators} indicators for ${currentPair} (${totalActive} active)`);
         }
         
         // Получение текущей выбранной валютной пары
@@ -1191,8 +1182,8 @@
                 
                 // ✅ ИСПРАВЛЕНИЕ: Безопасная загрузка сигналов
                 try {
-                    const signalsResponse = await fetch(`/api/signals/${currentSymbol}`);
-                    if (signalsResponse.ok) {
+                                    const signalsResponse = await fetch('/api/signals');
+                if (signalsResponse.ok) {
                         const result = await signalsResponse.json();
                         let signalsData = null;
                         if (result.status === 'success' && result.data) {
@@ -1312,8 +1303,8 @@
                 const mode = document.getElementById('tradingMode').value;
                 let signalsData = null;
                 try {
-                    const modeSignalsResponse = await fetch(`/api/signals/${symbol}/mode/${mode}`);
-                    if (modeSignalsResponse.ok) {
+                                    const modeSignalsResponse = await fetch('/api/signals');
+                if (modeSignalsResponse.ok) {
                         const modeResult = await modeSignalsResponse.json();
                         if (modeResult.status === 'success' && modeResult.data) {
                             signalsData = modeResult.data;
@@ -1326,7 +1317,7 @@
                     console.log('Mode-specific signals not available, falling back to regular API');
                 }
                 if (!signalsData) {
-                    const signalsResponse = await fetch(`/api/signals/${symbol}`);
+                    const signalsResponse = await fetch('/api/signals');
                     if (signalsResponse.ok) {
                         const result = await signalsResponse.json();
                         if (result.status === 'success' && result.data) {
@@ -1354,8 +1345,8 @@
 
         // Обновление сигналов для конкретного символа
         function updateSignalsForSymbol(signalsData) {
+            // ✅ ИСПРАВЛЕНИЕ: Обработка данных от API
             if (!signalsData || !signalsData.signals) {
-                // ✅ ИСПРАВЛЕНИЕ: Устанавливаем значения по умолчанию
                 document.getElementById('activeSignals').textContent = '0/0';
                 document.getElementById('indicatorsGrid').innerHTML = 
                     '<div class="text-center text-muted">Нет данных сигналов</div>';
@@ -1363,21 +1354,43 @@
                 return;
             }
             
-            // ✅ ИСПРАВЛЕНИЕ: Безопасная проверка счетчиков
-            const activeCount = signalsData.active_count || 0;
-            const totalCount = signalsData.total_count || 0;
+            // Получаем сигналы для текущего символа
+            const symbolSignals = signalsData.signals[currentSymbol];
+            
+            if (!symbolSignals) {
+                document.getElementById('activeSignals').textContent = '0/0';
+                document.getElementById('indicatorsGrid').innerHTML = 
+                    '<div class="text-center text-muted">Нет данных для выбранного символа</div>';
+                updateSignalStrength(0);
+                return;
+            }
+            
+            // Преобразуем данные API в формат для отображения
+            const signalsArray = Object.entries(symbolSignals).map(([name, data]) => ({
+                name: name,
+                signal: data.signal || data, // Поддерживаем как новый, так и старый формат
+                value: data.value || data // Числовое значение индикатора
+            }));
+            
+            const totalCount = signalsArray.length;
+            const activeCount = signalsArray.filter(s => s.signal === 'BUY' || s.signal === 'SELL').length;
             
             // Обновляем счетчики
             document.getElementById('activeSignals').textContent = `${activeCount}/${totalCount}`;
             
             // Обновляем индикаторы сигналов
             const grid = document.getElementById('indicatorsGrid');
-            if (Array.isArray(signalsData.signals) && signalsData.signals.length > 0) {
-                grid.innerHTML = signalsData.signals.map(signal => {
-                    // ✅ ИСПРАВЛЕНИЕ: Безопасная проверка данных сигнала
-                    const signalValue = signal?.signal || 'HOLD';
-                    const signalName = signal?.name || 'Unknown';
-                    const signalPrice = signal?.value || 'N/A';
+            if (signalsArray.length > 0) {
+                grid.innerHTML = signalsArray.map(signal => {
+                    const signalValue = signal.signal || 'HOLD';
+                    const signalName = signal.name || 'Unknown';
+                    const signalPrice = signal.value || 'N/A';
+                    
+                    // Если это числовое значение, показываем его с единицей измерения
+                    let displayValue = signalPrice;
+                    if (typeof signal.value === 'string' && signal.value !== 'N/A' && signal.value !== signalValue) {
+                        displayValue = signal.value; // Числовое значение индикатора
+                    }
                     
                     const signalClass = signalValue === 'BUY' ? 'indicator-buy' : 
                                        signalValue === 'SELL' ? 'indicator-sell' : 'indicator-hold';
@@ -1387,7 +1400,7 @@
                     return `
                         <div class="indicator-item ${signalClass}">
                             <div class="indicator-name">${signalName}</div>
-                            <div class="indicator-value">${signalPrice}</div>
+                            <div class="indicator-value">${displayValue}</div>
                             <div class="indicator-signal">${icon} ${signalValue}</div>
                         </div>
                     `;

@@ -174,6 +174,13 @@ class EnhancedRiskManager(RiskManager):
         self.correlation_matrix = {}
         self.last_correlation_update = datetime.now()
         
+        # Категории активов для управления рисками
+        self.asset_categories = {
+            "major": ["BTCUSDT", "ETHUSDT"],
+            "altcoins": ["SOLUSDT", "BNBUSDT"],
+            "stable": ["USDCUSDT", "DAIUSDT"]
+        }
+        
         logger.info("🛡️ Enhanced Risk Manager initialized with trailing stops")
     
     async def calculate_enhanced_position_size(
@@ -415,7 +422,7 @@ class EnhancedRiskManager(RiskManager):
             # Группы коррелированных активов
             correlation_groups = {
                 "major_crypto": ["BTCUSDT", "ETHUSDT"],
-                "altcoins": ["SOLUSDT", "ADAUSDT", "BNBUSDT"],
+                "altcoins": ["SOLUSDT", "BNBUSDT"],
                 "meme_coins": ["DOGEUSDT"]
             }
             

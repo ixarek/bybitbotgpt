@@ -208,15 +208,15 @@ class StrategyManager:
                     logger.info(f"✅ Улучшенные сигналы получены для {symbol}")
                     
                 except Exception as e:
-                    logger.warning(f"⚠️ Ошибка получения улучшенных сигналов: {e}")
+                    logger.warning(f"⚠️ Error getting enhanced signals: {e}")
                     # Продолжаем с базовыми сигналами
             
-            logger.info(f"✅ Получены сигналы: {len(base_signals)} индикаторов для {symbol} на {timeframe}")
+            logger.info(f"✅ Generated signals: {len(base_signals)} indicators for {symbol} on {timeframe}")
             
             return result
             
         except Exception as e:
-            logger.error(f"Ошибка получения сигналов для {symbol} в режиме {target_mode.value}: {e}")
+            logger.error(f"Error getting signals for {symbol} in mode {target_mode.value}: {e}")
             return {
                 "error": str(e),
                 "symbol": symbol,
@@ -354,13 +354,13 @@ class StrategyManager:
         try:
             # Здесь будет логика обновления индикаторов в SignalProcessor
             # Пока что просто логируем
-            logger.info(f"Обновление индикаторов для режима {config.name}")
-            logger.info(f"Индикаторы: {list(config.indicators.keys())}")
+            logger.info(f"Updating indicators for mode {config.name}")
+            logger.info(f"Indicators: {list(config.indicators.keys())}")
             
             self._active_indicators = config.indicators
             
         except Exception as e:
-            logger.error(f"Ошибка обновления индикаторов: {e}")
+            logger.error(f"Error updating indicators: {e}")
     
     def _config_to_dict(self, config: ModeConfig) -> Dict[str, Any]:
         """Конвертация ModeConfig в словарь для API"""

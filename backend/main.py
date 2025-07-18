@@ -345,7 +345,7 @@ async def get_balance():
 async def get_positions():
     """Получить реальные активные позиции."""
     if not trading_engine or not trading_engine.bybit_client:
-        return []  # Нет активных позиций
+        return []  # No active positions
     
     try:
         # Получаем реальные позиции из Bybit API
@@ -364,11 +364,11 @@ async def get_positions():
                 formatted_positions.append(formatted_pos)
             return formatted_positions
         else:
-            return []  # Нет активных позиций
+            return []  # No active positions
             
     except Exception as api_error:
         logger.warning(f"Bybit positions API error: {api_error}")
-        return []  # Нет активных позиций
+        return []  # No active positions
 
 @app.get("/api/signals")
 async def get_all_signals():
@@ -385,16 +385,18 @@ async def get_all_signals():
         enhanced_signals = {}
         
         for symbol in settings.trading_pairs:
-            # Базовые сигналы (для обратной совместимости)
-            signals = trading_engine.signal_processor.get_signals(symbol, timeframe)
-            all_signals[symbol] = signals
+            # Подробные сигналы с числовыми значениями и сигналами
+            detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol, timeframe)
+            all_signals[symbol] = detailed_signals
             
             # Phase 1 Enhanced signals
             if strategy_manager and strategy_manager.use_enhanced_features:
                 try:
+                    # Извлекаем только сигналы для обратной совместимости
+                    basic_signals = {k: v["signal"] for k, v in detailed_signals.items()}
                     enhanced_result = await strategy_manager.get_enhanced_signals_async(symbol, timeframe)
                     enhanced_signals[symbol] = {
-                        "base_signals": signals,
+                        "base_signals": basic_signals,
                         "enhanced_signals": enhanced_result.get("signals", {}),
                         "signal_strength": enhanced_result.get("signal_strength", "unknown"),
                         "confidence": enhanced_result.get("confidence", "unknown"),
@@ -403,8 +405,10 @@ async def get_all_signals():
                     }
                 except Exception as e:
                     logger.warning(f"Enhanced signals error for {symbol}: {e}")
+                    # Извлекаем только сигналы для обратной совместимости
+                    basic_signals = {k: v["signal"] for k, v in detailed_signals.items()}
                     enhanced_signals[symbol] = {
-                        "base_signals": signals,
+                        "base_signals": basic_signals,
                         "enhanced_signals": {},
                         "signal_strength": "unknown",
                         "confidence": "unknown",
@@ -414,7 +418,8 @@ async def get_all_signals():
         
         result = {
             "signals": all_signals, 
-            "timeframe": timeframe
+            "timeframe": timeframe,
+            "mode": trading_engine.risk_manager.mode
         }
         
         # Добавляем enhanced данные если включены улучшения Phase 1
@@ -587,7 +592,7 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         # Отправляем приветственное сообщение
-        await websocket.send_text('{"type": "log", "data": {"type": "success", "message": "[WS] WebSocket подключен"}}')
+        await websocket.send_text('{"type": "log", "data": {"type": "success", "message": "[WS] WebSocket connected"}}')
         
         # Отправляем начальный статус
         status = await get_status()

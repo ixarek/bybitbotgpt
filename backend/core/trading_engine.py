@@ -49,9 +49,8 @@ class TradingEngine:
             "ETHUSDT": 3,
             "SOLUSDT": 2,
             "DOGEUSDT": 0,
-            "XRPUSDT": 1,
-            "BNBUSDT": 3,
-            "ADAUSDT": 1,
+            "XRPUSDT": 0,
+            "BNBUSDT": 2,
             # Добавьте другие пары по необходимости
         }
         
@@ -63,7 +62,6 @@ class TradingEngine:
             "DOGEUSDT": 1,
             "XRPUSDT": 1,
             "BNBUSDT": 0.01,
-            "ADAUSDT": 1,
             # Добавьте другие пары по необходимости
         }
         
@@ -122,7 +120,7 @@ class TradingEngine:
         logger.info(f"📊 Trading pairs: {trading_pairs}")
         while self.is_running:
             try:
-                logger.info(f"🔄 [LOOP] Текущий список пар: {trading_pairs}")
+                logger.info(f"🔄 [LOOP] Current trading pairs: {trading_pairs}")
                 for symbol in trading_pairs:
                     bybit_symbol = symbol.replace("/", "")
                     await self._process_symbol(bybit_symbol, timeframe)
@@ -163,7 +161,7 @@ class TradingEngine:
                     pass
 
             # Старый лог для backend
-            logger.info(f"{symbol}: Покупка: {signal_strength['BUY']}, Продажа: {signal_strength['SELL']}, Удержание: {signal_strength['HOLD']}")
+            logger.info(f"{symbol}: Buy: {signal_strength['BUY']}, Sell: {signal_strength['SELL']}, Hold: {signal_strength['HOLD']}")
 
             # Check if we should trade
             # ✅ ИСПРАВЛЕНИЕ: Адаптивное количество подтверждений для разных режимов
@@ -204,37 +202,64 @@ class TradingEngine:
                 hold.append(ind)
         parts = []
         if buy:
-            parts.append(f"Покупка: {', '.join(buy)}")
+            parts.append(f"Buy: {', '.join(buy)}")
         if sell:
-            parts.append(f"Продажа: {', '.join(sell)}")
+            parts.append(f"Sell: {', '.join(sell)}")
         if hold:
-            parts.append(f"Удержание: {', '.join(hold)}")
+            parts.append(f"Hold: {', '.join(hold)}")
         details = "; ".join(parts)
-        summary = f"{symbol}: {signal_strength['BUY']} покупка, {signal_strength['SELL']} продажа, {signal_strength['HOLD']} удержание"
+        summary = f"{symbol}: {signal_strength['BUY']} buy, {signal_strength['SELL']} sell, {signal_strength['HOLD']} hold"
         return f"{details}\n{summary}"
     
     def calc_tp_sl(self, entry_price, side, mode):
         logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
+        
         # Исправление: если режим moderate, заменяем на medium
         if mode == "moderate":
             logger.warning("[TP/SL] Режим 'moderate' заменён на 'medium'")
             mode = "medium"
+        
+        # ✅ ИСПРАВЛЕНИЕ: Более консервативные параметры TP/SL
         params = {
-            'aggressive': {'sl': 0.03, 'tp': 0.05},
-            'medium':     {'sl': 0.03, 'tp': 0.05},
-            'conservative': {'sl': 0.03, 'tp': 0.05}
+            'aggressive': {'sl': 0.02, 'tp': 0.03},    # 2% SL, 3% TP
+            'medium':     {'sl': 0.015, 'tp': 0.025},  # 1.5% SL, 2.5% TP  
+            'conservative': {'sl': 0.01, 'tp': 0.02}   # 1% SL, 2% TP
         }
+        
         if mode not in params:
             logger.error(f"Неизвестный режим торговли: {mode}")
             return None, None
+        
         sl_pct = params[mode]['sl']
         tp_pct = params[mode]['tp']
-        if side.lower() == 'buy' or side.lower() == 'long':
+        
+        # ✅ ИСПРАВЛЕНИЕ: Правильный расчет TP/SL с учетом направления
+        if side.lower() in ['buy', 'long']:
+            # Для покупки: SL ниже входной цены, TP выше
             stop_loss = entry_price * (1 - sl_pct)
             take_profit = entry_price * (1 + tp_pct)
         else:
+            # Для продажи: SL выше входной цены, TP ниже
             stop_loss = entry_price * (1 + sl_pct)
             take_profit = entry_price * (1 - tp_pct)
+        
+        # ✅ ИСПРАВЛЕНИЕ: Проверяем разумность цен
+        if side.lower() in ['buy', 'long']:
+            if stop_loss >= entry_price:
+                logger.error(f"❌ Неправильный SL для покупки: {stop_loss} >= {entry_price}")
+                return None, None
+            if take_profit <= entry_price:
+                logger.error(f"❌ Неправильный TP для покупки: {take_profit} <= {entry_price}")
+                return None, None
+        else:
+            if stop_loss <= entry_price:
+                logger.error(f"❌ Неправильный SL для продажи: {stop_loss} <= {entry_price}")
+                return None, None
+            if take_profit >= entry_price:
+                logger.error(f"❌ Неправильный TP для продажи: {take_profit} >= {entry_price}")
+                return None, None
+        
+        logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
         return round(stop_loss, 4), round(take_profit, 4)
     
     def round_qty(self, symbol, qty):
@@ -254,52 +279,53 @@ class TradingEngine:
             qty_adjusted = int(qty_adjusted)
         return qty_adjusted
 
-    def format_qty_for_bybit(self, symbol, qty, price=None):
+    def format_qty_for_bybit(self, symbol: str, qty: float, price: float = None) -> str:
         """
         Форматирует qty для Bybit: кратен lot_size, не меньше lot_size, форматируется по LOT_PRECISION, убирает лишние нули/точку, всегда строка.
-        Если передан price, гарантирует qty*price >= 5 USDT (Bybit min order).
+        
         Добавлена строгая валидация: qty округляется до нужной точности, проверяется кратность lot_size.
         """
+        from decimal import Decimal, ROUND_DOWN
         lot_size = Decimal(str(self.LOT_SIZE.get(symbol, 0.01)))
         precision = self.LOT_PRECISION.get(symbol, 3)
         qty_orig = qty
-        qty = Decimal(str(abs(qty)))
+        qty = Decimal(str(qty))
         logger.info(f"[format_qty_for_bybit] symbol={symbol}, qty_in={qty_orig}, lot_size={lot_size}, precision={precision}, price={price}")
+        
         # qty не может быть меньше lot_size
         if qty < lot_size:
             logger.info(f"[format_qty_for_bybit] qty < lot_size: {qty} < {lot_size}, set to lot_size")
             qty = lot_size
+        
         # qty обязательно кратен lot_size (до precision знаков)
-        quant = Decimal('1').scaleb(-precision)
-        qty = (qty // lot_size) * lot_size
-        qty = qty.quantize(quant)
+        if lot_size > 0:
+            qty = (qty // lot_size) * lot_size
+        
         logger.info(f"[format_qty_for_bybit] qty after lot_size rounding: {qty}")
-        # Проверка min_qty для 5 USDT
-        if price is not None:
-            price = Decimal(str(price))
-            min_qty = (Decimal('5') / price).quantize(lot_size, rounding=ROUND_DOWN)
+        
+        # ✅ ИСПРАВЛЕНИЕ: Проверяем минимальную сумму ордера (5 USDT)
+        if price is not None and price > 0:
+            min_qty = (Decimal('5') / Decimal(str(price))).quantize(lot_size, rounding=ROUND_DOWN)
             logger.info(f"[format_qty_for_bybit] min_qty for 5 USDT: {min_qty}")
             if qty < min_qty:
+                # Увеличиваем до минимального количества
                 qty = ((min_qty // lot_size) + 1) * lot_size
-                qty = qty.quantize(quant)
-                logger.info(f"[format_qty_for_bybit] qty increased to min_qty: {qty}")
-        # Окончательное округление до нужной точности
-        qty = qty.quantize(quant)
+                logger.info(f"[format_qty_for_bybit] qty increased to meet 5 USDT minimum: {qty}")
+        
+        # ✅ ИСПРАВЛЕНИЕ: Дополнительная проверка для ETHUSDT (минимум 0.1)
+        if symbol == "ETHUSDT" and qty < Decimal('0.1'):
+            qty = Decimal('0.1')
+            logger.info(f"[format_qty_for_bybit] ETHUSDT minimum qty set to 0.1")
+        
         # Проверка кратности lot_size
         remainder = (qty / lot_size) % 1
         logger.info(f"[format_qty_for_bybit] qty/lot_size={qty/lot_size}, remainder={remainder}")
         if remainder != 0:
             logger.warning(f"[format_qty_for_bybit] WARNING: qty={qty} не кратен lot_size={lot_size} (remainder={remainder}) — Bybit не примет!")
-        # qty > 0
-        if qty <= 0:
-            logger.warning(f"[format_qty_for_bybit] WARNING: qty={qty} <= 0 — Bybit не примет!")
-        # Форматируем по точности
-        fmt = f".{{0}}f".format(precision)
-        qty_str = format(qty, fmt)
-        # Убираем лишние нули справа и точку, если целое
-        if "." in qty_str:
-            qty_str = qty_str.rstrip("0").rstrip(".") if qty_str.rstrip("0").rstrip(".") else "0"
-        logger.info(f"[format_qty_for_bybit] qty_str result: {qty_str}, qty*price={(qty*price if price else 'n/a')}")
+        
+        # Форматируем результат
+        qty_str = f"{qty:.{precision}f}".rstrip('0').rstrip('.')
+        logger.info(f"[format_qty_for_bybit] qty_str result: {qty_str}, qty*price={qty*Decimal(str(price or 1)):.5f}")
         return qty_str
 
     def get_mode(self):
@@ -332,7 +358,7 @@ class TradingEngine:
             qty = max(qty, 0.001)
             min_qty = math.ceil(5 / float(current_price) * 1000) / 1000
             if qty * current_price < 5:
-                logger.info(f"🔄 [min_qty] Увеличиваем qty для {symbol}: {qty} → {min_qty} (чтобы сумма заявки была >= 5 USDT)")
+                logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {qty} → {min_qty} (to meet minimum order value >= 5 USDT)")
                 qty = min_qty
             # Округляем qty по шагу лота
             qty_final = self.adjust_qty(symbol, qty)
@@ -453,7 +479,7 @@ class TradingEngine:
             # Проверка минимальной суммы ордера (Bybit требует >= 5 USDT на заявку)
             min_qty = math.ceil(5 / float(current_price) * 1000) / 1000
             if amount < min_qty:
-                logger.info(f"🔄 [min_qty] Увеличиваем qty для {symbol}: {amount} → {min_qty} (чтобы сумма заявки была >= 5 USDT)")
+                logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {amount} → {min_qty} (to meet minimum order value >= 5 USDT)")
                 amount = min_qty
             min_order_value = float(amount) * float(current_price)
             if min_order_value < 5:

@@ -153,8 +153,11 @@ async def get_trading_modes(trading_engine = Depends(get_trading_engine)):
         logger.error(f"Error getting trading modes: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+class TradingModeRequest(BaseModel):
+    mode: str
+
 @router.post("/mode")
-async def switch_mode(mode: str, trading_engine = Depends(get_trading_engine)):
+async def switch_mode(request: TradingModeRequest, trading_engine = Depends(get_trading_engine)):
     """Switch trading mode"""
     try:
         if not trading_engine.strategy_manager:
@@ -165,12 +168,12 @@ async def switch_mode(mode: str, trading_engine = Depends(get_trading_engine)):
         # Find the mode
         target_mode = None
         for tm in TradingMode:
-            if tm.value == mode:
+            if tm.value == request.mode:
                 target_mode = tm
                 break
         
         if target_mode is None:
-            raise HTTPException(status_code=400, detail=f"Invalid mode: {mode}")
+            raise HTTPException(status_code=400, detail=f"Invalid mode: {request.mode}")
         
         result = await trading_engine.strategy_manager.switch_mode(target_mode)
         

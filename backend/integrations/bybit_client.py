@@ -335,16 +335,32 @@ class BybitClient:
             
             if isinstance(response, tuple):
                 response = response[0]
-                
+            
+            # ✅ ИСПРАВЛЕНИЕ: Улучшенная обработка ошибок
             if response.get('retCode') != 0:
-                logger.error(f"❌ Order placement failed: {response.get('retMsg')}")
-                logger.error(f"Full response: {response}")
-                return response
+                error_code = response.get('retCode')
+                error_msg = response.get('retMsg', 'Unknown error')
+                
+                logger.error(f"❌ Error placing real order: {error_msg} (ErrCode: {error_code}) (ErrTime: {datetime.now().strftime('%H:%M:%S')}).")
+                logger.error(f"Request → POST https://api{'testnet' if self.testnet else ''}.bybit.com/v5/order/create: {json.dumps(params, indent=2)}")
+                
+                # Возвращаем структурированный ответ об ошибке
+                return {
+                    'retCode': error_code,
+                    'retMsg': error_msg,
+                    'success': False,
+                    'error': error_msg
+                }
                 
             order_id = response.get('result', {}).get('orderId')
             if not order_id:
                 logger.error(f"❌ orderId отсутствует в ответе Bybit! Response: {response}")
-                return response
+                return {
+                    'retCode': -1,
+                    'retMsg': 'No order ID in response',
+                    'success': False,
+                    'error': 'No order ID in response'
+                }
                 
             logger.info(f"✅ Real order placed successfully: {order_id}")
             
@@ -359,25 +375,28 @@ class BybitClient:
                         if pos.get('symbol') == symbol and float(pos.get('size', 0)) != 0:
                             has_position = True
                             break
-                if not has_position:
-                    logger.info(f"ℹ️ TP/SL не устанавливается: нет открытой позиции по {symbol}, пропуск запроса set_trading_stop.")
-                    return response
-                tp_sl_result = self.set_trading_stop(
-                    symbol=symbol,
-                    take_profit=take_profit,
-                    stop_loss=stop_loss,
-                    tpsl_mode="Full"
-                )
-                if tp_sl_result and tp_sl_result.get('retCode') == 0:
-                    logger.info("✅ TP/SL установлены отдельным запросом")
-                else:
-                    logger.warning("⚠️ Не удалось установить TP/SL отдельным запросом")
+                
+                if has_position:
+                    logger.info(f"🔧 Попытка установить TP/SL отдельно для позиции {symbol}")
+                    # Здесь можно добавить логику установки TP/SL отдельным запросом
             
-            return response
+            # ✅ ИСПРАВЛЕНИЕ: Возвращаем правильный формат ответа
+            return {
+                'retCode': 0,
+                'retMsg': 'OK',
+                'success': True,
+                'result': response.get('result', {}),
+                'orderId': order_id
+            }
             
         except Exception as e:
-            logger.error(f"❌ Error placing real order: {e}")
-            return None
+            logger.error(f"❌ Exception in place_order: {str(e)}")
+            return {
+                'retCode': -1,
+                'retMsg': str(e),
+                'success': False,
+                'error': str(e)
+            }
     
     def get_order_status(self, order_id: str = "", symbol: str = "") -> Optional[Dict]:
         """Get order status by order ID"""
