@@ -128,7 +128,7 @@ async def get_all_signals(trading_engine = Depends(get_trading_engine)):
             raise HTTPException(status_code=503, detail="Strategy manager not initialized")
         
         # Получаем детальные сигналы для всех торговых пар
-        trading_pairs = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"]
+        trading_pairs = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "XRPUSDT"]
         all_signals = {}
         
         for symbol in trading_pairs:
@@ -137,13 +137,16 @@ async def get_all_signals(trading_engine = Depends(get_trading_engine)):
                 detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol)
                 if detailed_signals:
                     all_signals[symbol] = detailed_signals
+                    logger.info(f"✅ Generated detailed signals for {symbol}: {len(detailed_signals)} indicators")
                 else:
                     # Fallback к обычным сигналам
                     signals = await trading_engine.strategy_manager.get_signals_for_mode(symbol)
                     if signals and "signals" in signals:
                         all_signals[symbol] = signals["signals"]
+                        logger.info(f"✅ Generated fallback signals for {symbol}: {len(signals['signals'])} indicators")
                     else:
                         all_signals[symbol] = signals
+                        logger.info(f"✅ Generated basic signals for {symbol}")
             except Exception as e:
                 logger.warning(f"Error getting signals for {symbol}: {e}")
                 all_signals[symbol] = {}

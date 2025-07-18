@@ -532,13 +532,9 @@
                     updatePositions(data.data);
                     break;
                 case 'signals':
-                    // Реактивное обновление сигналов при смене режима
-                    if (data.data.signals) {
-                        updateAllSignals(data.data.signals, data.data.timeframe, data.data.mode);
-                        addLogEntry('info', `🔄 Indicators updated via WebSocket (${data.data.mode}, ${data.data.timeframe})`);
-                    } else {
-                        updateSignals(data.data);
-                    }
+                    // ✅ ИСПРАВЛЕНИЕ: Отключаем WebSocket обновления сигналов
+                    // Сигналы теперь обновляются только через API
+                    console.log('WebSocket signals ignored - using API data only');
                     break;
                 case 'log':
                     // Обработка логов от сервера
@@ -878,43 +874,18 @@
             }
         }
         
+        // ✅ ИСПРАВЛЕНИЕ: Полностью отключаем WebSocket обновления сигналов
         // Обновление всех сигналов для всех валютных пар
         function updateAllSignals(allSignals, timeframe, mode) {
-            if (!allSignals) return;
-            
-            // Получаем текущую выбранную пару
-            const currentPair = getCurrentSelectedPair();
-            let totalActive = 0;
-            let totalIndicators = 0;
-            if (currentPair && allSignals[currentPair]) {
-                const signals = allSignals[currentPair];
-                Object.values(signals).forEach(signal => {
-                    totalIndicators++;
-                    if (signal !== 'HOLD') {
-                        totalActive++;
-                    }
-                });
-            }
-            // Обновляем счетчики в интерфейсе только для выбранной пары
-            document.getElementById('activeSignals').textContent = `${totalActive}/${totalIndicators}`;
-            // Обновляем индикаторы для текущей выбранной пары
-            if (currentPair && allSignals[currentPair]) {
-                updateSignalsForPair(currentPair, allSignals[currentPair], timeframe);
-            }
-            // Обновляем силу сигнала
-            updateSignalStrength(totalActive);
-            addLogEntry('info', `📈 Updated ${totalIndicators} indicators for ${currentPair} (${totalActive} active)`);
+            // ✅ ИСПРАВЛЕНИЕ: Не обновляем сигналы через WebSocket
+            console.log('WebSocket updateAllSignals ignored - using API data only');
+            return;
         }
         
         // Получение текущей выбранной валютной пары
         function getCurrentSelectedPair() {
-            const pairButtons = document.querySelectorAll('.pair-btn');
-            for (let btn of pairButtons) {
-                if (btn.classList.contains('active')) {
-                    return btn.textContent.trim();
-                }
-            }
-            return 'BTC/USDT'; // По умолчанию
+            // ✅ ИСПРАВЛЕНИЕ: Используем глобальную переменную currentSymbol
+            return currentSymbol || 'BTCUSDT';
         }
         
         // Обновление сигналов для конкретной пары
@@ -982,33 +953,12 @@
             }).join('');
         }
 
+        // ✅ ИСПРАВЛЕНИЕ: Отключаем WebSocket обновления сигналов
         // Обновление торговых сигналов
         function updateSignals(signalsData) {
-            if (!signalsData || !signalsData.signals) return;
-            
-            // Обновляем счетчики
-            document.getElementById('activeSignals').textContent = 
-                `${signalsData.active_count}/${signalsData.total_count}`;
-            
-            // Обновляем индикаторы сигналов
-            const grid = document.getElementById('indicatorsGrid');
-            grid.innerHTML = signalsData.signals.map(signal => {
-                const signalClass = signal.signal === 'BUY' ? 'indicator-buy' : 
-                                   signal.signal === 'SELL' ? 'indicator-sell' : 'indicator-hold';
-                const icon = signal.signal === 'BUY' ? '↗️' : 
-                            signal.signal === 'SELL' ? '↘️' : '➡️';
-                
-                return `
-                    <div class="indicator-item ${signalClass}">
-                        <div class="indicator-name">${signal.name}</div>
-                        <div class="indicator-value">${signal.value}</div>
-                        <div class="indicator-signal">${icon} ${signal.signal}</div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Обновляем силу сигнала
-            updateSignalStrength(signalsData.active_count);
+            // ✅ ИСПРАВЛЕНИЕ: Не обновляем сигналы через WebSocket
+            console.log('WebSocket updateSignals ignored - using API data only');
+            return;
         }
 
         // Обновление силы сигнала
