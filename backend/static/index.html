@@ -1299,38 +1299,22 @@
         // Загрузка данных для конкретной валютной пары
         async function loadDataForSymbol(symbol) {
             try {
-                // ✅ ИСПРАВЛЕНИЕ: Используем режимно-зависимые сигналы
-                const mode = document.getElementById('tradingMode').value;
-                let signalsData = null;
-                try {
-                                    const modeSignalsResponse = await fetch('/api/signals');
-                if (modeSignalsResponse.ok) {
-                        const modeResult = await modeSignalsResponse.json();
-                        if (modeResult.status === 'success' && modeResult.data) {
-                            signalsData = modeResult.data;
-                        } else {
-                            signalsData = modeResult;
-                        }
-                        addLogEntry('info', `📊 Загружены сигналы для ${symbol} в режиме ${mode}`);
-                    }
-                } catch (modeError) {
-                    console.log('Mode-specific signals not available, falling back to regular API');
-                }
-                if (!signalsData) {
-                    const signalsResponse = await fetch('/api/signals');
-                    if (signalsResponse.ok) {
-                        const result = await signalsResponse.json();
-                        if (result.status === 'success' && result.data) {
-                            signalsData = result.data;
-                        } else {
-                            signalsData = result;
-                        }
+                // ✅ ИСПРАВЛЕНИЕ: Загружаем все сигналы сразу
+                const signalsResponse = await fetch('/api/signals');
+                if (signalsResponse.ok) {
+                    const result = await signalsResponse.json();
+                    console.log('API Response:', result);
+                    
+                    if (result && result.signals) {
+                        updateSignalsForSymbol(result);
                         addLogEntry('info', `📊 Загружены сигналы для ${symbol}`);
+                    } else {
+                        addLogEntry('warning', `⚠️ Нет данных сигналов для ${symbol}`);
                     }
+                } else {
+                    addLogEntry('error', `❌ Ошибка API: ${signalsResponse.status}`);
                 }
-                if (signalsData && signalsData.signals) {
-                    updateSignalsForSymbol(signalsData);
-                }
+                
                 // Загружаем данные графика для символа
                 const chartResponse = await fetch(`/api/chart-data/${symbol}`);
                 if (chartResponse.ok) {
@@ -1345,8 +1329,12 @@
 
         // Обновление сигналов для конкретного символа
         function updateSignalsForSymbol(signalsData) {
+            console.log('updateSignalsForSymbol called with:', signalsData);
+            console.log('currentSymbol:', currentSymbol);
+            
             // ✅ ИСПРАВЛЕНИЕ: Обработка данных от API
             if (!signalsData || !signalsData.signals) {
+                console.log('No signals data available');
                 document.getElementById('activeSignals').textContent = '0/0';
                 document.getElementById('indicatorsGrid').innerHTML = 
                     '<div class="text-center text-muted">Нет данных сигналов</div>';
@@ -1356,8 +1344,10 @@
             
             // Получаем сигналы для текущего символа
             const symbolSignals = signalsData.signals[currentSymbol];
+            console.log('Symbol signals for', currentSymbol, ':', symbolSignals);
             
             if (!symbolSignals) {
+                console.log('No signals for current symbol');
                 document.getElementById('activeSignals').textContent = '0/0';
                 document.getElementById('indicatorsGrid').innerHTML = 
                     '<div class="text-center text-muted">Нет данных для выбранного символа</div>';
@@ -1365,18 +1355,61 @@
                 return;
             }
             
-            // Преобразуем данные API в формат для отображения
-            const signalsArray = Object.entries(symbolSignals).map(([name, data]) => ({
-                name: name,
-                signal: data.signal || data, // Поддерживаем как новый, так и старый формат
-                value: data.value || data // Числовое значение индикатора
-            }));
+            // ✅ ИСПРАВЛЕНИЕ: Обработка новой структуры данных API
+            let signalsArray = [];
+            
+            // Проверяем структуру данных
+            if (symbolSignals.enhanced_signals) {
+                // Используем enhanced_signals
+                signalsArray = Object.entries(symbolSignals.enhanced_signals).map(([name, signal]) => ({
+                    name: name,
+                    signal: signal,
+                    value: signal // Для enhanced_signals значение = сигнал
+                }));
+            } else if (symbolSignals.base_signals) {
+                // Используем base_signals
+                signalsArray = Object.entries(symbolSignals.base_signals).map(([name, signal]) => ({
+                    name: name,
+                    signal: signal,
+                    value: signal // Для base_signals значение = сигнал
+                }));
+            } else {
+                // ✅ НОВАЯ СТРУКТУРА: Детальные сигналы с value и signal
+                signalsArray = Object.entries(symbolSignals).map(([name, data]) => {
+                    if (data && typeof data === 'object' && data.value && data.signal) {
+                        // Новая структура: {value: "36.38", signal: "HOLD"}
+                        return {
+                            name: name,
+                            signal: data.signal,
+                            value: data.value
+                        };
+                    } else {
+                        // Старая структура: "BUY" или {signal: "BUY"}
+                        return {
+                            name: name,
+                            signal: data.signal || data,
+                            value: data.value || data
+                        };
+                    }
+                });
+            }
             
             const totalCount = signalsArray.length;
             const activeCount = signalsArray.filter(s => s.signal === 'BUY' || s.signal === 'SELL').length;
             
+            console.log('Signals array:', signalsArray);
+            console.log('Total count:', totalCount);
+            console.log('Active count:', activeCount);
+            
             // Обновляем счетчики
-            document.getElementById('activeSignals').textContent = `${activeCount}/${totalCount}`;
+            console.log('Updating counter to:', `${activeCount}/${totalCount}`);
+            const counterElement = document.getElementById('activeSignals');
+            if (counterElement) {
+                counterElement.textContent = `${activeCount}/${totalCount}`;
+                console.log('Counter updated successfully');
+            } else {
+                console.error('Counter element not found!');
+            }
             
             // Обновляем индикаторы сигналов
             const grid = document.getElementById('indicatorsGrid');

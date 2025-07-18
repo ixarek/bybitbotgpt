@@ -120,6 +120,42 @@ async def place_order(order: OrderRequest, trading_engine = Depends(get_trading_
         logger.error(f"Error placing order: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/signals")
+async def get_all_signals(trading_engine = Depends(get_trading_engine)):
+    """Get trading signals for all symbols"""
+    try:
+        if not trading_engine.strategy_manager:
+            raise HTTPException(status_code=503, detail="Strategy manager not initialized")
+        
+        # Получаем детальные сигналы для всех торговых пар
+        trading_pairs = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"]
+        all_signals = {}
+        
+        for symbol in trading_pairs:
+            try:
+                # Получаем детальные сигналы с числовыми значениями
+                detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol)
+                if detailed_signals:
+                    all_signals[symbol] = detailed_signals
+                else:
+                    # Fallback к обычным сигналам
+                    signals = await trading_engine.strategy_manager.get_signals_for_mode(symbol)
+                    if signals and "signals" in signals:
+                        all_signals[symbol] = signals["signals"]
+                    else:
+                        all_signals[symbol] = signals
+            except Exception as e:
+                logger.warning(f"Error getting signals for {symbol}: {e}")
+                all_signals[symbol] = {}
+        
+        return {
+            "signals": all_signals,
+            "enhanced_features_enabled": True
+        }
+    except Exception as e:
+        logger.error(f"Error getting all signals: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/signals/{symbol}")
 async def get_signals(symbol: str, trading_engine = Depends(get_trading_engine)):
     """Get trading signals for a symbol"""
