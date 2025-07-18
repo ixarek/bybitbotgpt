@@ -270,14 +270,31 @@ class TradingEngine:
 
     def adjust_qty(self, symbol, qty):
         import math
+        from decimal import Decimal, ROUND_DOWN
+        
         lot_size = self.LOT_SIZE.get(symbol, 0.01)
         qty = abs(qty)
-        qty_adjusted = math.ceil(qty / lot_size) * lot_size
-        if qty_adjusted < lot_size:
-            qty_adjusted = lot_size
+        
+        # Используем Decimal для точных вычислений
+        qty_decimal = Decimal(str(qty))
+        lot_size_decimal = Decimal(str(lot_size))
+        
+        # Округляем до ближайшего кратного лот-сайза
+        qty_adjusted = (qty_decimal / lot_size_decimal).quantize(Decimal('1'), rounding=ROUND_DOWN) * lot_size_decimal
+        
+        # Минимальное количество не может быть меньше лот-сайза
+        if qty_adjusted < lot_size_decimal:
+            qty_adjusted = lot_size_decimal
+        
+        # Конвертируем обратно в float
+        qty_result = float(qty_adjusted)
+        
+        # Для целых лотов возвращаем int
         if lot_size >= 1:
-            qty_adjusted = int(qty_adjusted)
-        return qty_adjusted
+            qty_result = int(qty_result)
+        
+        logger.info(f"🔢 [adjust_qty] {symbol}: {qty:.6f} → {qty_result} (lot_size={lot_size})")
+        return qty_result
 
     def format_qty_for_bybit(self, symbol: str, qty: float, price: float = None) -> str:
         """
