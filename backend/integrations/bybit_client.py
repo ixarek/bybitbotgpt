@@ -22,17 +22,28 @@ class BybitClient:
     Supports both REST API and WebSocket connections
     """
     
-    def __init__(self, api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True):
+    def __init__(self, api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True, demo: bool = False):
         self.api_key = api_key
         self.api_secret = api_secret
         self.testnet = testnet
+        self.demo = demo
         
-        # Initialize pybit HTTP client
-        self.session = HTTP(
-            api_key=api_key or "",
-            api_secret=api_secret or "",
-            testnet=testnet
-        )
+        # Initialize pybit HTTP client with correct parameters for demo
+        if demo:
+            # Demo режим: testnet=False, demo=True
+            self.session = HTTP(
+                api_key=api_key or "",
+                api_secret=api_secret or "",
+                testnet=False,  # Важно: для demo режима testnet=False
+                demo=True       # Включаем demo режим
+            )
+        else:
+            # Обычный режим (testnet или mainnet)
+            self.session = HTTP(
+                api_key=api_key or "",
+                api_secret=api_secret or "",
+                testnet=testnet
+            )
         
         # Market data cache
         self.market_data = {}
@@ -47,7 +58,12 @@ class BybitClient:
             # Test REST API connection
             server_time = await self.get_server_time()
             if server_time:
-                logger.info(f"✅ Connected to Bybit {'testnet' if self.testnet else 'mainnet'}")
+                if self.demo:
+                    logger.info("✅ Connected to Bybit demo account (real prices, virtual money)")
+                elif self.testnet:
+                    logger.info("✅ Connected to Bybit testnet")
+                else:
+                    logger.info("✅ Connected to Bybit mainnet")
                 return True
             else:
                 logger.error("❌ Failed to connect to Bybit")
@@ -550,12 +566,12 @@ class BybitClient:
 bybit_client = None
 
 
-async def get_bybit_client(api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True) -> BybitClient:
+async def get_bybit_client(api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True, demo: bool = False) -> BybitClient:
     """Get or create Bybit client instance"""
     global bybit_client
     
     if bybit_client is None:
-        bybit_client = BybitClient(api_key, api_secret, testnet)
+        bybit_client = BybitClient(api_key, api_secret, testnet, demo)
         await bybit_client.initialize()
     
     return bybit_client 

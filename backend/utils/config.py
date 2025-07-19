@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     bybit_api_key: Optional[str] = Field(None, description="Bybit API Key")
     bybit_api_secret: Optional[str] = Field(None, description="Bybit API Secret")
     bybit_testnet: bool = Field(True, description="Use Bybit testnet")
+    bybit_demo: bool = Field(False, description="Use Bybit demo account (real prices, virtual money)")
     
     # Trading Configuration
     trading_pairs: List[str] = Field(

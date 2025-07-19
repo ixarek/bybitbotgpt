@@ -64,9 +64,15 @@ async def lifespan(app: FastAPI):
         bybit_client = await get_bybit_client(
             api_key=settings.bybit_api_key,
             api_secret=settings.bybit_api_secret,
-            testnet=settings.bybit_testnet
+            testnet=settings.bybit_testnet,
+            demo=settings.bybit_demo
         )
-        print("[OK] Connected to Bybit testnet")
+        if settings.bybit_demo:
+            print("[OK] Connected to Bybit demo account (real prices)")
+        elif settings.bybit_testnet:
+            print("[OK] Connected to Bybit testnet")
+        else:
+            print("[OK] Connected to Bybit mainnet")
         
         print("[OK] WebSocket connected")
         

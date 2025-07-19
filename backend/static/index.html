@@ -357,14 +357,14 @@
                         </div>
                         <div class="mt-3">
                             <label class="form-label">Торговые стратегии</label>
-                            <select class="form-select" id="tradingMode" onchange="changeTradingMode()">
-                                <option value="aggressive">🔥 Агрессивный (Скальпинг, 1-5м, 10-20x плечо)</option>
-                                <option value="medium" selected>⚖️ Средний (Тренд, 15м-1ч, 3-5x плечо)</option>
-                                <option value="conservative">🛡️ Консервативный (DCA, 4ч-1д, без плеча)</option>
-                            </select>
+                                            <select class="form-select" id="tradingMode" onchange="changeTradingMode()">
+                    <option value="aggressive">🔥 Агрессивный (1м свечи, 4 индикатора, 10-20x плечо)</option>
+                    <option value="medium" selected>⚖️ Умеренный (5м свечи, 5 индикаторов, 10-20x плечо)</option>
+                    <option value="conservative">🛡️ Консервативный (15м свечи, 6 индикаторов, 10-20x плечо)</option>
+                </select>
                             <div class="mt-2">
                                 <small class="text-muted" id="modeDescription">
-                                    Средний режим: Moving Average Crossover + Trend Following
+                                    Умеренный режим: Торговля на 5-минутных свечах с 5 индикаторами (TP: 3%, SL: 1%)
                                 </small>
                             </div>
                         </div>
@@ -449,7 +449,7 @@
                     <div id="modeInfo" class="mb-2">
                         <small class="text-muted">
                             <i class="fas fa-clock me-1"></i>
-                            Режим: Средний | Таймфрейм: 15m
+                            Режим: Умеренный | Таймфрейм: 5m | Плечо: 10-20x | TP: 3% | SL: 1%
                         </small>
                     </div>
                     
@@ -743,9 +743,9 @@
             
             // Обновляем описание режима
             const descriptions = {
-                'aggressive': 'Агрессивный режим: Скальпинг + Event-driven торговля (1-5м, 10-20x плечо)',
-                'medium': 'Средний режим: Moving Average Crossover + Trend Following (15м-1ч, 3-5x плечо)',
-                'conservative': 'Консервативный режим: DCA + Long-term Trend (4ч-1д, без плеча)'
+                'aggressive': 'Агрессивный режим: Торговля на 1-минутных свечах с 4 индикаторами (TP: 3%, SL: 1%)',
+                'medium': 'Умеренный режим: Торговля на 5-минутных свечах с 5 индикаторами (TP: 3%, SL: 1%)',
+                'conservative': 'Консервативный режим: Торговля на 15-минутных свечах с 6 индикаторами (TP: 3%, SL: 1%)'
             };
             modeDescription.textContent = descriptions[mode] || '';
             
@@ -1132,7 +1132,7 @@
                     // Обновляем описание режима
                     const modeDescription = document.getElementById('modeDescription');
                     if (modeDescription) {
-                        modeDescription.textContent = 'Средний режим: Moving Average Crossover + Trend Following (15м-1ч, 3-5x плечо)';
+                        modeDescription.textContent = 'Умеренный режим: Торговля на 5-минутных свечах с 5 индикаторами (TP: 3%, SL: 1%)';
                     }
                     
                     console.log('✅ Принудительно инициализирован средний режим по умолчанию');
@@ -1387,11 +1387,16 @@
             if (signalsData.current_mode && signalsData.timeframe) {
                 const modeInfo = document.getElementById('modeInfo');
                 if (modeInfo) {
+                    const modeName = signalsData.mode_name || signalsData.current_mode;
+                    const timeframe = signalsData.timeframe;
+                    const leverage = '10-20x';
+                    const tp = '3%';
+                    const sl = '1%';
+                    
                     modeInfo.innerHTML = `
                         <small class="text-muted">
                             <i class="fas fa-clock me-1"></i>
-                            Режим: ${signalsData.mode_name || signalsData.current_mode} 
-                            | Таймфрейм: ${signalsData.timeframe}
+                            Режим: ${modeName} | Таймфрейм: ${timeframe} | Плечо: ${leverage} | TP: ${tp} | SL: ${sl}
                         </small>
                     `;
                 }

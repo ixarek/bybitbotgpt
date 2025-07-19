@@ -45,7 +45,7 @@ class SignalProcessor:
                 logger.warning("Bybit client not available, using mock signals")
                 return self._generate_mock_signals()
             
-            df = bybit_client.get_kline(symbol, timeframe, limit=100)
+            df = bybit_client.get_kline(symbol, timeframe, limit=200)
             if df is None or df.empty:
                 logger.warning(f"No market data for {symbol} {timeframe}, using mock signals")
                 return self._generate_mock_signals()
@@ -70,7 +70,7 @@ class SignalProcessor:
             if bybit_client is None:
                 return "N/A"
             
-            df = bybit_client.get_kline(symbol, timeframe, limit=100)
+            df = bybit_client.get_kline(symbol, timeframe, limit=200)
             
             if df is None or df.empty or len(df) < 50:
                 return "N/A"
@@ -152,7 +152,7 @@ class SignalProcessor:
                 logger.warning("Bybit client not available, using mock signals")
                 return self._generate_mock_detailed_signals()
             
-            df = bybit_client.get_kline(symbol, timeframe, limit=100)
+            df = bybit_client.get_kline(symbol, timeframe, limit=200)
             if df is None or df.empty:
                 logger.warning(f"No market data for {symbol} {timeframe}, using mock signals")
                 return self._generate_mock_detailed_signals()

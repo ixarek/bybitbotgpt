@@ -320,7 +320,7 @@ class EnhancedRiskManager(RiskManager):
                     try:
                         from backend.integrations.bybit_client import bybit_client
                         if bybit_client:
-                            df = bybit_client.get_kline(symbol, "5", limit=50)
+                            df = bybit_client.get_kline(symbol, "5", limit=200)
                             if df is not None and len(df) > 14:
                                 atr = self._calculate_atr(df['high'], df['low'], df['close'])
                     except Exception as e:

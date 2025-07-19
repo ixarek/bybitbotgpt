@@ -75,7 +75,8 @@ class TradingEngine:
             self.bybit_client = BybitClient(
                 api_key=settings.bybit_api_key,
                 api_secret=settings.bybit_api_secret,
-                testnet=settings.bybit_testnet
+                testnet=settings.bybit_testnet,
+                demo=settings.bybit_demo
             )
             
             success = await self.bybit_client.initialize()
@@ -116,11 +117,21 @@ class TradingEngine:
         current_mode = self.strategy_manager.get_current_mode()
         mode_config = self.strategy_manager.get_mode_parameters(current_mode)
         timeframe = mode_config.get('timeframes', ['5m'])[0] if mode_config and 'timeframes' in mode_config and mode_config['timeframes'] else "5m"
-        trading_pairs = mode_config.get('trading_pairs', self.trading_pairs) if mode_config and 'trading_pairs' in mode_config else self.trading_pairs
+        
+        # ✅ ИСПРАВЛЕНИЕ: Всегда используем торговые пары из режима, а не из settings
+        trading_pairs = mode_config.get('trading_pairs', self.trading_pairs) if mode_config else self.trading_pairs
+        
         logger.info(f"📊 Trading loop started - Mode: {current_mode.value}, Timeframe: {timeframe}")
-        logger.info(f"📊 Trading pairs: {trading_pairs}")
+        logger.info(f"📊 Trading pairs from mode config: {trading_pairs}")
+        logger.info(f"📊 Settings trading pairs (fallback): {self.trading_pairs}")
+        
         while self.is_running:
             try:
+                # ✅ ИСПРАВЛЕНИЕ: Сначала корректируем размеры существующих позиций
+                logger.info("🔧 [LOOP] Корректируем размеры существующих позиций...")
+                await self.sync_positions_with_exchange()
+                
+                # Затем обрабатываем новые торговые сигналы
                 logger.info(f"🔄 [LOOP] Current trading pairs: {trading_pairs}")
                 for symbol in trading_pairs:
                     bybit_symbol = symbol.replace("/", "")
@@ -214,7 +225,7 @@ class TradingEngine:
     
     def round_position_to_nearest_100(self, symbol: str, qty: float, current_price: float, leverage: float) -> float:
         """
-        Округляет размер позиции до ближайших 100$ с учетом плеча
+        Округляет размер позиции до диапазона 100$ ± 20$ (80-120$) с учетом плеча
         
         Args:
             symbol: Торговая пара
@@ -228,26 +239,39 @@ class TradingEngine:
         # Рассчитываем текущую стоимость позиции с учетом плеча
         position_value = qty * current_price * leverage
         
-        # Округляем до ближайших 100$
-        rounded_value = round(position_value / 100) * 100
+        # Округляем до ближайших 100$ с допуском ±20$
+        target_value = 100
+        min_value = 80  # 100 - 20
+        max_value = 120  # 100 + 20
+        
+        if position_value < min_value:
+            # Если меньше 80$, увеличиваем до 100$
+            rounded_value = target_value
+        elif position_value > max_value:
+            # Если больше 120$, уменьшаем до 100$
+            rounded_value = target_value
+        else:
+            # Если в диапазоне 80-120$, оставляем как есть
+            rounded_value = position_value
         
         # Рассчитываем новое количество актива
         new_qty = rounded_value / (current_price * leverage)
         
         # Округляем по параметрам биржи
-        adjusted_qty = self.adjust_qty(symbol, new_qty)
+        adjusted_qty = self.adjust_qty(symbol, float(new_qty))
         
-        # Проверяем, что итоговая стоимость не меньше 100$
+        # Проверяем, что итоговая стоимость не меньше 80$
         final_value = adjusted_qty * current_price * leverage
-        if final_value < 100:
-            # Если меньше 100$, увеличиваем до минимальных 100$
-            min_qty_for_100 = 100 / (current_price * leverage)
+        if final_value < min_value:
+            # Если меньше 80$, увеличиваем до минимальных 100$
+            min_qty_for_100 = target_value / (current_price * leverage)
             adjusted_qty = self.adjust_qty(symbol, min_qty_for_100)
         
         logger.info(f"🔢 [round_position_to_nearest_100] {symbol}:")
         logger.info(f"   Исходное qty: {qty:.6f}")
         logger.info(f"   Исходная стоимость: {position_value:.2f} USDT")
-        logger.info(f"   Округленная стоимость: {rounded_value:.2f} USDT")
+        logger.info(f"   Диапазон: {min_value}-{max_value} USDT")
+        logger.info(f"   Целевая стоимость: {rounded_value:.2f} USDT")
         logger.info(f"   Новое qty: {adjusted_qty:.6f}")
         logger.info(f"   Итоговая стоимость: {adjusted_qty * current_price * leverage:.2f} USDT")
         
@@ -261,11 +285,11 @@ class TradingEngine:
             logger.warning("[TP/SL] Режим 'moderate' заменён на 'medium'")
             mode = "medium"
         
-        # ✅ ИСПРАВЛЕНИЕ: Более консервативные параметры TP/SL
+        # ✅ ИСПРАВЛЕНИЕ: Новые параметры TP/SL согласно требованиям
         params = {
-            'aggressive': {'sl': 0.02, 'tp': 0.03},    # 2% SL, 3% TP
-            'medium':     {'sl': 0.015, 'tp': 0.025},  # 1.5% SL, 2.5% TP  
-            'conservative': {'sl': 0.01, 'tp': 0.02}   # 1% SL, 2% TP
+            'aggressive': {'sl': 0.01, 'tp': 0.03},    # 1% SL, 3% TP
+            'medium':     {'sl': 0.01, 'tp': 0.03},    # 1% SL, 3% TP  
+            'conservative': {'sl': 0.01, 'tp': 0.03}   # 1% SL, 3% TP
         }
         
         if mode not in params:
@@ -319,7 +343,8 @@ class TradingEngine:
         
         # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи
         try:
-            api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+            base_url = self.get_api_base_url() if hasattr(self, 'bybit_client') and self.bybit_client else "https://api-testnet.bybit.com"
+            api_url = f"{base_url}/v5/market/instruments-info"
             params = {"category": "linear", "symbol": symbol}
             response = requests.get(api_url, params=params, timeout=5)
             if response.status_code == 200:
@@ -385,7 +410,8 @@ class TradingEngine:
         
         # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи
         try:
-            api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+            base_url = self.get_api_base_url() if hasattr(self, 'bybit_client') and self.bybit_client else "https://api-testnet.bybit.com"
+            api_url = f"{base_url}/v5/market/instruments-info"
             params = {"category": "linear", "symbol": symbol}
             response = requests.get(api_url, params=params, timeout=5)
             if response.status_code == 200:
@@ -433,7 +459,10 @@ class TradingEngine:
         # ✅ ИСПРАВЛЕНИЕ: Проверяем минимальную сумму ордера (minNotionalValue USDT)
         if price is not None and price > 0:
             price_decimal = Decimal(str(price))
-            min_qty_for_value = (min_notional_value / price_decimal).quantize(qty_step, rounding=ROUND_HALF_UP)
+            # Рассчитываем минимальное количество для достижения minNotionalValue
+            min_qty_raw = min_notional_value / price_decimal
+            # Округляем до кратного qty_step в большую сторону
+            min_qty_for_value = ((min_qty_raw / qty_step).quantize(Decimal('1'), rounding=ROUND_HALF_UP)) * qty_step
             logger.info(f"[format_qty_for_bybit] min_qty for {min_notional_value} USDT: {min_qty_for_value}")
             if qty < min_qty_for_value:
                 # Увеличиваем до минимального количества
@@ -449,8 +478,10 @@ class TradingEngine:
             qty = (qty / qty_step).quantize(Decimal('1'), rounding=ROUND_HALF_UP) * qty_step
             logger.info(f"[format_qty_for_bybit] Принудительно округлено до: {qty}")
         
-        # Форматируем результат - убираем лишние нули и точку
-        qty_str = f"{qty}".rstrip('0').rstrip('.')
+        # Форматируем результат - убираем лишние нули только после десятичной точки
+        qty_str = f"{qty}"
+        if '.' in qty_str:
+            qty_str = qty_str.rstrip('0').rstrip('.')
         if qty_str == '':
             qty_str = '0'
         
@@ -479,24 +510,18 @@ class TradingEngine:
             if symbol in self.active_positions:
                 logger.warning(f"⚠️ Already have position in {symbol}")
                 return
-            min_position_value = 100
-            leverage = 1
-            if 'leverage_range' in mode_config and isinstance(mode_config['leverage_range'], tuple):
-                leverage = float(mode_config['leverage_range'][1])
             
-            # Рассчитываем базовое количество
-            qty = min_position_value / (current_price * leverage)
-            qty = max(qty, 0.001)
+            # ✅ ИСПРАВЛЕНИЕ: Рассчитываем правильный размер позиции сразу на 80-120$
+            target_position_value = 100  # Целевая стоимость позиции в USDT
+            leverage = 1  # Для новых ордеров всегда leverage=1
             
-            # ✅ ИСПРАВЛЕНИЕ: Округляем до ближайших 100$ с учетом плеча
-            qty = self.round_position_to_nearest_100(symbol, qty, current_price, leverage)
-            
-            # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи для расчета min_qty
+            # Получаем minNotionalValue для правильного расчета
+            min_notional_value = 5  # По умолчанию
             try:
-                api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+                base_url = self.get_api_base_url() if hasattr(self, 'bybit_client') and self.bybit_client else "https://api-testnet.bybit.com"
+                api_url = f"{base_url}/v5/market/instruments-info"
                 params = {"category": "linear", "symbol": symbol}
                 response = requests.get(api_url, params=params, timeout=5)
-                min_notional_value = 5  # По умолчанию
                 if response.status_code == 200:
                     data = response.json()
                     if data.get('retCode') == 0 and data.get('result', {}).get('list'):
@@ -504,32 +529,26 @@ class TradingEngine:
                         lot_size_filter = instrument.get('lotSizeFilter', {})
                         min_notional_value = float(lot_size_filter.get('minNotionalValue', '5'))
                         logger.info(f"[_execute_trade] Получен minNotionalValue с биржи: {min_notional_value}")
-                    else:
-                        logger.warning(f"[_execute_trade] Не удалось получить параметры с биржи, используем fallback")
-                else:
-                    logger.warning(f"[_execute_trade] Ошибка запроса к бирже, используем fallback")
             except Exception as e:
-                logger.warning(f"[_execute_trade] Исключение при получении параметров: {e}, используем fallback")
+                logger.warning(f"[_execute_trade] Исключение при получении параметров: {e}")
             
-            min_qty = math.ceil(min_notional_value / float(current_price) * 1000) / 1000
-            if qty * current_price < min_notional_value:
-                logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {qty} → {min_qty} (to meet minimum order value >= {min_notional_value} USDT)")
-                qty = min_qty
+            # Рассчитываем qty для целевой стоимости с учетом minNotionalValue
+            # Используем максимум из целевой стоимости и minNotionalValue
+            required_value = max(target_position_value, min_notional_value)
+            qty = required_value / current_price
             
-            # Округляем qty по актуальным параметрам биржи
-            qty_final = self.adjust_qty(symbol, qty)
+            # Округляем qty по параметрам биржи (без двойной корректировки)
+            qty = self.adjust_qty(symbol, qty)
             
-            # ✅ ИСПРАВЛЕНИЕ: Форматируем qty для логирования используя актуальные параметры
-            qty_str = self.format_qty_for_bybit(symbol, qty_final, current_price)
-            logger.info(f"🔢 [lot_size] Итоговое qty для {symbol}: {qty_str}")
+            # Проверяем что расчетная стоимость соответствует требованиям
+            calculated_value = qty * current_price
+            logger.info(f"🔢 [_execute_trade] Рассчитанный размер: {qty:.6f} {symbol} = {calculated_value:.2f} USDT")
             
             side = "Buy" if decision == "BUY" else "Sell"
-            # Для market order передаем текущую цену, чтобы избежать ошибок типов
-            order_price = current_price if "market" else None
             order_result = await self.place_order(
                 symbol=symbol,
                 side=side,
-                amount=qty_final,
+                amount=qty,
                 order_type="market",
                 price=current_price
             )
@@ -538,7 +557,7 @@ class TradingEngine:
                 self.active_positions[symbol] = {
                     "order_id": order_id,
                     "side": side,
-                    "size": order_result.get('amount', qty_final),
+                    "size": order_result.get('amount', qty),
                     "entry_price": current_price,
                     "stop_loss": None,
                     "take_profit": None,
@@ -634,7 +653,8 @@ class TradingEngine:
             # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи для проверки минимальной суммы
             min_notional_value = 5  # По умолчанию
             try:
-                api_url = "https://api-testnet.bybit.com/v5/market/instruments-info"
+                base_url = self.get_api_base_url() if hasattr(self, 'bybit_client') and self.bybit_client else "https://api-testnet.bybit.com"
+                api_url = f"{base_url}/v5/market/instruments-info"
                 params = {"category": "linear", "symbol": symbol}
                 response = requests.get(api_url, params=params, timeout=5)
                 if response.status_code == 200:
@@ -660,17 +680,11 @@ class TradingEngine:
             if min_order_value < min_notional_value:
                 logger.warning(f"⚠️ Сумма ордера {min_order_value:.2f} USDT меньше минимальной {min_notional_value} USDT (Bybit). Ордер не отправлен.")
                 return {"success": False, "error": f"Сумма ордера {min_order_value:.2f} USDT меньше минимальной {min_notional_value} USDT (Bybit)"}
-            # ✅ ИСПРАВЛЕНИЕ: Округляем размер позиции до ближайших 100$ с учетом плеча
-            original_amount = amount
-            amount = self.round_position_to_nearest_100(symbol, amount, current_price, leverage)
+            # ✅ ИСПРАВЛЕНИЕ: Для новых ордеров размер уже правильно рассчитан в _execute_trade
+            # Проверяем только минимальную сумму ордера для Bybit
+            order_value = float(amount) * float(current_price)
             
-            # Проверка минимальной суммы позиции с учетом плеча (стратегия)
-            order_value = float(amount) * float(current_price) * leverage
-            if order_value < 100:
-                logger.warning(f"⚠️ Сумма позиции с учетом плеча {order_value:.2f} USDT меньше минимальной 100 USDT. Ордер не отправлен.")
-                return {"success": False, "error": f"Сумма позиции с учетом плеча {order_value:.2f} USDT меньше минимальной 100 USDT"}
-            
-            logger.info(f"🔢 [place_order] Размер позиции округлен: {original_amount:.6f} → {amount:.6f} (стоимость: {order_value:.2f} USDT)")
+            logger.info(f"📊 [place_order] Размер ордера: {amount:.6f} {symbol} (стоимость: {order_value:.2f} USDT)")
             # Проверка маржи (баланса)
             margin_required = float(amount) * float(current_price) / leverage
             balance = self.bybit_client.get_balance()
@@ -826,3 +840,112 @@ class TradingEngine:
         for pos in real_positions:
             if pos['symbol'] not in self.active_positions and pos['size'] > 0:
                 self.active_positions[pos['symbol']] = pos
+                
+        # ✅ НОВОЕ: Корректируем размеры существующих позиций
+        await self.correct_position_sizes()
+
+    async def correct_position_sizes(self):
+        """Корректирует размеры всех активных позиций до диапазона 80-120 USDT"""
+        if not self.bybit_client:
+            return
+            
+        try:
+            real_positions = self.bybit_client.get_positions() or []
+            # ✅ ИСПРАВЛЕНИЕ: Для корректировки позиций всегда используем leverage=1
+            # так как позиции на бирже уже имеют встроенное плечо
+            leverage = 1
+            
+            for position in real_positions:
+                symbol = position['symbol']
+                current_size = float(position['size'])
+                
+                if current_size <= 0:
+                    continue
+                    
+                # Получаем текущую цену
+                current_price = self.bybit_client.get_current_price(symbol)
+                if not current_price:
+                    continue
+                    
+                # Рассчитываем текущую стоимость позиции
+                position_value = current_size * current_price * leverage
+                side = position.get('side', 'Buy')
+                
+                logger.info(f"🔍 [correct_position_sizes] Проверяем {symbol}: "
+                          f"размер={current_size}, цена={current_price}, "
+                          f"стоимость={position_value:.2f} USDT")
+                
+                # Проверяем нужна ли корректировка
+                min_value = 80
+                max_value = 120
+                
+                if min_value <= position_value <= max_value:
+                    logger.info(f"✅ {symbol}: Размер позиции в норме ({position_value:.2f} USDT)")
+                    continue
+                    
+                if position_value < min_value:
+                    # Позиция слишком мала - увеличиваем до 100 USDT
+                    target_value = 100
+                    target_size = target_value / (current_price * leverage)
+                    additional_size = target_size - current_size
+                    
+                    if additional_size > 0:
+                        logger.info(f"📈 {symbol}: Увеличиваем позицию с {position_value:.2f} до 100 USDT "
+                                  f"(+{additional_size:.6f})")
+                        
+                        # Округляем до параметров биржи
+                        additional_size = self.adjust_qty(symbol, additional_size)
+                        
+                        # Выставляем дополнительный ордер
+                        result = await self.place_order(
+                            symbol=symbol,
+                            side=side,
+                            amount=additional_size,
+                            order_type="market"
+                        )
+                        
+                        if result.get('success'):
+                            logger.info(f"✅ {symbol}: Позиция увеличена на {additional_size:.6f}")
+                        else:
+                            logger.error(f"❌ {symbol}: Ошибка увеличения позиции: {result.get('error')}")
+                            
+                elif position_value > max_value:
+                    # Позиция слишком велика - уменьшаем до 100 USDT
+                    target_value = 100
+                    target_size = target_value / (current_price * leverage)
+                    reduce_size = current_size - target_size
+                    
+                    if reduce_size > 0:
+                        logger.info(f"📉 {symbol}: Уменьшаем позицию с {position_value:.2f} до 100 USDT "
+                                  f"(-{reduce_size:.6f})")
+                        
+                        # Округляем до параметров биржи
+                        reduce_size = self.adjust_qty(symbol, reduce_size)
+                        
+                        # Определяем противоположную сторону для частичного закрытия
+                        close_side = "Sell" if side == "Buy" else "Buy"
+                        
+                        # Выставляем ордер на частичное закрытие
+                        result = await self.place_order(
+                            symbol=symbol,
+                            side=close_side,
+                            amount=reduce_size,
+                            order_type="market"
+                        )
+                        
+                        if result.get('success'):
+                            logger.info(f"✅ {symbol}: Позиция уменьшена на {reduce_size:.6f}")
+                        else:
+                            logger.error(f"❌ {symbol}: Ошибка уменьшения позиции: {result.get('error')}")
+                            
+        except Exception as e:
+            logger.error(f"❌ Ошибка корректировки размеров позиций: {e}")
+
+    def get_api_base_url(self) -> str:
+        """Возвращает правильный базовый URL для API в зависимости от режима"""
+        if hasattr(self.bybit_client, 'demo') and self.bybit_client.demo:
+            return "https://api-demo.bybit.com"
+        elif hasattr(self.bybit_client, 'testnet') and self.bybit_client.testnet:
+            return "https://api-testnet.bybit.com"
+        else:
+            return "https://api.bybit.com"
