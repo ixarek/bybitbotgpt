@@ -45,7 +45,7 @@ TRADING_MODE_CONFIGS = {
         leverage_range=(10.0, 20.0),
         tp_range=(3.0, 3.0),  # 3%
         sl_range=(1.0, 1.0),  # 1%
-        trading_pairs=["BTC/USDT", "ETH/USDT", "SOL/USDT", "DOGE/USDT", "XRP/USDT"],
+        trading_pairs=["BTC/USDT", "ETH/USDT", "BNB/USDT", "SOL/USDT", "DOGE/USDT", "XRP/USDT"],
         risk_level="HIGH",
         strategy_type="SCALPING"
     ),
