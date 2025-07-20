@@ -62,8 +62,8 @@ TRADING_MODE_CONFIGS = {
             "volume": [{"period": 20}]
         },
         leverage_range=(10.0, 20.0),
-        tp_range=(3.0, 3.0),  # 3%
-        sl_range=(1.0, 1.0),  # 1%
+        tp_range=(4.0, 4.0),  # 4%
+        sl_range=(2.0, 2.0),  # 2%
         trading_pairs=["BTC/USDT", "ETH/USDT", "BNB/USDT", "SOL/USDT", "DOGE/USDT", "XRP/USDT"],
         risk_level="MEDIUM",
         strategy_type="TREND_FOLLOWING"
@@ -82,8 +82,8 @@ TRADING_MODE_CONFIGS = {
             "volume": [{"period": 50}]
         },
         leverage_range=(10.0, 20.0),
-        tp_range=(3.0, 3.0),  # 3%
-        sl_range=(1.0, 1.0),  # 1%
+        tp_range=(5.0, 5.0),  # 5%
+        sl_range=(3.0, 3.0),  # 3%
         trading_pairs=["BTC/USDT", "ETH/USDT", "SOL/USDT", "DOGE/USDT", "XRP/USDT"],
         risk_level="LOW",
         strategy_type="TREND_FOLLOWING"

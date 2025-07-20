@@ -288,8 +288,8 @@ class TradingEngine:
         # ✅ ИСПРАВЛЕНИЕ: Новые параметры TP/SL согласно требованиям
         params = {
             'aggressive': {'sl': 0.01, 'tp': 0.03},    # 1% SL, 3% TP
-            'medium':     {'sl': 0.01, 'tp': 0.03},    # 1% SL, 3% TP  
-            'conservative': {'sl': 0.01, 'tp': 0.03}   # 1% SL, 3% TP
+            'medium':     {'sl': 0.02, 'tp': 0.04},    # 2% SL, 4% TP  
+            'conservative': {'sl': 0.03, 'tp': 0.05}   # 3% SL, 5% TP
         }
         
         if mode not in params:
@@ -511,9 +511,26 @@ class TradingEngine:
                 logger.warning(f"⚠️ Already have position in {symbol}")
                 return
             
-            # ✅ ИСПРАВЛЕНИЕ: Рассчитываем правильный размер позиции сразу на 80-120$
-            target_position_value = 100  # Целевая стоимость позиции в USDT
-            leverage = 1  # Для новых ордеров всегда leverage=1
+            # ✅ ИСПРАВЛЕНИЕ: Рассчитываем размер позиции 80-120$ С учетом плеча
+            target_position_value = 100  # Целевая стоимость позиции в USDT (с учетом плеча)
+            
+            # Получаем плечо из конфигурации режима
+            leverage = 10  # По умолчанию 10x
+            try:
+                if hasattr(mode_config, 'leverage_range') and isinstance(mode_config.leverage_range, tuple):
+                    leverage = float(mode_config.leverage_range[1])
+                    logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
+                elif isinstance(mode_config, dict) and 'leverage_range' in mode_config:
+                    leverage_range = mode_config['leverage_range']
+                    if isinstance(leverage_range, (list, tuple)) and len(leverage_range) > 1:
+                        leverage = float(leverage_range[1])
+                    else:
+                        leverage = float(leverage_range)
+                    logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
+                else:
+                    logger.warning(f"[_execute_trade] Не удалось получить плечо из mode_config, используем по умолчанию: {leverage}x")
+            except Exception as e:
+                logger.warning(f"[_execute_trade] Ошибка получения плеча: {e}, используем по умолчанию: {leverage}x")
             
             # Получаем minNotionalValue для правильного расчета
             min_notional_value = 5  # По умолчанию
@@ -532,17 +549,25 @@ class TradingEngine:
             except Exception as e:
                 logger.warning(f"[_execute_trade] Исключение при получении параметров: {e}")
             
-            # Рассчитываем qty для целевой стоимости с учетом minNotionalValue
-            # Используем максимум из целевой стоимости и minNotionalValue
-            required_value = max(target_position_value, min_notional_value)
+            # Рассчитываем qty для целевой стоимости С учетом плеча
+            # Цель: 1000$ позиция с плечом 10x = 100$ маржи
+            # Но мы хотим 1000$ позицию, поэтому умножаем на leverage
+            required_value = max(target_position_value * leverage, min_notional_value)
             qty = required_value / current_price
             
-            # Округляем qty по параметрам биржи (без двойной корректировки)
+            # Округляем qty по параметрам биржи
             qty = self.adjust_qty(symbol, qty)
             
-            # Проверяем что расчетная стоимость соответствует требованиям
+            # Проверяем что расчетная стоимость соответствует требованиям (С учетом плеча)
             calculated_value = qty * current_price
-            logger.info(f"🔢 [_execute_trade] Рассчитанный размер: {qty:.6f} {symbol} = {calculated_value:.2f} USDT")
+            logger.info(f"🔢 [_execute_trade] Рассчитанный размер: {qty:.6f} {symbol} = {calculated_value:.2f} USDT (с плечом {leverage}x)")
+            
+            # Проверяем что стоимость в диапазоне 800-1200$ (1000$ ± 200$)
+            min_value = 800
+            max_value = 1200
+            if calculated_value < min_value or calculated_value > max_value:
+                logger.warning(f"⚠️ Стоимость позиции {calculated_value:.2f} USDT вне диапазона {min_value}-{max_value}$. Ордер не отправлен.")
+                return
             
             side = "Buy" if decision == "BUY" else "Sell"
             order_result = await self.place_order(
@@ -571,7 +596,9 @@ class TradingEngine:
                 logger.error(f"❌ Failed to place order: {error_msg}")
             await self.sync_positions_with_exchange()
         except Exception as e:
+            import traceback
             logger.error(f"❌ Error executing trade for {symbol}: {e}")
+            logger.error(f"❌ Full traceback: {traceback.format_exc()}")
     
     def calc_tp_sl_from_mode(self, entry_price: float, side: str, mode_config) -> tuple:
         """Calculate TP/SL based on mode configuration"""
@@ -867,7 +894,7 @@ class TradingEngine:
                 if not current_price:
                     continue
                     
-                # Рассчитываем текущую стоимость позиции
+                # Рассчитываем текущую стоимость позиции С учетом плеча
                 position_value = current_size * current_price * leverage
                 side = position.get('side', 'Buy')
                 
@@ -875,22 +902,22 @@ class TradingEngine:
                           f"размер={current_size}, цена={current_price}, "
                           f"стоимость={position_value:.2f} USDT")
                 
-                # Проверяем нужна ли корректировка
-                min_value = 80
-                max_value = 120
+                # Проверяем нужна ли корректировка (диапазон 800-1200$ для позиций ~1000$)
+                min_value = 800
+                max_value = 1200
                 
                 if min_value <= position_value <= max_value:
                     logger.info(f"✅ {symbol}: Размер позиции в норме ({position_value:.2f} USDT)")
                     continue
                     
                 if position_value < min_value:
-                    # Позиция слишком мала - увеличиваем до 100 USDT
-                    target_value = 100
+                    # Позиция слишком мала - увеличиваем до 1000 USDT
+                    target_value = 1000
                     target_size = target_value / (current_price * leverage)
                     additional_size = target_size - current_size
                     
                     if additional_size > 0:
-                        logger.info(f"📈 {symbol}: Увеличиваем позицию с {position_value:.2f} до 100 USDT "
+                        logger.info(f"📈 {symbol}: Увеличиваем позицию с {position_value:.2f} до 1000 USDT "
                                   f"(+{additional_size:.6f})")
                         
                         # Округляем до параметров биржи
@@ -910,13 +937,13 @@ class TradingEngine:
                             logger.error(f"❌ {symbol}: Ошибка увеличения позиции: {result.get('error')}")
                             
                 elif position_value > max_value:
-                    # Позиция слишком велика - уменьшаем до 100 USDT
-                    target_value = 100
+                    # Позиция слишком велика - уменьшаем до 1000 USDT
+                    target_value = 1000
                     target_size = target_value / (current_price * leverage)
                     reduce_size = current_size - target_size
                     
                     if reduce_size > 0:
-                        logger.info(f"📉 {symbol}: Уменьшаем позицию с {position_value:.2f} до 100 USDT "
+                        logger.info(f"📉 {symbol}: Уменьшаем позицию с {position_value:.2f} до 1000 USDT "
                                   f"(-{reduce_size:.6f})")
                         
                         # Округляем до параметров биржи

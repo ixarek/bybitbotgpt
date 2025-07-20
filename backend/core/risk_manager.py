@@ -54,7 +54,7 @@ class RiskManager:
                 confidence = sell_count / total_signals
             
             # Check confidence level
-            if confidence < 0.6:  # Minimum 60% confidence
+            if confidence < 0.5:  # Minimum 50% confidence
                 return False
             
             # Check daily trade limit
