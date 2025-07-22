@@ -25,6 +25,7 @@ class StopLossType(Enum):
     ATR_BASED = "atr_based"
     PERCENTAGE = "percentage"
     VOLATILITY_ADJUSTED = "volatility_adjusted"
+    STEPWISE = "stepwise"  # Новый тип
 
 
 class PositionRisk(Enum):
@@ -137,6 +138,49 @@ class TrailingStopOrder:
             return (self.best_price - self.entry_price) / self.entry_price
         else:
             return (self.entry_price - self.best_price) / self.entry_price
+
+
+class StepwiseStopOrder(TrailingStopOrder):
+    """Ступенчатый стоп-лосс для консервативного режима (универсальный для BUY/SELL, абсолютная логика)"""
+    def __init__(self, symbol, side, entry_price, initial_stop, tp_pct=0.05, steps=None):
+        super().__init__(symbol, side, entry_price, initial_stop, 0, StopLossType.STEPWISE)
+        self.tp_pct = tp_pct
+        # steps: [(уровень_прибыли, новый SL), ...] в процентах
+        self.steps = steps or [
+            (0.01, -0.02),
+            (0.02, -0.01),
+            (0.03, 0.0),
+            (0.04, 0.01)
+        ]
+        self.current_step = 0
+
+    def update_stepwise_stop(self, current_price):
+        if not self.is_active:
+            return False
+        updated = False
+        if self.side.upper() == "BUY":
+            price_from_entry = (current_price - self.entry_price) / self.entry_price
+            while self.current_step < len(self.steps) and price_from_entry >= self.steps[self.current_step][0]:
+                new_sl_pct = self.steps[self.current_step][1]
+                new_stop = self.entry_price * (1 + new_sl_pct)
+                # SL только увеличивается
+                if new_stop > self.current_stop:
+                    self.current_stop = new_stop
+                    updated = True
+                    logger.info(f"[StepwiseSL][BUY] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
+                self.current_step += 1
+        elif self.side.upper() == "SELL":
+            price_from_entry = (self.entry_price - current_price) / self.entry_price
+            while self.current_step < len(self.steps) and price_from_entry >= self.steps[self.current_step][0]:
+                new_sl_pct = self.steps[self.current_step][1]
+                new_stop = self.entry_price * (1 - new_sl_pct)
+                # SL только уменьшается
+                if new_stop < self.current_stop:
+                    self.current_stop = new_stop
+                    updated = True
+                    logger.info(f"[StepwiseSL][SELL] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
+                self.current_step += 1
+        return updated
 
 
 class EnhancedRiskManager(RiskManager):
@@ -314,20 +358,25 @@ class EnhancedRiskManager(RiskManager):
                 if current_price is None:
                     continue
                 
-                # Получаем ATR для ATR-based стопов
-                atr = None
-                if trailing_stop.stop_type == StopLossType.ATR_BASED:
-                    try:
-                        from backend.integrations.bybit_client import bybit_client
-                        if bybit_client:
-                            df = bybit_client.get_kline(symbol, "5", limit=200)
-                            if df is not None and len(df) > 14:
-                                atr = self._calculate_atr(df['high'], df['low'], df['close'])
-                    except Exception as e:
-                        logger.warning(f"Could not get ATR for {symbol}: {e}")
-                
-                # Обновляем трейлинг-стоп
-                trailing_stop.update_trailing_stop(current_price, atr)
+                if trailing_stop.stop_type == StopLossType.STEPWISE:
+                    updated = trailing_stop.update_stepwise_stop(current_price)
+                    if updated:
+                        logger.info(f"🔄 Stepwise stop updated for {symbol}: {trailing_stop.current_stop:.4f}")
+                else:
+                    # Получаем ATR для ATR-based стопов
+                    atr = None
+                    if trailing_stop.stop_type == StopLossType.ATR_BASED:
+                        try:
+                            from backend.integrations.bybit_client import bybit_client
+                            if bybit_client:
+                                df = bybit_client.get_kline(symbol, "5", limit=200)
+                                if df is not None and len(df) > 14:
+                                    atr = self._calculate_atr(df['high'], df['low'], df['close'])
+                        except Exception as e:
+                            logger.warning(f"Could not get ATR for {symbol}: {e}")
+                    
+                    # Обновляем трейлинг-стоп
+                    trailing_stop.update_trailing_stop(current_price, atr)
                 
                 # Проверяем срабатывание
                 if trailing_stop.should_trigger(current_price):

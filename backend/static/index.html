@@ -1489,20 +1489,26 @@
                     const signalValue = signal.signal || 'HOLD';
                     const signalName = signal.name || 'Unknown';
                     const signalPrice = signal.value || 'N/A';
-                    
-                    // Если это числовое значение, показываем его с единицей измерения
                     let displayValue = signalPrice;
-                    if (typeof signal.value === 'string' && signal.value !== 'N/A' && signal.value !== signalValue) {
-                        displayValue = signal.value; // Числовое значение индикатора
+                    let tooltip = '';
+                    // --- SuperTrendAI: показываем tooltip с множителем ---
+                    if (signalName === 'SuperTrendAI') {
+                        let mult = signal.multiplier || '';
+                        let close = signal.close || '';
+                        let st = signal.supertrend || '';
+                        let stsig = signal.supertrend_signal || '';
+                        tooltip = `AI SuperTrend (кластеризация ATR): ${signalValue}`;
+                        if (mult && mult !== 'N/A') tooltip += `, множитель: ${mult}`;
+                        if (close && close !== 'N/A') tooltip += `, close: ${close}`;
+                        if (st && st !== 'N/A') tooltip += `, supertrend: ${st}`;
+                        if (stsig && stsig !== 'N/A') tooltip += `, signal: ${stsig}`;
                     }
-                    
                     const signalClass = signalValue === 'BUY' ? 'indicator-buy' : 
                                        signalValue === 'SELL' ? 'indicator-sell' : 'indicator-hold';
                     const icon = signalValue === 'BUY' ? '↗️' : 
                                 signalValue === 'SELL' ? '↘️' : '➡️';
-                    
                     return `
-                        <div class="indicator-item ${signalClass}">
+                        <div class="indicator-item ${signalClass}"${tooltip ? ` title='${tooltip}'` : ''}>
                             <div class="indicator-name">${signalName}</div>
                             <div class="indicator-value">${displayValue}</div>
                             <div class="indicator-signal">${icon} ${signalValue}</div>

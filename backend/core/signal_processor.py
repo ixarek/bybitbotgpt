@@ -9,6 +9,9 @@ from typing import Dict, List, Optional, Any
 import logging
 from datetime import datetime
 
+# --- SuperTrendAI ---
+from backend.core.supertrend_ai import SuperTrendAI
+
 logger = logging.getLogger(__name__)
 
 
@@ -277,13 +280,10 @@ class SignalProcessor:
             
             # ATR (Average True Range)
             atr = self._calculate_atr(high, low, close, 14)
-            if len(atr) > 1 and not pd.isna(atr.iloc[-1]) and not pd.isna(atr.iloc[-2]):
-                if atr.iloc[-1] > atr.iloc[-2]:
-                    signals["ATR"] = "SELL"  # High volatility = caution
-                else:
-                    signals["ATR"] = "BUY"   # Low volatility = opportunity
+            if len(atr) > 1 and not pd.isna(atr.iloc[-1]):
+                signals["ATR"] = "NONE"  # Больше не BUY/SELL
             else:
-                signals["ATR"] = "HOLD"
+                signals["ATR"] = "NONE"
             
             # ADX (simplified version)
             # For simplicity, we'll use a basic trend strength indicator
@@ -330,6 +330,22 @@ class SignalProcessor:
                     signals["OBV"] = "HOLD"
             else:
                 signals["OBV"] = "HOLD"
+            
+            # --- SuperTrend AI (Clustering) ---
+            try:
+                st_ai = SuperTrendAI(window=10, n_clusters=3)
+                df_st = st_ai.fit_transform(df)
+                st_signal = df_st['supertrend_signal'].iloc[-1]
+                st_value = df_st['supertrend'].iloc[-1]
+                close = df['close'].iloc[-1]
+                if st_signal == 1 and close > st_value:
+                    signals["SuperTrendAI"] = "BUY"
+                elif st_signal == -1 and close < st_value:
+                    signals["SuperTrendAI"] = "SELL"
+                else:
+                    signals["SuperTrendAI"] = "HOLD"
+            except Exception as e:
+                signals["SuperTrendAI"] = "HOLD"
             
         except Exception as e:
             logger.error(f"Error calculating indicators: {e}")
@@ -593,18 +609,23 @@ class SignalProcessor:
             
             # ATR (Average True Range)
             atr = self._calculate_atr(high, low, close, 14)
-            if len(atr) > 1 and not pd.isna(atr.iloc[-1]) and not pd.isna(atr.iloc[-2]):
+            if len(atr) > 1 and not pd.isna(atr.iloc[-1]):
                 atr_val = atr.iloc[-1]
-                if atr.iloc[-1] > atr.iloc[-2]:
-                    signal = "SELL"  # High volatility = caution
+                price = close.iloc[-1]
+                ratio = atr_val / price if price else 0
+                if ratio < 0.01:
+                    strength = "Слабый"
+                elif ratio < 0.03:
+                    strength = "Средний"
                 else:
-                    signal = "BUY"   # Low volatility = opportunity
+                    strength = "Сильный"
                 detailed_signals["ATR"] = {
                     "value": f"{atr_val:.2f}",
-                    "signal": signal
+                    "signal": "NONE",
+                    "strength": strength
                 }
             else:
-                detailed_signals["ATR"] = {"value": "N/A", "signal": "HOLD"}
+                detailed_signals["ATR"] = {"value": "N/A", "signal": "NONE", "strength": "N/A"}
             
             # ADX (simplified version)
             ema_short = close.ewm(span=10).mean()
@@ -659,6 +680,33 @@ class SignalProcessor:
                 }
             else:
                 detailed_signals["OBV"] = {"value": "N/A", "signal": "HOLD"}
+            
+            # --- SuperTrend AI (Clustering) ---
+            try:
+                st_ai = SuperTrendAI(window=10, n_clusters=3)
+                df_st = st_ai.fit_transform(df)
+                st_signal = df_st['supertrend_signal'].iloc[-1]
+                st_value = df_st['supertrend'].iloc[-1]
+                st_mult = df_st['supertrend_multiplier'].iloc[-1]
+                close = df['close'].iloc[-1]
+                logger.info(f"[SuperTrendAI] UI: close={close}, supertrend={st_value}, signal={st_signal}, multiplier={st_mult}")
+                if st_signal == 1 and close > st_value:
+                    signal = "BUY"
+                elif st_signal == -1 and close < st_value:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["SuperTrendAI"] = {
+                    "value": f"{st_value:.2f}",
+                    "signal": signal,
+                    "multiplier": f"{st_mult:.2f}",
+                    "close": f"{close:.2f}",
+                    "supertrend": f"{st_value:.2f}",
+                    "supertrend_signal": int(st_signal) if pd.notna(st_signal) else 'N/A'
+                }
+            except Exception as e:
+                logger.error(f"[SuperTrendAI] Ошибка detailed_signals: {e}")
+                detailed_signals["SuperTrendAI"] = {"value": "N/A", "signal": "HOLD", "multiplier": "N/A", "close": "N/A", "supertrend": "N/A", "supertrend_signal": "N/A"}
             
             return detailed_signals
             

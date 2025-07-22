@@ -36,6 +36,7 @@ class TradingEngine:
         # Trading state
         self.is_running = False
         self.start_time = None
+        # Теперь ключ — (symbol, side): ("BTCUSDT", "Buy") или ("BTCUSDT", "Sell")
         self.active_positions = {}
         self.trading_pairs = settings.trading_pairs
         
@@ -159,6 +160,12 @@ class TradingEngine:
             # Process technical signals
             signals = self.signal_processor.get_signals(symbol, timeframe)
             signal_strength = self.signal_processor.get_signal_strength(signals)
+            # Получаем detailed_signals для ATR силы
+            if hasattr(self.signal_processor, 'get_detailed_signals'):
+                detailed_signals = self.signal_processor.get_detailed_signals(symbol, timeframe)
+                atr_info = detailed_signals.get('ATR', {})
+                if 'strength' in atr_info:
+                    logger.info(f"[ATR] {symbol} {timeframe}: {atr_info.get('value')} ({atr_info.get('strength')})")
 
             # Формируем человекочитаемый лог для веба
             web_log = self.format_signal_log_for_web(symbol, signals, signal_strength)
@@ -277,7 +284,7 @@ class TradingEngine:
         
         return adjusted_qty
 
-    def calc_tp_sl(self, entry_price, side, mode):
+    def calc_tp_sl(self, entry_price, side, mode, market_data=None, symbol=None, timeframe=None):
         logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
         
         # Исправление: если режим moderate, заменяем на medium
@@ -285,31 +292,84 @@ class TradingEngine:
             logger.warning("[TP/SL] Режим 'moderate' заменён на 'medium'")
             mode = "medium"
         
-        # ✅ ИСПРАВЛЕНИЕ: Новые параметры TP/SL согласно требованиям
+        # ATR-основанный SL для агрессивного режима
+        if mode == "aggressive" and market_data is not None:
+            try:
+                atr_period = 14
+                if 'high' in market_data and 'low' in market_data and 'close' in market_data:
+                    high = market_data['high']
+                    low = market_data['low']
+                    close = market_data['close']
+                    import numpy as np
+                    high_low = high - low
+                    high_close = np.abs(high - close.shift())
+                    low_close = np.abs(low - close.shift())
+                    true_range = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+                    atr = true_range.rolling(window=atr_period).mean().iloc[-1]
+                    atr_mult = 1.5
+                    if side.lower() in ['buy', 'long']:
+                        stop_loss = entry_price - atr * atr_mult
+                        take_profit = entry_price * 1.03
+                    else:
+                        stop_loss = entry_price + atr * atr_mult
+                        take_profit = entry_price * 0.97
+                    logger.info(f"[TP/SL][ATR] SL={stop_loss:.4f}, TP={take_profit:.4f}, ATR={atr:.4f}")
+                    return round(stop_loss, 4), round(take_profit, 4)
+            except Exception as e:
+                logger.error(f"[TP/SL][ATR] Ошибка расчёта ATR: {e}")
+        # ATR-основанный SL/TP для консервативного режима
+        if mode == "conservative" and market_data is not None:
+            try:
+                atr_period = 14
+                if 'high' in market_data and 'low' in market_data and 'close' in market_data:
+                    high = market_data['high']
+                    low = market_data['low']
+                    close = market_data['close']
+                    import numpy as np
+                    high_low = high - low
+                    high_close = np.abs(high - close.shift())
+                    low_close = np.abs(low - close.shift())
+                    true_range = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+                    atr = true_range.rolling(window=atr_period).mean().iloc[-1]
+                    # Диапазоны SL/TP
+                    min_sl, max_sl = 0.01, 0.03
+                    min_tp, max_tp = 0.02, 0.05
+                    # ATR нормируем относительно цены (процент волатильности)
+                    atr_pct = atr / entry_price
+                    # Чем выше ATR, тем ближе к max_sl/max_tp
+                    # ATR < 1% — min, ATR >= 3% — max, между — линейная интерполяция
+                    atr_min, atr_max = 0.01, 0.03
+                    k = min(1.0, max(0.0, (atr_pct - atr_min) / (atr_max - atr_min)))
+                    sl_pct = min_sl + (max_sl - min_sl) * k
+                    tp_pct = min_tp + (max_tp - min_tp) * k
+                    if side.lower() in ['buy', 'long']:
+                        stop_loss = entry_price * (1 - sl_pct)
+                        take_profit = entry_price * (1 + tp_pct)
+                    else:
+                        stop_loss = entry_price * (1 + sl_pct)
+                        take_profit = entry_price * (1 - tp_pct)
+                    logger.info(f"[TP/SL][ATR_CONS] SL={stop_loss:.4f}, TP={take_profit:.4f}, ATR={atr:.4f}, k={k:.2f}")
+                    return round(stop_loss, 4), round(take_profit, 4)
+            except Exception as e:
+                logger.error(f"[TP/SL][ATR_CONS] Ошибка расчёта ATR: {e}")
+        # Старый способ для остальных режимов
         params = {
-            'aggressive': {'sl': 0.01, 'tp': 0.03},    # 1% SL, 3% TP
-            'medium':     {'sl': 0.02, 'tp': 0.04},    # 2% SL, 4% TP  
-            'conservative': {'sl': 0.03, 'tp': 0.05}   # 3% SL, 5% TP
+            'aggressive': {'sl': 0.01, 'tp': 0.03},
+            'medium':     {'sl': 0.02, 'tp': 0.04},
+            'conservative': {'sl': 0.03, 'tp': 0.05}
         }
-        
         if mode not in params:
             logger.error(f"Неизвестный режим торговли: {mode}")
             return None, None
-        
         sl_pct = params[mode]['sl']
         tp_pct = params[mode]['tp']
-        
-        # ✅ ИСПРАВЛЕНИЕ: Правильный расчет TP/SL с учетом направления
         if side.lower() in ['buy', 'long']:
-            # Для покупки: SL ниже входной цены, TP выше
             stop_loss = entry_price * (1 - sl_pct)
             take_profit = entry_price * (1 + tp_pct)
         else:
-            # Для продажи: SL выше входной цены, TP ниже
             stop_loss = entry_price * (1 + sl_pct)
             take_profit = entry_price * (1 - tp_pct)
-        
-        # ✅ ИСПРАВЛЕНИЕ: Проверяем разумность цен
+        # Проверяем разумность цен
         if side.lower() in ['buy', 'long']:
             if stop_loss >= entry_price:
                 logger.error(f"❌ Неправильный SL для покупки: {stop_loss} >= {entry_price}")
@@ -324,7 +384,6 @@ class TradingEngine:
             if take_profit >= entry_price:
                 logger.error(f"❌ Неправильный TP для продажи: {take_profit} >= {entry_price}")
                 return None, None
-        
         logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
         return round(stop_loss, 4), round(take_profit, 4)
     
@@ -507,8 +566,9 @@ class TradingEngine:
             current_price = market_data['close'].iloc[-1]
             current_mode = self.strategy_manager.get_current_mode()
             mode_config = self.strategy_manager.get_mode_parameters(current_mode)
-            if symbol in self.active_positions:
-                logger.warning(f"⚠️ Already have position in {symbol}")
+            side = "Buy" if decision == "BUY" else "Sell"
+            if (symbol, side) in self.active_positions:
+                logger.warning(f"⚠️ Already have {side} position in {symbol}")
                 return
             
             # ✅ ИСПРАВЛЕНИЕ: Рассчитываем размер позиции 80-120$ С учетом плеча
@@ -569,32 +629,25 @@ class TradingEngine:
                 logger.warning(f"⚠️ Стоимость позиции {calculated_value:.2f} USDT вне диапазона {min_value}-{max_value}$. Ордер не отправлен.")
                 return
             
-            side = "Buy" if decision == "BUY" else "Sell"
-            order_result = await self.place_order(
+            await self.place_order(
                 symbol=symbol,
                 side=side,
                 amount=qty,
                 order_type="market",
-                price=current_price
+                price=current_price,
+                market_data=market_data,
+                mode=current_mode.value,
+                timeframe=mode_config.get('timeframes', ['5m'])[0] if mode_config and 'timeframes' in mode_config and mode_config['timeframes'] else "5m"
             )
-            if order_result and order_result.get('success'):
-                order_id = order_result.get('order_id', None)
-                self.active_positions[symbol] = {
-                    "order_id": order_id,
-                    "side": side,
-                    "size": order_result.get('amount', qty),
-                    "entry_price": current_price,
-                    "stop_loss": None,
-                    "take_profit": None,
-                    "timestamp": datetime.now(),
-                    "mode": current_mode.value
-                }
-                self.total_trades += 1
-                logger.info(f"✅ Order placed successfully: {order_id}")
-            else:
-                error_msg = order_result.get('error', 'Unknown error') if order_result else 'No response'
-                logger.error(f"❌ Failed to place order: {error_msg}")
-            await self.sync_positions_with_exchange()
+            if current_mode.value == "conservative":
+                # Создаём ступенчатый стоп через EnhancedRiskManager
+                if hasattr(self.risk_manager, 'create_trailing_stop'):
+                    self.risk_manager.create_trailing_stop(
+                        symbol=symbol,
+                        side=side,
+                        entry_price=current_price,
+                        stop_type=getattr(self.risk_manager, 'StopLossType', None).STEPWISE if hasattr(self.risk_manager, 'StopLossType') else None
+                    )
         except Exception as e:
             import traceback
             logger.error(f"❌ Error executing trade for {symbol}: {e}")
@@ -625,7 +678,7 @@ class TradingEngine:
             logger.error(f"Error calculating TP/SL: {e}")
             return None, None
     
-    async def place_order(self, symbol: str, side: str, amount: float, order_type: str = "market", price: float = None) -> Dict:
+    async def place_order(self, symbol: str, side: str, amount: float, order_type: str = "market", price: float = None, market_data=None, mode=None, timeframe=None) -> Dict:
         """
         Публичный метод для выставления ордера через торговый движок
         
@@ -667,7 +720,8 @@ class TradingEngine:
                 logger.error(f"❌ Не удалось получить цену для {symbol}, ордер не будет выставлен!")
                 return {"success": False, "error": "Не удалось получить цену для расчёта суммы ордера"}
             # Получаем параметры режима для расчёта плеча
-            mode = self.risk_manager.mode if hasattr(self.risk_manager, 'mode') else 'medium'
+            if mode is None:
+                mode = self.risk_manager.mode if hasattr(self.risk_manager, 'mode') else 'medium'
             try:
                 mode_enum = TradingMode(mode)
             except Exception:
@@ -718,8 +772,7 @@ class TradingEngine:
             if balance is not None and margin_required > float(balance):
                 logger.warning(f"⚠️ Недостаточно средств: требуется маржа {margin_required:.2f} USDT, доступно {balance:.2f} USDT. Ордер не отправлен.")
                 return {"success": False, "error": f"Недостаточно средств: требуется маржа {margin_required:.2f} USDT, доступно {balance:.2f} USDT"}
-            mode = self.risk_manager.mode if hasattr(self.risk_manager, 'mode') else 'medium'
-            stop_loss, take_profit = self.calc_tp_sl(current_price, side, mode)
+            stop_loss, take_profit = self.calc_tp_sl(current_price, side, mode, market_data=market_data, symbol=symbol, timeframe=timeframe)
             if stop_loss is None or take_profit is None:
                 logger.error(f"❌ Не удалось рассчитать TP/SL для {symbol}, ордер не будет выставлен!")
                 return {"success": False, "error": "Не удалось рассчитать TP/SL"}
@@ -801,43 +854,61 @@ class TradingEngine:
         """Get active trading positions"""
         return self.active_positions
     
-    async def close_position(self, symbol: str) -> bool:
-        """Close a specific position"""
-        if symbol not in self.active_positions:
-            logger.warning(f"⚠️ No active position for {symbol}")
-            return False
-        
-        try:
-            position = self.active_positions[symbol]
-            
-            # Determine opposite side for closing
-            close_side = "Sell" if position["side"] == "Buy" else "Buy"
-            
-            # Place closing order
-            qty_final = self.adjust_qty(symbol, position["size"])
-            qty_str = self.format_qty_for_bybit(symbol, qty_final)
-            logger.info(f"🔢 [lot_size] Закрытие позиции {symbol}: qty={qty_str}")
-            order_kwargs = dict(
-                symbol=symbol,
-                side=close_side,
-                order_type="Market",
-                qty=qty_str
-            )
-            order_result = await self.bybit_client.place_order(**order_kwargs)
-            
-            if order_result:
-                # Remove from active positions
-                del self.active_positions[symbol]
-                logger.info(f"✅ Position closed for {symbol}")
-                
-                await self.sync_positions_with_exchange()  # Синхронизация после попытки
-                
-                return True
-            
-        except Exception as e:
-            logger.error(f"❌ Error closing position for {symbol}: {e}")
-        
-        return False
+    async def close_position(self, symbol: str, side: str = None) -> bool:
+        """Close a specific position. Если side не указан — закрыть обе стороны"""
+        closed = False
+        if side:
+            key = (symbol, side)
+            if key not in self.active_positions:
+                logger.warning(f"⚠️ No active {side} position for {symbol}")
+                return False
+            try:
+                position = self.active_positions[key]
+                close_side = "Sell" if position["side"] == "Buy" else "Buy"
+                qty_final = self.adjust_qty(symbol, position["size"])
+                qty_str = self.format_qty_for_bybit(symbol, qty_final)
+                logger.info(f"🔢 [lot_size] Закрытие позиции {symbol} {side}: qty={qty_str}")
+                order_kwargs = dict(
+                    symbol=symbol,
+                    side=close_side,
+                    order_type="Market",
+                    qty=qty_str
+                )
+                order_result = await self.bybit_client.place_order(**order_kwargs)
+                if order_result:
+                    del self.active_positions[key]
+                    logger.info(f"✅ Position closed for {symbol} {side}")
+                    await self.sync_positions_with_exchange()
+                    closed = True
+            except Exception as e:
+                logger.error(f"❌ Error closing position for {symbol} {side}: {e}")
+        else:
+            # Закрыть обе стороны
+            for s in ["Buy", "Sell"]:
+                key = (symbol, s)
+                if key in self.active_positions:
+                    try:
+                        position = self.active_positions[key]
+                        close_side = "Sell" if position["side"] == "Buy" else "Buy"
+                        qty_final = self.adjust_qty(symbol, position["size"])
+                        qty_str = self.format_qty_for_bybit(symbol, qty_final)
+                        logger.info(f"🔢 [lot_size] Закрытие позиции {symbol} {s}: qty={qty_str}")
+                        order_kwargs = dict(
+                            symbol=symbol,
+                            side=close_side,
+                            order_type="Market",
+                            qty=qty_str
+                        )
+                        order_result = await self.bybit_client.place_order(**order_kwargs)
+                        if order_result:
+                            del self.active_positions[key]
+                            logger.info(f"✅ Position closed for {symbol} {s}")
+                            closed = True
+                    except Exception as e:
+                        logger.error(f"❌ Error closing position for {symbol} {s}: {e}")
+            if closed:
+                await self.sync_positions_with_exchange()
+        return closed
     
     async def shutdown(self):
         """Shutdown the trading engine gracefully"""
@@ -847,8 +918,8 @@ class TradingEngine:
         self.stop()
         
         # Close all positions
-        for symbol in list(self.active_positions.keys()):
-            await self.close_position(symbol)
+        for key in list(self.active_positions.keys()):
+            await self.close_position(key[0], key[1])
         
         logger.info("✅ Trading engine shutdown complete")
 
@@ -858,15 +929,16 @@ class TradingEngine:
             logger.warning("⚠️ Bybit client не инициализирован, синхронизация невозможна")
             return
         real_positions = self.bybit_client.get_positions() or []
-        real_symbols = {p['symbol'] for p in real_positions if p['size'] > 0}
+        real_keys = {(p['symbol'], p.get('side', 'Buy')) for p in real_positions if p['size'] > 0}
         # Удаляем локальные позиции, которых нет на бирже
-        for symbol in list(self.active_positions.keys()):
-            if symbol not in real_symbols:
-                del self.active_positions[symbol]
+        for key in list(self.active_positions.keys()):
+            if key not in real_keys:
+                del self.active_positions[key]
         # Добавляем новые, если есть на бирже, а локально нет
         for pos in real_positions:
-            if pos['symbol'] not in self.active_positions and pos['size'] > 0:
-                self.active_positions[pos['symbol']] = pos
+            key = (pos['symbol'], pos.get('side', 'Buy'))
+            if key not in self.active_positions and pos['size'] > 0:
+                self.active_positions[key] = pos
                 
         # ✅ НОВОЕ: Корректируем размеры существующих позиций
         await self.correct_position_sizes()
