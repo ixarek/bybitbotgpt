@@ -21,6 +21,7 @@ from ..utils.config import settings, get_risk_config
 
 # Настройка логгера
 logger = logging.getLogger("backend.core.trading_engine")
+clean_logger = logging.getLogger("backend.core.trading_engine.clean")
 
 class TradingEngine:
     """
@@ -166,6 +167,7 @@ class TradingEngine:
                 atr_info = detailed_signals.get('ATR', {})
                 if 'strength' in atr_info:
                     logger.info(f"[ATR] {symbol} {timeframe}: {atr_info.get('value')} ({atr_info.get('strength')})")
+                    clean_logger.info(f"[ATR] {symbol} {timeframe}: {atr_info.get('value')} ({atr_info.get('strength')})")
 
             # Формируем человекочитаемый лог для веба
             web_log = self.format_signal_log_for_web(symbol, signals, signal_strength)
@@ -286,6 +288,7 @@ class TradingEngine:
 
     def calc_tp_sl(self, entry_price, side, mode, market_data=None, symbol=None, timeframe=None):
         logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
+        clean_logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
         
         # Исправление: если режим moderate, заменяем на medium
         if mode == "moderate":
@@ -314,10 +317,12 @@ class TradingEngine:
                         stop_loss = entry_price + atr * atr_mult
                         take_profit = entry_price * 0.97
                     logger.info(f"[TP/SL][ATR] SL={stop_loss:.4f}, TP={take_profit:.4f}, ATR={atr:.4f}")
+                    clean_logger.info(f"[TP/SL][ATR] SL={stop_loss:.4f}, TP={take_profit:.4f}, ATR={atr:.4f}")
                     return round(stop_loss, 4), round(take_profit, 4)
             except Exception as e:
                 logger.error(f"[TP/SL][ATR] Ошибка расчёта ATR: {e}")
-        # ATR-основанный SL/TP для консервативного режима
+                clean_logger.error(f"[TP/SL][ATR] Ошибка расчёта ATR: {e}")
+        # Новая стратегия для консервативного режима
         if mode == "conservative" and market_data is not None:
             try:
                 atr_period = 14
@@ -326,32 +331,37 @@ class TradingEngine:
                     low = market_data['low']
                     close = market_data['close']
                     import numpy as np
-                    high_low = high - low
-                    high_close = np.abs(high - close.shift())
-                    low_close = np.abs(low - close.shift())
-                    true_range = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
-                    atr = true_range.rolling(window=atr_period).mean().iloc[-1]
-                    # Диапазоны SL/TP
-                    min_sl, max_sl = 0.01, 0.03
-                    min_tp, max_tp = 0.02, 0.05
-                    # ATR нормируем относительно цены (процент волатильности)
-                    atr_pct = atr / entry_price
-                    # Чем выше ATR, тем ближе к max_sl/max_tp
-                    # ATR < 1% — min, ATR >= 3% — max, между — линейная интерполяция
-                    atr_min, atr_max = 0.01, 0.03
-                    k = min(1.0, max(0.0, (atr_pct - atr_min) / (atr_max - atr_min)))
-                    sl_pct = min_sl + (max_sl - min_sl) * k
-                    tp_pct = min_tp + (max_tp - min_tp) * k
+                    atr = (pd.concat([
+                        high - low,
+                        np.abs(high - close.shift()),
+                        np.abs(low - close.shift())
+                    ], axis=1).max(axis=1)).rolling(window=atr_period).mean().iloc[-1]
+                    atr_pct = round(atr / entry_price, 4)
+                    # Ограничиваем ATR в диапазоне 1-5%
+                    atr_pct = min(max(atr_pct, 0.01), 0.05)
+                    sl_pct = tp_pct = atr_pct
+                    # Для ATR >= 3% — особые правила подтягивания SL
+                    if atr_pct >= 0.03:
+                        # Если цена ушла в TP на 2%+ — SL = entry
+                        # Если на 3%+ — SL = entry +1%
+                        # (эту логику нужно реализовать в ступенчатом SL, здесь только стартовые значения)
+                        logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}% (динамика подтяжки SL реализуется в StepwiseStopOrder)")
+                        clean_logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}% (динамика подтяжки SL реализуется в StepwiseStopOrder)")
+                    else:
+                        logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}%")
+                        clean_logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}%")
                     if side.lower() in ['buy', 'long']:
                         stop_loss = entry_price * (1 - sl_pct)
                         take_profit = entry_price * (1 + tp_pct)
                     else:
                         stop_loss = entry_price * (1 + sl_pct)
                         take_profit = entry_price * (1 - tp_pct)
-                    logger.info(f"[TP/SL][ATR_CONS] SL={stop_loss:.4f}, TP={take_profit:.4f}, ATR={atr:.4f}, k={k:.2f}")
+                    logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
+                    clean_logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
                     return round(stop_loss, 4), round(take_profit, 4)
             except Exception as e:
-                logger.error(f"[TP/SL][ATR_CONS] Ошибка расчёта ATR: {e}")
+                logger.error(f"[TP/SL][ATR_CONS_NEW] Ошибка расчёта ATR: {e}")
+                clean_logger.error(f"[TP/SL][ATR_CONS_NEW] Ошибка расчёта ATR: {e}")
         # Старый способ для остальных режимов
         params = {
             'aggressive': {'sl': 0.01, 'tp': 0.03},
@@ -360,6 +370,7 @@ class TradingEngine:
         }
         if mode not in params:
             logger.error(f"Неизвестный режим торговли: {mode}")
+            clean_logger.error(f"Неизвестный режим торговли: {mode}")
             return None, None
         sl_pct = params[mode]['sl']
         tp_pct = params[mode]['tp']
@@ -373,18 +384,23 @@ class TradingEngine:
         if side.lower() in ['buy', 'long']:
             if stop_loss >= entry_price:
                 logger.error(f"❌ Неправильный SL для покупки: {stop_loss} >= {entry_price}")
+                clean_logger.error(f"❌ Неправильный SL для покупки: {stop_loss} >= {entry_price}")
                 return None, None
             if take_profit <= entry_price:
                 logger.error(f"❌ Неправильный TP для покупки: {take_profit} <= {entry_price}")
+                clean_logger.error(f"❌ Неправильный TP для покупки: {take_profit} <= {entry_price}")
                 return None, None
         else:
             if stop_loss <= entry_price:
                 logger.error(f"❌ Неправильный SL для продажи: {stop_loss} <= {entry_price}")
+                clean_logger.error(f"❌ Неправильный SL для продажи: {stop_loss} <= {entry_price}")
                 return None, None
             if take_profit >= entry_price:
                 logger.error(f"❌ Неправильный TP для продажи: {take_profit} >= {entry_price}")
+                clean_logger.error(f"❌ Неправильный TP для продажи: {take_profit} >= {entry_price}")
                 return None, None
         logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
+        clean_logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
         return round(stop_loss, 4), round(take_profit, 4)
     
     def round_qty(self, symbol, qty):
@@ -416,21 +432,25 @@ class TradingEngine:
                     qty_step = float(lot_size_filter.get('qtyStep', '0.1'))
                     
                     logger.info(f"[adjust_qty] Получены параметры с биржи: minOrderQty={min_order_qty}, qtyStep={qty_step}")
+                    clean_logger.info(f"[adjust_qty] Получены параметры с биржи: minOrderQty={min_order_qty}, qtyStep={qty_step}")
                 else:
                     # Fallback к статическим значениям
                     min_order_qty = 0.1
                     qty_step = 0.1
                     logger.warning(f"[adjust_qty] Не удалось получить параметры с биржи, используем fallback")
+                    clean_logger.warning(f"[adjust_qty] Не удалось получить параметры с биржи, используем fallback")
             else:
                 # Fallback к статическим значениям
                 min_order_qty = 0.1
                 qty_step = 0.1
                 logger.warning(f"[adjust_qty] Ошибка запроса к бирже, используем fallback")
+                clean_logger.warning(f"[adjust_qty] Ошибка запроса к бирже, используем fallback")
         except Exception as e:
             # Fallback к статическим значениям
             min_order_qty = 0.1
             qty_step = 0.1
             logger.warning(f"[adjust_qty] Исключение при получении параметров: {e}, используем fallback")
+            clean_logger.warning(f"[adjust_qty] Исключение при получении параметров: {e}, используем fallback")
         
         # Используем Decimal для точных вычислений
         qty_decimal = Decimal(str(qty))
@@ -452,6 +472,7 @@ class TradingEngine:
             qty_result = int(qty_result)
         
         logger.info(f"🔢 [adjust_qty] {symbol}: {qty:.6f} → {qty_result} (qtyStep={qty_step}, minOrderQty={min_order_qty})")
+        clean_logger.info(f"🔢 [adjust_qty] {symbol}: {qty:.6f} → {qty_result} (qtyStep={qty_step}, minOrderQty={min_order_qty})")
         return qty_result
 
     def format_qty_for_bybit(self, symbol: str, qty: float, price: float = None) -> str:
@@ -466,6 +487,7 @@ class TradingEngine:
         qty_orig = qty
         qty = Decimal(str(qty))
         logger.info(f"[format_qty_for_bybit] symbol={symbol}, qty_in={qty_orig}, price={price}")
+        clean_logger.info(f"[format_qty_for_bybit] symbol={symbol}, qty_in={qty_orig}, price={price}")
         
         # ✅ ИСПРАВЛЕНИЕ: Получаем актуальные параметры с биржи
         try:
@@ -484,28 +506,33 @@ class TradingEngine:
                     min_notional_value = Decimal(str(lot_size_filter.get('minNotionalValue', '5')))
                     
                     logger.info(f"[format_qty_for_bybit] Получены параметры с биржи: minOrderQty={min_order_qty}, qtyStep={qty_step}, minNotionalValue={min_notional_value}")
+                    clean_logger.info(f"[format_qty_for_bybit] Получены параметры с биржи: minOrderQty={min_order_qty}, qtyStep={qty_step}, minNotionalValue={min_notional_value}")
                 else:
                     # Fallback к статическим значениям
                     min_order_qty = Decimal('0.1')
                     qty_step = Decimal('0.1')
                     min_notional_value = Decimal('5')
                     logger.warning(f"[format_qty_for_bybit] Не удалось получить параметры с биржи, используем fallback")
+                    clean_logger.warning(f"[format_qty_for_bybit] Не удалось получить параметры с биржи, используем fallback")
             else:
                 # Fallback к статическим значениям
                 min_order_qty = Decimal('0.1')
                 qty_step = Decimal('0.1')
                 min_notional_value = Decimal('5')
                 logger.warning(f"[format_qty_for_bybit] Ошибка запроса к бирже, используем fallback")
+                clean_logger.warning(f"[format_qty_for_bybit] Ошибка запроса к бирже, используем fallback")
         except Exception as e:
             # Fallback к статическим значениям
             min_order_qty = Decimal('0.1')
             qty_step = Decimal('0.1')
             min_notional_value = Decimal('5')
             logger.warning(f"[format_qty_for_bybit] Исключение при получении параметров: {e}, используем fallback")
+            clean_logger.warning(f"[format_qty_for_bybit] Исключение при получении параметров: {e}, используем fallback")
         
         # qty не может быть меньше minOrderQty
         if qty < min_order_qty:
             logger.info(f"[format_qty_for_bybit] qty < minOrderQty: {qty} < {min_order_qty}, set to minOrderQty")
+            clean_logger.info(f"[format_qty_for_bybit] qty < minOrderQty: {qty} < {min_order_qty}, set to minOrderQty")
             qty = min_order_qty
         
         # ✅ ИСПРАВЛЕНИЕ: qty обязательно кратен qtyStep
@@ -514,6 +541,7 @@ class TradingEngine:
             qty = (qty / qty_step).quantize(Decimal('1'), rounding=ROUND_HALF_UP) * qty_step
         
         logger.info(f"[format_qty_for_bybit] qty after qtyStep rounding: {qty}")
+        clean_logger.info(f"[format_qty_for_bybit] qty after qtyStep rounding: {qty}")
         
         # ✅ ИСПРАВЛЕНИЕ: Проверяем минимальную сумму ордера (minNotionalValue USDT)
         if price is not None and price > 0:
@@ -523,19 +551,24 @@ class TradingEngine:
             # Округляем до кратного qty_step в большую сторону
             min_qty_for_value = ((min_qty_raw / qty_step).quantize(Decimal('1'), rounding=ROUND_HALF_UP)) * qty_step
             logger.info(f"[format_qty_for_bybit] min_qty for {min_notional_value} USDT: {min_qty_for_value}")
+            clean_logger.info(f"[format_qty_for_bybit] min_qty for {min_notional_value} USDT: {min_qty_for_value}")
             if qty < min_qty_for_value:
                 # Увеличиваем до минимального количества
                 qty = min_qty_for_value
                 logger.info(f"[format_qty_for_bybit] qty increased to meet {min_notional_value} USDT minimum: {qty}")
+                clean_logger.info(f"[format_qty_for_bybit] qty increased to meet {min_notional_value} USDT minimum: {qty}")
         
         # Проверка кратности qtyStep
         remainder = (qty / qty_step) % 1
         logger.info(f"[format_qty_for_bybit] qty/qtyStep={qty/qty_step}, remainder={remainder}")
+        clean_logger.info(f"[format_qty_for_bybit] qty/qtyStep={qty/qty_step}, remainder={remainder}")
         if remainder != 0:
             logger.warning(f"[format_qty_for_bybit] WARNING: qty={qty} не кратен qtyStep={qty_step} (remainder={remainder}) — Bybit не примет!")
+            clean_logger.warning(f"[format_qty_for_bybit] WARNING: qty={qty} не кратен qtyStep={qty_step} (remainder={remainder}) — Bybit не примет!")
             # Принудительно округляем
             qty = (qty / qty_step).quantize(Decimal('1'), rounding=ROUND_HALF_UP) * qty_step
             logger.info(f"[format_qty_for_bybit] Принудительно округлено до: {qty}")
+            clean_logger.info(f"[format_qty_for_bybit] Принудительно округлено до: {qty}")
         
         # Форматируем результат - убираем лишние нули только после десятичной точки
         qty_str = f"{qty}"
@@ -545,6 +578,7 @@ class TradingEngine:
             qty_str = '0'
         
         logger.info(f"[format_qty_for_bybit] qty_str result: {qty_str}, qty*price={qty*Decimal(str(price or 1)):.5f}")
+        clean_logger.info(f"[format_qty_for_bybit] qty_str result: {qty_str}, qty*price={qty*Decimal(str(price or 1)):.5f}")
         return qty_str
 
     def get_mode(self):
@@ -580,6 +614,7 @@ class TradingEngine:
                 if hasattr(mode_config, 'leverage_range') and isinstance(mode_config.leverage_range, tuple):
                     leverage = float(mode_config.leverage_range[1])
                     logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
+                    clean_logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
                 elif isinstance(mode_config, dict) and 'leverage_range' in mode_config:
                     leverage_range = mode_config['leverage_range']
                     if isinstance(leverage_range, (list, tuple)) and len(leverage_range) > 1:
@@ -587,10 +622,13 @@ class TradingEngine:
                     else:
                         leverage = float(leverage_range)
                     logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
+                    clean_logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
                 else:
                     logger.warning(f"[_execute_trade] Не удалось получить плечо из mode_config, используем по умолчанию: {leverage}x")
+                    clean_logger.warning(f"[_execute_trade] Не удалось получить плечо из mode_config, используем по умолчанию: {leverage}x")
             except Exception as e:
                 logger.warning(f"[_execute_trade] Ошибка получения плеча: {e}, используем по умолчанию: {leverage}x")
+                clean_logger.warning(f"[_execute_trade] Ошибка получения плеча: {e}, используем по умолчанию: {leverage}x")
             
             # Получаем minNotionalValue для правильного расчета
             min_notional_value = 5  # По умолчанию
@@ -606,8 +644,10 @@ class TradingEngine:
                         lot_size_filter = instrument.get('lotSizeFilter', {})
                         min_notional_value = float(lot_size_filter.get('minNotionalValue', '5'))
                         logger.info(f"[_execute_trade] Получен minNotionalValue с биржи: {min_notional_value}")
+                        clean_logger.info(f"[_execute_trade] Получен minNotionalValue с биржи: {min_notional_value}")
             except Exception as e:
                 logger.warning(f"[_execute_trade] Исключение при получении параметров: {e}")
+                clean_logger.warning(f"[_execute_trade] Исключение при получении параметров: {e}")
             
             # Рассчитываем qty для целевой стоимости С учетом плеча
             # Цель: 1000$ позиция с плечом 10x = 100$ маржи
@@ -621,12 +661,14 @@ class TradingEngine:
             # Проверяем что расчетная стоимость соответствует требованиям (С учетом плеча)
             calculated_value = qty * current_price
             logger.info(f"🔢 [_execute_trade] Рассчитанный размер: {qty:.6f} {symbol} = {calculated_value:.2f} USDT (с плечом {leverage}x)")
+            clean_logger.info(f"🔢 [_execute_trade] Рассчитанный размер: {qty:.6f} {symbol} = {calculated_value:.2f} USDT (с плечом {leverage}x)")
             
             # Проверяем что стоимость в диапазоне 800-1200$ (1000$ ± 200$)
             min_value = 800
             max_value = 1200
             if calculated_value < min_value or calculated_value > max_value:
                 logger.warning(f"⚠️ Стоимость позиции {calculated_value:.2f} USDT вне диапазона {min_value}-{max_value}$. Ордер не отправлен.")
+                clean_logger.warning(f"⚠️ Стоимость позиции {calculated_value:.2f} USDT вне диапазона {min_value}-{max_value}$. Ордер не отправлен.")
                 return
             
             await self.place_order(
@@ -693,6 +735,7 @@ class TradingEngine:
             Dict с результатом операции
         """
         logger.info(f"📝 Выставление ордера: {side.upper()} {amount} {symbol} ({order_type})")
+        clean_logger.info(f"📝 Выставление ордера: {side.upper()} {amount} {symbol} ({order_type})")
         
         try:
             if not self.bybit_client:
@@ -713,11 +756,19 @@ class TradingEngine:
             logger.info(f"   Тип: {order_type}")
             if price:
                 logger.info(f"   Цена: {price}")
+            clean_logger.info(f"🎯 Параметры ордера:")
+            clean_logger.info(f"   Символ: {symbol}")
+            clean_logger.info(f"   Направление: {side.upper()}")
+            clean_logger.info(f"   Количество: {amount}")
+            clean_logger.info(f"   Тип: {order_type}")
+            if price:
+                clean_logger.info(f"   Цена: {price}")
             
             # Получаем текущую цену для расчёта TP/SL и проверки суммы
             current_price = price if price else self.bybit_client.get_current_price(symbol)
             if current_price is None:
                 logger.error(f"❌ Не удалось получить цену для {symbol}, ордер не будет выставлен!")
+                clean_logger.error(f"❌ Не удалось получить цену для {symbol}, ордер не будет выставлен!")
                 return {"success": False, "error": "Не удалось получить цену для расчёта суммы ордера"}
             # Получаем параметры режима для расчёта плеча
             if mode is None:
@@ -745,36 +796,45 @@ class TradingEngine:
                         lot_size_filter = instrument.get('lotSizeFilter', {})
                         min_notional_value = float(lot_size_filter.get('minNotionalValue', '5'))
                         logger.info(f"[place_order] Получен minNotionalValue с биржи: {min_notional_value}")
+                        clean_logger.info(f"[place_order] Получен minNotionalValue с биржи: {min_notional_value}")
                     else:
                         logger.warning(f"[place_order] Не удалось получить параметры с биржи, используем fallback")
+                        clean_logger.warning(f"[place_order] Не удалось получить параметры с биржи, используем fallback")
                 else:
                     logger.warning(f"[place_order] Ошибка запроса к бирже, используем fallback")
+                    clean_logger.warning(f"[place_order] Ошибка запроса к бирже, используем fallback")
             except Exception as e:
                 logger.warning(f"[place_order] Исключение при получении параметров: {e}, используем fallback")
+                clean_logger.warning(f"[place_order] Исключение при получении параметров: {e}, используем fallback")
             
             # Проверка минимальной суммы ордера (Bybit требует >= minNotionalValue USDT на заявку)
             min_qty = math.ceil(min_notional_value / float(current_price) * 1000) / 1000
             if amount < min_qty:
                 logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {amount} → {min_qty} (to meet minimum order value >= {min_notional_value} USDT)")
+                clean_logger.info(f"🔄 [min_qty] Increasing qty for {symbol}: {amount} → {min_qty} (to meet minimum order value >= {min_notional_value} USDT)")
                 amount = min_qty
             min_order_value = float(amount) * float(current_price)
             if min_order_value < min_notional_value:
                 logger.warning(f"⚠️ Сумма ордера {min_order_value:.2f} USDT меньше минимальной {min_notional_value} USDT (Bybit). Ордер не отправлен.")
+                clean_logger.warning(f"⚠️ Сумма ордера {min_order_value:.2f} USDT меньше минимальной {min_notional_value} USDT (Bybit). Ордер не отправлен.")
                 return {"success": False, "error": f"Сумма ордера {min_order_value:.2f} USDT меньше минимальной {min_notional_value} USDT (Bybit)"}
             # ✅ ИСПРАВЛЕНИЕ: Для новых ордеров размер уже правильно рассчитан в _execute_trade
             # Проверяем только минимальную сумму ордера для Bybit
             order_value = float(amount) * float(current_price)
             
             logger.info(f"📊 [place_order] Размер ордера: {amount:.6f} {symbol} (стоимость: {order_value:.2f} USDT)")
+            clean_logger.info(f"📊 [place_order] Размер ордера: {amount:.6f} {symbol} (стоимость: {order_value:.2f} USDT)")
             # Проверка маржи (баланса)
             margin_required = float(amount) * float(current_price) / leverage
             balance = self.bybit_client.get_balance()
             if balance is not None and margin_required > float(balance):
                 logger.warning(f"⚠️ Недостаточно средств: требуется маржа {margin_required:.2f} USDT, доступно {balance:.2f} USDT. Ордер не отправлен.")
+                clean_logger.warning(f"⚠️ Недостаточно средств: требуется маржа {margin_required:.2f} USDT, доступно {balance:.2f} USDT. Ордер не отправлен.")
                 return {"success": False, "error": f"Недостаточно средств: требуется маржа {margin_required:.2f} USDT, доступно {balance:.2f} USDT"}
             stop_loss, take_profit = self.calc_tp_sl(current_price, side, mode, market_data=market_data, symbol=symbol, timeframe=timeframe)
             if stop_loss is None or take_profit is None:
                 logger.error(f"❌ Не удалось рассчитать TP/SL для {symbol}, ордер не будет выставлен!")
+                clean_logger.error(f"❌ Не удалось рассчитать TP/SL для {symbol}, ордер не будет выставлен!")
                 return {"success": False, "error": "Не удалось рассчитать TP/SL"}
             # --- Новый блок: попытки выставления ордера с увеличением qty при ошибке 110007 ---
             max_attempts = 3
@@ -782,9 +842,11 @@ class TradingEngine:
             max_qty = 1000  # лимит для qty, чтобы не уйти в абсурд
             while attempt < max_attempts:
                 logger.info(f"🎯 [Попытка {attempt+1}] Executing {side} order for {amount} {symbol} at {current_price}")
+                clean_logger.info(f"🎯 [Попытка {attempt+1}] Executing {side} order for {amount} {symbol} at {current_price}")
                 qty_final = self.adjust_qty(symbol, amount)
                 qty_str = self.format_qty_for_bybit(symbol, qty_final, price=current_price)
                 logger.info(f"🔢 [lot_size] Итоговое qty для {symbol}: {qty_str}")
+                clean_logger.info(f"🔢 [lot_size] Итоговое qty для {symbol}: {qty_str}")
                 order_kwargs = dict(
                     symbol=symbol,
                     side=side.capitalize(),
@@ -797,13 +859,18 @@ class TradingEngine:
                     order_kwargs["price"] = float(price)
                 order_kwargs = {k: v for k, v in order_kwargs.items() if v is not None}
                 logger.info(f"[place_order] Параметры для bybit_client.place_order: {order_kwargs}")
+                clean_logger.info(f"[place_order] Параметры для bybit_client.place_order: {order_kwargs}")
                 logger.info(f"[place_order] type(qty_str)={type(qty_str)}, repr(qty_str)={repr(qty_str)}")
+                clean_logger.info(f"[place_order] type(qty_str)={type(qty_str)}, repr(qty_str)={repr(qty_str)}")
                 logger.info(f"[place_order] Полный запрос: {order_kwargs}")
+                clean_logger.info(f"[place_order] Полный запрос: {order_kwargs}")
                 order_result = await self.bybit_client.place_order(**order_kwargs)
                 logger.info(f"[place_order] Ответ bybit_client.place_order: {order_result}")
+                clean_logger.info(f"[place_order] Ответ bybit_client.place_order: {order_result}")
                 if order_result and order_result.get('retCode') == 0:
                     order_id = order_result.get('result', {}).get('orderId')
                     logger.info(f"✅ Ордер успешно выставлен! ID: {order_id}")
+                    clean_logger.info(f"✅ Ордер успешно выставлен! ID: {order_id}")
                     self.total_trades += 1
                     await self.sync_positions_with_exchange()
                     return {
@@ -818,13 +885,16 @@ class TradingEngine:
                 else:
                     error_msg = order_result.get('retMsg', 'Unknown error') if order_result else 'No response'
                     logger.error(f"❌ Ошибка выставления ордера: {error_msg}")
+                    clean_logger.error(f"❌ Ошибка выставления ордера: {error_msg}")
                     # Если ошибка 110007 — увеличиваем qty и пробуем ещё раз
                     if order_result and ("110007" in str(order_result.get('retMsg', '')) or "ab not enough for new order" in str(order_result.get('retMsg', ''))):
                         new_amount = round(amount * 2, 3)
                         if new_amount > max_qty:
                             logger.error(f"❌ [110007] Достигнут лимит qty ({new_amount}), дальнейшие попытки невозможны.")
+                            clean_logger.error(f"❌ [110007] Достигнут лимит qty ({new_amount}), дальнейшие попытки невозможны.")
                             return {"success": False, "error": f"Достигнут лимит qty ({new_amount}), дальнейшие попытки невозможны.", "result": order_result}
                         logger.warning(f"🔄 [110007] Увеличиваем qty {amount} → {new_amount} и повторяем попытку...")
+                        clean_logger.warning(f"🔄 [110007] Увеличиваем qty {amount} → {new_amount} и повторяем попытку...")
                         amount = new_amount
                         attempt += 1
                         continue
@@ -832,9 +902,11 @@ class TradingEngine:
                     return {"success": False, "error": error_msg, "result": order_result}
             # Если не удалось после всех попыток
             logger.error(f"❌ Не удалось выставить ордер после увеличения qty. Последнее qty: {amount}")
+            clean_logger.error(f"❌ Не удалось выставить ордер после увеличения qty. Последнее qty: {amount}")
             return {"success": False, "error": "Не удалось выставить ордер после увеличения qty", "result": None}
         except Exception as e:
             logger.error(f"❌ Исключение при выставлении ордера: {e}")
+            clean_logger.error(f"❌ Исключение при выставлении ордера: {e}")
             return {"success": False, "error": str(e)}
 
     async def get_trading_status(self) -> Dict:
@@ -861,6 +933,7 @@ class TradingEngine:
             key = (symbol, side)
             if key not in self.active_positions:
                 logger.warning(f"⚠️ No active {side} position for {symbol}")
+                clean_logger.warning(f"⚠️ No active {side} position for {symbol}")
                 return False
             try:
                 position = self.active_positions[key]
@@ -868,6 +941,7 @@ class TradingEngine:
                 qty_final = self.adjust_qty(symbol, position["size"])
                 qty_str = self.format_qty_for_bybit(symbol, qty_final)
                 logger.info(f"🔢 [lot_size] Закрытие позиции {symbol} {side}: qty={qty_str}")
+                clean_logger.info(f"🔢 [lot_size] Закрытие позиции {symbol} {side}: qty={qty_str}")
                 order_kwargs = dict(
                     symbol=symbol,
                     side=close_side,
@@ -878,10 +952,12 @@ class TradingEngine:
                 if order_result:
                     del self.active_positions[key]
                     logger.info(f"✅ Position closed for {symbol} {side}")
+                    clean_logger.info(f"✅ Position closed for {symbol} {side}")
                     await self.sync_positions_with_exchange()
                     closed = True
             except Exception as e:
                 logger.error(f"❌ Error closing position for {symbol} {side}: {e}")
+                clean_logger.error(f"❌ Error closing position for {symbol} {side}: {e}")
         else:
             # Закрыть обе стороны
             for s in ["Buy", "Sell"]:
@@ -893,6 +969,7 @@ class TradingEngine:
                         qty_final = self.adjust_qty(symbol, position["size"])
                         qty_str = self.format_qty_for_bybit(symbol, qty_final)
                         logger.info(f"🔢 [lot_size] Закрытие позиции {symbol} {s}: qty={qty_str}")
+                        clean_logger.info(f"🔢 [lot_size] Закрытие позиции {symbol} {s}: qty={qty_str}")
                         order_kwargs = dict(
                             symbol=symbol,
                             side=close_side,
@@ -903,9 +980,11 @@ class TradingEngine:
                         if order_result:
                             del self.active_positions[key]
                             logger.info(f"✅ Position closed for {symbol} {s}")
+                            clean_logger.info(f"✅ Position closed for {symbol} {s}")
                             closed = True
                     except Exception as e:
                         logger.error(f"❌ Error closing position for {symbol} {s}: {e}")
+                        clean_logger.error(f"❌ Error closing position for {symbol} {s}: {e}")
             if closed:
                 await self.sync_positions_with_exchange()
         return closed
@@ -913,6 +992,7 @@ class TradingEngine:
     async def shutdown(self):
         """Shutdown the trading engine gracefully"""
         logger.info("🔄 Shutting down trading engine...")
+        clean_logger.info("🔄 Shutting down trading engine...")
         
         # Stop trading
         self.stop()
@@ -922,11 +1002,13 @@ class TradingEngine:
             await self.close_position(key[0], key[1])
         
         logger.info("✅ Trading engine shutdown complete")
+        clean_logger.info("✅ Trading engine shutdown complete")
 
     async def sync_positions_with_exchange(self):
         """Синхронизировать локальные позиции с реальными на бирже"""
         if not self.bybit_client:
             logger.warning("⚠️ Bybit client не инициализирован, синхронизация невозможна")
+            clean_logger.warning("⚠️ Bybit client не инициализирован, синхронизация невозможна")
             return
         real_positions = self.bybit_client.get_positions() or []
         real_keys = {(p['symbol'], p.get('side', 'Buy')) for p in real_positions if p['size'] > 0}
@@ -973,6 +1055,9 @@ class TradingEngine:
                 logger.info(f"🔍 [correct_position_sizes] Проверяем {symbol}: "
                           f"размер={current_size}, цена={current_price}, "
                           f"стоимость={position_value:.2f} USDT")
+                clean_logger.info(f"🔍 [correct_position_sizes] Проверяем {symbol}: "
+                          f"размер={current_size}, цена={current_price}, "
+                          f"стоимость={position_value:.2f} USDT")
                 
                 # Проверяем нужна ли корректировка (диапазон 800-1200$ для позиций ~1000$)
                 min_value = 800
@@ -980,6 +1065,7 @@ class TradingEngine:
                 
                 if min_value <= position_value <= max_value:
                     logger.info(f"✅ {symbol}: Размер позиции в норме ({position_value:.2f} USDT)")
+                    clean_logger.info(f"✅ {symbol}: Размер позиции в норме ({position_value:.2f} USDT)")
                     continue
                     
                 if position_value < min_value:
@@ -990,6 +1076,8 @@ class TradingEngine:
                     
                     if additional_size > 0:
                         logger.info(f"📈 {symbol}: Увеличиваем позицию с {position_value:.2f} до 1000 USDT "
+                                  f"(+{additional_size:.6f})")
+                        clean_logger.info(f"📈 {symbol}: Увеличиваем позицию с {position_value:.2f} до 1000 USDT "
                                   f"(+{additional_size:.6f})")
                         
                         # Округляем до параметров биржи
@@ -1005,8 +1093,10 @@ class TradingEngine:
                         
                         if result.get('success'):
                             logger.info(f"✅ {symbol}: Позиция увеличена на {additional_size:.6f}")
+                            clean_logger.info(f"✅ {symbol}: Позиция увеличена на {additional_size:.6f}")
                         else:
                             logger.error(f"❌ {symbol}: Ошибка увеличения позиции: {result.get('error')}")
+                            clean_logger.error(f"❌ {symbol}: Ошибка увеличения позиции: {result.get('error')}")
                             
                 elif position_value > max_value:
                     # Позиция слишком велика - уменьшаем до 1000 USDT
@@ -1016,6 +1106,8 @@ class TradingEngine:
                     
                     if reduce_size > 0:
                         logger.info(f"📉 {symbol}: Уменьшаем позицию с {position_value:.2f} до 1000 USDT "
+                                  f"(-{reduce_size:.6f})")
+                        clean_logger.info(f"📉 {symbol}: Уменьшаем позицию с {position_value:.2f} до 1000 USDT "
                                   f"(-{reduce_size:.6f})")
                         
                         # Округляем до параметров биржи
@@ -1034,11 +1126,14 @@ class TradingEngine:
                         
                         if result.get('success'):
                             logger.info(f"✅ {symbol}: Позиция уменьшена на {reduce_size:.6f}")
+                            clean_logger.info(f"✅ {symbol}: Позиция уменьшена на {reduce_size:.6f}")
                         else:
                             logger.error(f"❌ {symbol}: Ошибка уменьшения позиции: {result.get('error')}")
+                            clean_logger.error(f"❌ {symbol}: Ошибка уменьшения позиции: {result.get('error')}")
                             
         except Exception as e:
             logger.error(f"❌ Ошибка корректировки размеров позиций: {e}")
+            clean_logger.error(f"❌ Ошибка корректировки размеров позиций: {e}")
 
     def get_api_base_url(self) -> str:
         """Возвращает правильный базовый URL для API в зависимости от режима"""

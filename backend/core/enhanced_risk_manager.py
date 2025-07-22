@@ -163,23 +163,49 @@ class StepwiseStopOrder(TrailingStopOrder):
             while self.current_step < len(self.steps) and price_from_entry >= self.steps[self.current_step][0]:
                 new_sl_pct = self.steps[self.current_step][1]
                 new_stop = self.entry_price * (1 + new_sl_pct)
-                # SL только увеличивается
                 if new_stop > self.current_stop:
                     self.current_stop = new_stop
                     updated = True
                     logger.info(f"[StepwiseSL][BUY] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
                 self.current_step += 1
+            # ATR >= 3% — подтягиваем SL к entry/entry+1% при достижении TP
+            if hasattr(self, 'atr_pct') and self.atr_pct >= 0.03:
+                if price_from_entry >= 0.03:
+                    new_stop = self.entry_price * 1.01
+                    if new_stop > self.current_stop:
+                        self.current_stop = new_stop
+                        updated = True
+                        logger.info(f"[StepwiseSL][BUY][ATR3+] TP>3%: SL подтянут к entry+1%: {self.current_stop:.4f}")
+                elif price_from_entry >= 0.02:
+                    new_stop = self.entry_price
+                    if new_stop > self.current_stop:
+                        self.current_stop = new_stop
+                        updated = True
+                        logger.info(f"[StepwiseSL][BUY][ATR3+] TP>2%: SL подтянут к entry: {self.current_stop:.4f}")
         elif self.side.upper() == "SELL":
             price_from_entry = (self.entry_price - current_price) / self.entry_price
             while self.current_step < len(self.steps) and price_from_entry >= self.steps[self.current_step][0]:
                 new_sl_pct = self.steps[self.current_step][1]
                 new_stop = self.entry_price * (1 - new_sl_pct)
-                # SL только уменьшается
                 if new_stop < self.current_stop:
                     self.current_stop = new_stop
                     updated = True
                     logger.info(f"[StepwiseSL][SELL] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
                 self.current_step += 1
+            # ATR >= 3% — подтягиваем SL к entry/entry-1% при достижении TP
+            if hasattr(self, 'atr_pct') and self.atr_pct >= 0.03:
+                if price_from_entry >= 0.03:
+                    new_stop = self.entry_price * 0.99
+                    if new_stop < self.current_stop:
+                        self.current_stop = new_stop
+                        updated = True
+                        logger.info(f"[StepwiseSL][SELL][ATR3+] TP>3%: SL подтянут к entry-1%: {self.current_stop:.4f}")
+                elif price_from_entry >= 0.02:
+                    new_stop = self.entry_price
+                    if new_stop < self.current_stop:
+                        self.current_stop = new_stop
+                        updated = True
+                        logger.info(f"[StepwiseSL][SELL][ATR3+] TP>2%: SL подтянут к entry: {self.current_stop:.4f}")
         return updated
 
 
