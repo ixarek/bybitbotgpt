@@ -138,6 +138,46 @@ class TradingEngine:
                 for symbol in trading_pairs:
                     bybit_symbol = symbol.replace("/", "")
                     await self._process_symbol(bybit_symbol, timeframe)
+
+                # --- [НОВОЕ] Обновление трейлинг-стопов ---
+                # Собираем market_data для всех активных стопов
+                if hasattr(self.risk_manager, 'update_trailing_stops'):
+                    trailing_symbols = set()
+                    if hasattr(self.risk_manager, 'trailing_stops'):
+                        trailing_symbols = set(stop.symbol for stop in getattr(self.risk_manager, 'trailing_stops', {}).values() if stop.is_active)
+                    # Получаем close последней свечи для каждого символа
+                    trailing_market_data = {}
+                    for symbol in trailing_symbols:
+                        try:
+                            klines = self.bybit_client.get_kline(symbol, timeframe, limit=1)
+                            if klines is not None and len(klines) > 0:
+                                trailing_market_data[symbol] = klines['close'].iloc[-1]
+                        except Exception as e:
+                            logger.warning(f"[TrailingSL] Не удалось получить цену для {symbol}: {e}")
+                    if trailing_market_data:
+                        await self.risk_manager.update_trailing_stops(trailing_market_data)
+                # --- [КОНЕЦ НОВОГО БЛОКА] ---
+
+                # --- [НОВОЕ] Гарантия трейлинг-стопа для всех активных позиций ---
+                if hasattr(self, 'active_positions') and hasattr(self.risk_manager, 'trailing_stops'):
+                    for (symbol, side) in self.active_positions.keys():
+                        stop_key = f"{symbol}_{side}"
+                        if stop_key not in self.risk_manager.trailing_stops or not self.risk_manager.trailing_stops[stop_key].is_active:
+                            # Получаем цену последней сделки или текущую цену
+                            try:
+                                current_price = self.bybit_client.get_current_price(symbol)
+                                if current_price:
+                                    trailing_stop = self.risk_manager.create_trailing_stop(
+                                        symbol=symbol,
+                                        side=side,
+                                        entry_price=current_price,
+                                        stop_type=getattr(self.risk_manager, 'StopLossType', None).TRAILING if hasattr(self.risk_manager, 'StopLossType') else None
+                                    )
+                                    from backend.core.enhanced_risk_manager import stop_logger
+                                    stop_logger.info(f"[CREATE][main_loop] Trailing stop auto-created for {symbol} {side}: entry={current_price:.4f}")
+                            except Exception as e:
+                                logger.warning(f"[TrailingSL][main_loop] Не удалось создать стоп для {symbol} {side}: {e}")
+
                 wait_time = 15 if current_mode.value == "aggressive" else 30
                 await asyncio.sleep(wait_time)
             except Exception as e:
@@ -611,18 +651,24 @@ class TradingEngine:
             # Получаем плечо из конфигурации режима
             leverage = 10  # По умолчанию 10x
             try:
+                raw_leverage = None
                 if hasattr(mode_config, 'leverage_range') and isinstance(mode_config.leverage_range, tuple):
-                    leverage = float(mode_config.leverage_range[1])
-                    logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
-                    clean_logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
+                    raw_leverage = mode_config.leverage_range
                 elif isinstance(mode_config, dict) and 'leverage_range' in mode_config:
-                    leverage_range = mode_config['leverage_range']
-                    if isinstance(leverage_range, (list, tuple)) and len(leverage_range) > 1:
-                        leverage = float(leverage_range[1])
+                    raw_leverage = mode_config['leverage_range']
+                elif isinstance(mode_config, dict) and 'leverage' in mode_config:
+                    raw_leverage = mode_config['leverage']
+                if raw_leverage is not None:
+                    # Универсальная обработка типа
+                    if isinstance(raw_leverage, dict):
+                        leverage = float(raw_leverage.get('value', 10))
+                    elif isinstance(raw_leverage, (list, tuple)):
+                        # Берём максимальное значение, если диапазон
+                        leverage = float(raw_leverage[-1])
                     else:
-                        leverage = float(leverage_range)
-                    logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
-                    clean_logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x")
+                        leverage = float(raw_leverage)
+                    logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x (type={type(raw_leverage)})")
+                    clean_logger.info(f"[_execute_trade] Используем плечо из режима: {leverage}x (type={type(raw_leverage)})")
                 else:
                     logger.warning(f"[_execute_trade] Не удалось получить плечо из mode_config, используем по умолчанию: {leverage}x")
                     clean_logger.warning(f"[_execute_trade] Не удалось получить плечо из mode_config, используем по умолчанию: {leverage}x")
@@ -671,7 +717,7 @@ class TradingEngine:
                 clean_logger.warning(f"⚠️ Стоимость позиции {calculated_value:.2f} USDT вне диапазона {min_value}-{max_value}$. Ордер не отправлен.")
                 return
             
-            await self.place_order(
+            order_result = await self.place_order(
                 symbol=symbol,
                 side=side,
                 amount=qty,
@@ -681,15 +727,20 @@ class TradingEngine:
                 mode=current_mode.value,
                 timeframe=mode_config.get('timeframes', ['5m'])[0] if mode_config and 'timeframes' in mode_config and mode_config['timeframes'] else "5m"
             )
-            if current_mode.value == "conservative":
-                # Создаём ступенчатый стоп через EnhancedRiskManager
+            if order_result and order_result.get('success') and current_mode.value == "conservative":
+                # Создаём трейлинг-стоп через EnhancedRiskManager только если ордер реально открыт
                 if hasattr(self.risk_manager, 'create_trailing_stop'):
-                    self.risk_manager.create_trailing_stop(
+                    trailing_stop = self.risk_manager.create_trailing_stop(
                         symbol=symbol,
                         side=side,
                         entry_price=current_price,
-                        stop_type=getattr(self.risk_manager, 'StopLossType', None).STEPWISE if hasattr(self.risk_manager, 'StopLossType') else None
+                        stop_type=getattr(self.risk_manager, 'StopLossType', None).TRAILING if hasattr(self.risk_manager, 'StopLossType') else None
                     )
+                    try:
+                        from backend.core.enhanced_risk_manager import stop_logger
+                        stop_logger.info(f"[CREATE][_execute_trade] Trailing stop created for {symbol} {side}: entry={current_price:.4f}")
+                    except Exception:
+                        pass
         except Exception as e:
             import traceback
             logger.error(f"❌ Error executing trade for {symbol}: {e}")

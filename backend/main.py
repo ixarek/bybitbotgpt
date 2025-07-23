@@ -177,7 +177,10 @@ class ConnectionManager:
         self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+        try:
+            self.active_connections.remove(websocket)
+        except ValueError:
+            pass  # Уже удалён, ничего страшного
 
     async def send_personal_message(self, message: str, websocket: WebSocket):
         await websocket.send_text(message)

@@ -63,55 +63,50 @@ class TrailingStopOrder:
         self.is_active = True
         
     def update_trailing_stop(self, current_price: float, atr: Optional[float] = None) -> bool:
-        """Обновление трейлинг-стопа"""
+        """Обновление трейлинг-стопа с логикой ступенчатого подтягивания"""
         try:
             if not self.is_active:
                 return False
-            
             updated = False
-            
-            if self.side == "BUY":  # Лонг позиция
+            # Stepwise trailing logic
+            if self.side.upper() == "BUY":
+                price_from_entry = (current_price - self.entry_price) / self.entry_price
+                # Ступенчатое подтягивание: на 1% — SL=entry, на 2% — SL=entry+1%, на 3% — SL=entry+2% и т.д.
+                for i in range(1, 6):
+                    if price_from_entry >= i * 0.01:
+                        new_stop = self.entry_price * (1 + max(0, (i-1)*0.01))
+                        if new_stop > self.current_stop:
+                            self.current_stop = new_stop
+                            updated = True
+                            stop_logger.info(f"[StepwiseTrailing][BUY][TP>{i}%] SL подтянут к entry+{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
+                # Классический трейлинг-стоп (если цена обновила максимум)
                 if current_price > self.best_price:
                     self.best_price = current_price
-                    
-                    if self.stop_type == StopLossType.TRAILING:
-                        new_stop = current_price - self.trailing_distance
-                    elif self.stop_type == StopLossType.ATR_BASED and atr:
-                        new_stop = current_price - (atr * 2)
-                    elif self.stop_type == StopLossType.PERCENTAGE:
-                        new_stop = current_price * (1 - self.trailing_distance)
-                    else:
-                        new_stop = current_price - self.trailing_distance
-                    
+                    new_stop = current_price - self.trailing_distance
                     if new_stop > self.current_stop:
                         self.current_stop = new_stop
                         updated = True
-                        stop_logger.info(f"[TrailingSL][BUY] {self.symbol}: SL={self.current_stop:.4f}")
-            
-            else:  # Шорт позиция
+                        stop_logger.info(f"[TrailingSL][BUY][SHIFT] {self.symbol}: SL смещён на {self.current_stop:.4f} (классический trailing)")
+            elif self.side.upper() == "SELL":
+                price_from_entry = (self.entry_price - current_price) / self.entry_price
+                for i in range(1, 6):
+                    if price_from_entry >= i * 0.01:
+                        new_stop = self.entry_price * (1 - max(0, (i-1)*0.01))
+                        if new_stop < self.current_stop:
+                            self.current_stop = new_stop
+                            updated = True
+                            stop_logger.info(f"[StepwiseTrailing][SELL][TP>{i}%] SL подтянут к entry-{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
                 if current_price < self.best_price:
                     self.best_price = current_price
-                    
-                    if self.stop_type == StopLossType.TRAILING:
-                        new_stop = current_price + self.trailing_distance
-                    elif self.stop_type == StopLossType.ATR_BASED and atr:
-                        new_stop = current_price + (atr * 2)
-                    elif self.stop_type == StopLossType.PERCENTAGE:
-                        new_stop = current_price * (1 + self.trailing_distance)
-                    else:
-                        new_stop = current_price + self.trailing_distance
-                    
+                    new_stop = current_price + self.trailing_distance
                     if new_stop < self.current_stop:
                         self.current_stop = new_stop
                         updated = True
-                        stop_logger.info(f"[TrailingSL][SELL] {self.symbol}: SL={self.current_stop:.4f}")
-            
+                        stop_logger.info(f"[TrailingSL][SELL][SHIFT] {self.symbol}: SL смещён на {self.current_stop:.4f} (классический trailing)")
             if updated:
                 self.last_update = datetime.now()
                 stop_logger.info(f"🔄 Trailing stop updated for {self.symbol}: {self.current_stop:.4f}")
-            
             return updated
-            
         except Exception as e:
             stop_logger.error(f"Error updating trailing stop: {e}")
             return False
@@ -147,63 +142,6 @@ class TrailingStopOrder:
             return (self.best_price - self.entry_price) / self.entry_price
         else:
             return (self.entry_price - self.best_price) / self.entry_price
-
-
-class StepwiseStopOrder(TrailingStopOrder):
-    """Ступенчатый стоп-лосс для консервативного режима (универсальный для BUY/SELL, абсолютная логика)"""
-    def __init__(self, symbol, side, entry_price, initial_stop, tp_pct=0.05, steps=None):
-        super().__init__(symbol, side, entry_price, initial_stop, 0, StopLossType.STEPWISE)
-        self.tp_pct = tp_pct
-        # steps: [(уровень_прибыли, новый SL), ...] в процентах
-        self.steps = steps or [
-            (0.01, -0.02),
-            (0.02, -0.01),
-            (0.03, 0.0),
-            (0.04, 0.01)
-        ]
-        self.current_step = 0
-
-    def update_stepwise_stop(self, current_price):
-        if not self.is_active:
-            return False
-        updated = False
-        if self.side.upper() == "BUY":
-            price_from_entry = (current_price - self.entry_price) / self.entry_price
-            while self.current_step < len(self.steps) and price_from_entry >= self.steps[self.current_step][0]:
-                new_sl_pct = self.steps[self.current_step][1]
-                new_stop = self.entry_price * (1 + new_sl_pct)
-                if new_stop > self.current_stop:
-                    self.current_stop = new_stop
-                    updated = True
-                    stop_logger.info(f"[StepwiseSL][BUY] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
-                self.current_step += 1
-            # Новая логика: ступенчатое подтягивание SL в гарантированную прибыль
-            for i in range(1, 6):
-                if price_from_entry >= i * 0.01:
-                    new_stop = self.entry_price * (1 + max(0, (i-1)*0.01))
-                    if new_stop > self.current_stop:
-                        self.current_stop = new_stop
-                        updated = True
-                        stop_logger.info(f"[StepwiseSL][BUY][TP>{i}%] SL подтянут к entry+{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
-        elif self.side.upper() == "SELL":
-            price_from_entry = (self.entry_price - current_price) / self.entry_price
-            while self.current_step < len(self.steps) and price_from_entry >= self.steps[self.current_step][0]:
-                new_sl_pct = self.steps[self.current_step][1]
-                new_stop = self.entry_price * (1 - new_sl_pct)
-                if new_stop < self.current_stop:
-                    self.current_stop = new_stop
-                    updated = True
-                    stop_logger.info(f"[StepwiseSL][SELL] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
-                self.current_step += 1
-            # Новая логика: ступенчатое подтягивание SL в гарантированную прибыль
-            for i in range(1, 6):
-                if price_from_entry >= i * 0.01:
-                    new_stop = self.entry_price * (1 - max(0, (i-1)*0.01))
-                    if new_stop < self.current_stop:
-                        self.current_stop = new_stop
-                        updated = True
-                        stop_logger.info(f"[StepwiseSL][SELL][TP>{i}%] SL подтянут к entry-{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
-        return updated
 
 
 class EnhancedRiskManager(RiskManager):
@@ -353,6 +291,7 @@ class EnhancedRiskManager(RiskManager):
             self.trailing_stops[f"{symbol}_{side}"] = trailing_stop
             
             logger.info(f"✅ Trailing stop created for {symbol} {side}: {initial_stop:.4f}")
+            stop_logger.info(f"[CREATE] Trailing stop created for {symbol} {side}: entry={entry_price:.4f}, initial_stop={initial_stop:.4f}, trailing_distance={trailing_distance:.4f}, stop_type={stop_type}")
             return trailing_stop
             
         except Exception as e:
@@ -381,25 +320,20 @@ class EnhancedRiskManager(RiskManager):
                 if current_price is None:
                     continue
                 
-                if trailing_stop.stop_type == StopLossType.STEPWISE:
-                    updated = trailing_stop.update_stepwise_stop(current_price)
-                    if updated:
-                        stop_logger.info(f"[StepwiseSL][UPDATE] {symbol}: SL={trailing_stop.current_stop:.4f}")
-                else:
-                    # Получаем ATR для ATR-based стопов
-                    atr = None
-                    if trailing_stop.stop_type == StopLossType.ATR_BASED:
-                        try:
-                            from backend.integrations.bybit_client import bybit_client
-                            if bybit_client:
-                                df = bybit_client.get_kline(symbol, "5", limit=200)
-                                if df is not None and len(df) > 14:
-                                    atr = self._calculate_atr(df['high'], df['low'], df['close'])
-                        except Exception as e:
-                            stop_logger.warning(f"Could not get ATR for {symbol}: {e}")
-                    
-                    # Обновляем трейлинг-стоп
-                    trailing_stop.update_trailing_stop(current_price, atr)
+                # Получаем ATR для ATR-based стопов
+                atr = None
+                if trailing_stop.stop_type == StopLossType.ATR_BASED:
+                    try:
+                        from backend.integrations.bybit_client import bybit_client
+                        if bybit_client:
+                            df = bybit_client.get_kline(symbol, "5", limit=200)
+                            if df is not None and len(df) > 14:
+                                atr = self._calculate_atr(df['high'], df['low'], df['close'])
+                    except Exception as e:
+                        stop_logger.warning(f"Could not get ATR for {symbol}: {e}")
+                
+                # Обновляем трейлинг-стоп
+                trailing_stop.update_trailing_stop(current_price, atr)
                 
                 # Проверяем срабатывание
                 if trailing_stop.should_trigger(current_price):

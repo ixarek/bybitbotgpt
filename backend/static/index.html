@@ -658,29 +658,18 @@
         async function startBot() {
             try {
                 addLogEntry('info', '⏳ Запуск торговли...');
-                console.log('Starting bot...');
-                
                 const response = await fetch('/api/start', { 
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                
-                console.log('Response status:', response.status);
                 const result = await response.json();
-                console.log('Response:', result);
-                
                 if (result.success) {
-                    isTrading = true;
-                    document.getElementById('startBtn').disabled = true;
-                    document.getElementById('stopBtn').disabled = false;
                     addLogEntry('success', '🚀 Торговля запущена');
+                    await fetchSystemStatus();
                 } else {
                     addLogEntry('error', `❌ Ошибка: ${result.message}`);
                 }
             } catch (error) {
-                console.error('Ошибка запуска:', error);
                 addLogEntry('error', `❌ Ошибка запуска торговли: ${error.message}`);
             }
         }
@@ -688,29 +677,18 @@
         async function stopBot() {
             try {
                 addLogEntry('info', '⏳ Остановка торговли...');
-                console.log('Stopping bot...');
-                
                 const response = await fetch('/api/stop', { 
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                
-                console.log('Response status:', response.status);
                 const result = await response.json();
-                console.log('Response:', result);
-                
                 if (result.success) {
-                    isTrading = false;
-                    document.getElementById('startBtn').disabled = false;
-                    document.getElementById('stopBtn').disabled = true;
                     addLogEntry('warning', '⏸️ Торговля остановлена');
+                    await fetchSystemStatus();
                 } else {
                     addLogEntry('error', `❌ Ошибка: ${result.message}`);
                 }
             } catch (error) {
-                console.error('Ошибка остановки:', error);
                 addLogEntry('error', `❌ Ошибка остановки торговли: ${error.message}`);
             }
         }
@@ -1275,34 +1253,11 @@
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Инициализация веб-интерфейса...');
-            
-            // ✅ НОВОЕ: Получаем текущий режим с сервера
-            getCurrentModeFromServer();
-            
-            // Подключаем WebSocket
+            fetchSystemStatus(); // Сначала получаем статус с сервера
             connectWebSocket();
-            
-            // Инициализируем график
             initChart();
-            
-            // Настраиваем переключение валютных пар
             setupSymbolTabs();
-            
-            // Загружаем начальные данные
             loadInitialData();
-            
-            // ✅ ИСПРАВЛЕНИЕ: Дополнительная инициализация режима с задержкой
-            setTimeout(() => {
-                const modeSelect = document.getElementById('tradingMode');
-                if (modeSelect && modeSelect.selectedIndex === -1) {
-                    modeSelect.value = 'medium';
-                    modeSelect.selectedIndex = 1;
-                    console.log('✅ Дополнительно инициализирован средний режим с задержкой');
-                }
-            }, 1000);
-            
-            // Добавляем начальные логи
             addLogEntry('success', '🌐 Веб-интерфейс загружен');
             addLogEntry('info', '🔗 Подключение к серверу...');
         });
@@ -1617,6 +1572,39 @@
             if (allSignalsData[currentSymbol]) {
                 updateSignalsForSymbol(allSignalsData[currentSymbol]);
             }
+        }
+
+        async function fetchSystemStatus() {
+            try {
+                const res = await fetch('/api/status');
+                if (!res.ok) throw new Error('Ошибка запроса статуса');
+                const status = await res.json();
+                // Установить режим
+                const modeSelect = document.getElementById('tradingMode');
+                if (modeSelect && status.mode) {
+                    modeSelect.value = status.mode;
+                    modeSelect.selectedIndex = Array.from(modeSelect.options).findIndex(opt => opt.value === status.mode);
+                    updateModeDescription(status.mode);
+                    console.log('Режим с сервера:', status.mode);
+                }
+                // Установить статус торговли
+                isTrading = status.trading && status.trading.is_running;
+                document.getElementById('startBtn').disabled = isTrading;
+                document.getElementById('stopBtn').disabled = !isTrading;
+                addLogEntry('info', `Статус торговли: ${isTrading ? 'запущена' : 'остановлена'}`);
+            } catch (e) {
+                addLogEntry('error', 'Ошибка получения статуса системы: ' + e.message);
+            }
+        }
+
+        function updateModeDescription(mode) {
+            const modeDescription = document.getElementById('modeDescription');
+            const descriptions = {
+                'aggressive': 'Агрессивный режим: Торговля на 1-минутных свечах с 4 индикаторами (TP: 3%, SL: 1%)',
+                'medium': 'Умеренный режим: Торговля на 5-минутных свечах с 5 индикаторами (TP: 4%, SL: 2%)',
+                'conservative': 'Консервативный режим: Торговля на 15-минутных свечах с 6 индикаторами (TP: 5%, SL: 3%)'
+            };
+            if (modeDescription) modeDescription.textContent = descriptions[mode] || '';
         }
     </script>
 </body>
