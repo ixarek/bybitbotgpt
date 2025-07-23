@@ -1,0 +1,1340 @@
+2025-07-23 09:30:12 | INFO     | root | [INIT] Logging system initialized
+2025-07-23 09:30:12 | INFO     | __main__ | [START] Starting Bybit Trading Bot server...
+2025-07-23 09:30:13 | INFO     | root | [INIT] Logging system initialized
+2025-07-23 09:30:13 | INFO     | backend.main | [START] Bybit Trading Bot starting up...
+2025-07-23 09:30:13 | INFO     | backend.integrations.bybit_client | 🔗 Initializing Bybit client...
+2025-07-23 09:30:13 | INFO     | backend.integrations.bybit_client | ✅ Connected to Bybit demo account (real prices, virtual money)
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-23 09:30:13 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: medium
+2025-07-23 09:30:13 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-23 09:30:13 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-23 09:30:13 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: medium
+2025-07-23 09:30:13 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-23 09:30:13 | INFO     | backend.main | [WS] WebSocket логирование настроено
+2025-07-23 09:30:13 | INFO     | backend.main | [TASK] Фоновая задача broadcast_live_data запущена
+2025-07-23 09:30:13 | INFO     | backend.main | [OK] Trading Bot with Phase 1 Enhancements initialized successfully
+2025-07-23 09:30:14 | INFO     | backend.api.rest_api | 🎯 Получение сигналов для режима: medium (Умеренный)
+2025-07-23 09:30:14 | INFO     | backend.api.rest_api | 📊 Используемый таймфрейм: 5m → API: 5
+2025-07-23 09:30:14 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 5
+2025-07-23 09:30:14 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5
+2025-07-23 09:30:14 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:14 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:14 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [118713.43000000001, 118654.5, 118612.72, 118477.65000000001, 118571.26999999999] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118674.1, supertrend=118571.26999999999, signal=1.0, multiplier=1.0
+2025-07-23 09:30:17 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118674.1, supertrend=118571.26999999999, signal=1.0, multiplier=1.0
+2025-07-23 09:30:17 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 5
+2025-07-23 09:30:17 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for BTCUSDT on 5m: 12 indicators
+2025-07-23 09:30:17 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 5
+2025-07-23 09:30:17 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5
+2025-07-23 09:30:17 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:17 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3700.1549999999997, 3712.222, 3703.476, 3707.298, 3708.126] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3701.05, supertrend=3708.126, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:17 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3701.05, supertrend=3708.126, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:17 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 5
+2025-07-23 09:30:17 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for ETHUSDT on 5m: 12 indicators
+2025-07-23 09:30:17 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 5
+2025-07-23 09:30:17 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5
+2025-07-23 09:30:17 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:17 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [201.184, 201.092, 201.51, 201.56099999999998, 201.672] direction: [1.0, 1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=201.06, supertrend=201.672, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:18 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=201.06, supertrend=201.672, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:18 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 5
+2025-07-23 09:30:18 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for SOLUSDT on 5m: 12 indicators
+2025-07-23 09:30:18 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 5
+2025-07-23 09:30:18 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5
+2025-07-23 09:30:18 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:18 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [793.7635738898159, 793.6793814502427, 791.7489690797287, 794.0185567092145, 795.1249140969934] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.2027491367603114
+2025-07-23 09:30:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.5, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:18 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.5, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:18 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 5
+2025-07-23 09:30:18 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for BNBUSDT on 5m: 12 indicators
+2025-07-23 09:30:18 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for DOGEUSDT 5
+2025-07-23 09:30:18 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 5
+2025-07-23 09:30:18 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:18 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:30:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.263174, 0.264451, 0.263265, 0.263312, 0.26342299999999996] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.26247, supertrend=0.26342299999999996, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:19 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=0.26247, supertrend=0.26342299999999996, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:19 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for DOGEUSDT 5
+2025-07-23 09:30:19 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for DOGEUSDT on 5m: 12 indicators
+2025-07-23 09:30:19 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for XRPUSDT 5
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 5
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:30:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.4914300000000003, 3.4875, 3.4840400000000002, 3.4723100000000002, 3.4774800000000003] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4845, supertrend=3.4774800000000003, signal=1.0, multiplier=1.0
+2025-07-23 09:30:19 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3.4845, supertrend=3.4774800000000003, signal=1.0, multiplier=1.0
+2025-07-23 09:30:19 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for XRPUSDT 5
+2025-07-23 09:30:19 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for XRPUSDT on 5m: 12 indicators
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:30:19 | INFO     | backend.api.rest_api | 🎯 Получение сигналов для режима: medium (Умеренный)
+2025-07-23 09:30:19 | INFO     | backend.api.rest_api | 📊 Используемый таймфрейм: 5m → API: 5
+2025-07-23 09:30:19 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 5
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5
+2025-07-23 09:30:19 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:20 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:20 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:20 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [118713.43000000001, 118654.5, 118612.72, 118477.65000000001, 118571.26999999999] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:20 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118674.1, supertrend=118571.26999999999, signal=1.0, multiplier=1.0
+2025-07-23 09:30:20 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118674.1, supertrend=118571.26999999999, signal=1.0, multiplier=1.0
+2025-07-23 09:30:20 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 5
+2025-07-23 09:30:20 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for BTCUSDT on 5m: 12 indicators
+2025-07-23 09:30:20 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 5
+2025-07-23 09:30:20 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5
+2025-07-23 09:30:20 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:20 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:20 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:20 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3700.1549999999997, 3712.222, 3703.476, 3707.298, 3708.324] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:20 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3701.4, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:20 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3701.4, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:20 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 5
+2025-07-23 09:30:20 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for ETHUSDT on 5m: 12 indicators
+2025-07-23 09:30:20 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 5
+2025-07-23 09:30:20 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5
+2025-07-23 09:30:20 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:21 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [201.184, 201.092, 201.51, 201.56099999999998, 201.672] direction: [1.0, 1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=201.04, supertrend=201.672, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:21 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=201.04, supertrend=201.672, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:21 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 5
+2025-07-23 09:30:21 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for SOLUSDT on 5m: 12 indicators
+2025-07-23 09:30:21 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 5
+2025-07-23 09:30:21 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5
+2025-07-23 09:30:21 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:21 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [793.7635738898159, 793.6793814502427, 791.7489690797287, 794.0185567092145, 795.1249140969934] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.2027491367603114
+2025-07-23 09:30:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.5, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:21 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.5, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:21 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 5
+2025-07-23 09:30:21 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for BNBUSDT on 5m: 12 indicators
+2025-07-23 09:30:21 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for DOGEUSDT 5
+2025-07-23 09:30:21 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 5
+2025-07-23 09:30:21 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:22 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:30:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.263174, 0.264451, 0.263265, 0.263312, 0.26342299999999996] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.26236, supertrend=0.26342299999999996, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:22 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=0.26236, supertrend=0.26342299999999996, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:22 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for DOGEUSDT 5
+2025-07-23 09:30:22 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for DOGEUSDT on 5m: 12 indicators
+2025-07-23 09:30:22 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for XRPUSDT 5
+2025-07-23 09:30:22 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 5
+2025-07-23 09:30:22 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:22 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:30:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.4914300000000003, 3.4875, 3.4840400000000002, 3.4723100000000002, 3.4774800000000003] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4842, supertrend=3.4774800000000003, signal=1.0, multiplier=1.0
+2025-07-23 09:30:22 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3.4842, supertrend=3.4774800000000003, signal=1.0, multiplier=1.0
+2025-07-23 09:30:22 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for XRPUSDT 5
+2025-07-23 09:30:22 | INFO     | backend.api.rest_api | ✅ Generated detailed signals for XRPUSDT on 5m: 12 indicators
+2025-07-23 09:30:22 | INFO     | backend.main | 📊 Getting real chart data for BTCUSDT 5m
+2025-07-23 09:30:22 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5m
+2025-07-23 09:30:22 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:23 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 50 real candles for BTCUSDT
+2025-07-23 09:30:23 | INFO     | backend.main | ✅ Получены реальные данные Bybit для BTCUSDT: 50 точек
+2025-07-23 09:30:24 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:30:24 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:30:24 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:30:24 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:30:24 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 5m → API: 5
+2025-07-23 09:30:24 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 5
+2025-07-23 09:30:24 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5
+2025-07-23 09:30:24 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:25 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [118713.43000000001, 118654.5, 118612.72, 118477.65000000001, 118571.31] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118674.1, supertrend=118571.31, signal=1.0, multiplier=1.0
+2025-07-23 09:30:25 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118674.1, supertrend=118571.31, signal=1.0, multiplier=1.0
+2025-07-23 09:30:25 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 5
+2025-07-23 09:30:25 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 5m
+2025-07-23 09:30:25 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5m
+2025-07-23 09:30:25 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:25 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [118713.43000000001, 118654.5, 118612.72, 118477.65000000001, 118571.31] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118674.1, supertrend=118571.31, signal=1.0, multiplier=1.0
+2025-07-23 09:30:25 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 5m
+2025-07-23 09:30:25 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 5m
+2025-07-23 09:30:25 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5m
+2025-07-23 09:30:25 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:25 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [118713.43000000001, 118654.5, 118612.72, 118477.65000000001, 118571.31] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118674.1, supertrend=118571.31, signal=1.0, multiplier=1.0
+2025-07-23 09:30:26 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 5m
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5m
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:26 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BTCUSDT: breakout
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5m
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:26 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BTCUSDT: breakout
+2025-07-23 09:30:26 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 5
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:26 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3700.1549999999997, 3712.222, 3703.476, 3707.298, 3708.324] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.43, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:27 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3700.43, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:27 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 5
+2025-07-23 09:30:27 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 5m
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5m
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3700.1549999999997, 3712.222, 3703.476, 3707.298, 3708.324] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.43, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:27 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 5m
+2025-07-23 09:30:27 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 5m
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5m
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3700.1549999999997, 3712.222, 3703.476, 3707.298, 3708.324] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.43, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:27 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 5m
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5m
+2025-07-23 09:30:27 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:28 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for ETHUSDT: breakout
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5m
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:28 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for ETHUSDT: breakout
+2025-07-23 09:30:28 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 5
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [201.184, 201.092, 201.51, 201.56099999999998, 201.644] direction: [1.0, 1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.93, supertrend=201.644, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:28 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.93, supertrend=201.644, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:28 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 5
+2025-07-23 09:30:28 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 5m
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5m
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:28 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [201.184, 201.092, 201.51, 201.56099999999998, 201.644] direction: [1.0, 1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.93, supertrend=201.644, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:29 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 5m
+2025-07-23 09:30:29 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 5m
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5m
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [201.184, 201.092, 201.51, 201.56099999999998, 201.644] direction: [1.0, 1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.93, supertrend=201.644, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:29 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 5m
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5m
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:29 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for SOLUSDT: breakout
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5m
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:29 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:30 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for SOLUSDT: breakout
+2025-07-23 09:30:30 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 5
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:30 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:30 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [793.7635738898159, 793.6793814502427, 791.7489690797287, 794.0185567092145, 795.1249140969934] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.2027491367603114
+2025-07-23 09:30:30 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.4, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:30 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.4, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:30 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 5
+2025-07-23 09:30:30 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 5m
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5m
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:30 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:30 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [793.7635738898159, 793.6793814502427, 791.7489690797287, 794.0185567092145, 795.1249140969934] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.2027491367603114
+2025-07-23 09:30:30 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.4, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:30 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 5m
+2025-07-23 09:30:30 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 5m
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5m
+2025-07-23 09:30:30 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:31 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:31 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:31 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [793.7635738898159, 793.6793814502427, 791.7489690797287, 794.0185567092145, 795.1249140969934] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.2027491367603114
+2025-07-23 09:30:31 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.3, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:31 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 5m
+2025-07-23 09:30:31 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5m
+2025-07-23 09:30:31 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:31 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:31 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BNBUSDT: high_volatility
+2025-07-23 09:30:31 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5m
+2025-07-23 09:30:31 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5m → 5
+2025-07-23 09:30:31 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:31 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BNBUSDT: high_volatility
+2025-07-23 09:30:36 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:30:36 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:30:36 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:30:37 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 5m → API: 5
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:37 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:37 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [118713.43000000001, 118654.5, 118612.72, 118477.65000000001, 118571.31] direction: [-1.0, -1.0, -1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:37 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118669.8, supertrend=118571.31, signal=1.0, multiplier=1.0
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118669.8, supertrend=118571.31, signal=1.0, multiplier=1.0
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 5m
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 5m
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:37 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:37 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3700.1549999999997, 3712.222, 3703.476, 3707.298, 3708.324] direction: [1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:37 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.58, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3700.58, supertrend=3708.324, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 5m
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 5m
+2025-07-23 09:30:37 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 5
+2025-07-23 09:30:37 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:38 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:38 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:38 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [201.184, 201.092, 201.51, 201.56099999999998, 201.628] direction: [1.0, 1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:38 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.92, supertrend=201.628, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:38 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.92, supertrend=201.628, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:38 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 5
+2025-07-23 09:30:38 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 5m
+2025-07-23 09:30:38 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 5m
+2025-07-23 09:30:38 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 5
+2025-07-23 09:30:38 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 5
+2025-07-23 09:30:38 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 5 → 5
+2025-07-23 09:30:38 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:38 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:39 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [793.7635738898159, 793.6793814502427, 791.7489690797287, 794.0185567092145, 795.1249140969934] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.2027491367603114
+2025-07-23 09:30:39 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.3, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:39 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.3, supertrend=795.1249140969934, signal=1.0, multiplier=1.2027491367603114
+2025-07-23 09:30:39 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 5
+2025-07-23 09:30:39 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 5m
+2025-07-23 09:30:39 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 5m
+2025-07-23 09:30:39 | INFO     | backend.core.strategy_manager | Updating indicators for mode Консервативный
+2025-07-23 09:30:39 | INFO     | backend.core.strategy_manager | Indicators: ['sma', 'rsi', 'bollinger_bands', 'stochastic', 'support_resistance', 'volume']
+2025-07-23 09:30:39 | INFO     | backend.core.strategy_manager | Торговый режим изменен: medium → conservative
+2025-07-23 09:30:42 | INFO     | backend.core.trading_engine | 🚀 Trading engine started
+2025-07-23 09:30:42 | INFO     | backend.main | [START] Trading started via web interface
+2025-07-23 09:30:42 | INFO     | backend.core.trading_engine | 📊 Trading loop started - Mode: conservative, Timeframe: 15m
+2025-07-23 09:30:42 | INFO     | backend.core.trading_engine | 📊 Trading pairs from mode config: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-23 09:30:42 | INFO     | backend.core.trading_engine | 📊 Settings trading pairs (fallback): ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT']
+2025-07-23 09:30:42 | INFO     | backend.core.trading_engine | 🔧 [LOOP] Корректируем размеры существующих позиций...
+2025-07-23 09:30:42 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:30:43 | INFO     | backend.core.trading_engine | 🔍 [correct_position_sizes] Проверяем ETHUSDT: размер=0.27, цена=3700.8, стоимость=999.22 USDT
+2025-07-23 09:30:43 | INFO     | backend.core.trading_engine.clean | 🔍 [correct_position_sizes] Проверяем ETHUSDT: размер=0.27, цена=3700.8, стоимость=999.22 USDT
+2025-07-23 09:30:43 | INFO     | backend.core.trading_engine | ✅ ETHUSDT: Размер позиции в норме (999.22 USDT)
+2025-07-23 09:30:43 | INFO     | backend.core.trading_engine.clean | ✅ ETHUSDT: Размер позиции в норме (999.22 USDT)
+2025-07-23 09:30:43 | INFO     | backend.core.trading_engine | 🔄 [LOOP] Current trading pairs: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:43 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:30:43 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:44 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:44 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118855.81] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:44 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118684.8, supertrend=118855.81, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:44 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 15m
+2025-07-23 09:30:44 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15m
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:44 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:44 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118855.81] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:44 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118684.8, supertrend=118855.81, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:44 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118684.8, supertrend=118855.81, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:44 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15m
+2025-07-23 09:30:44 | INFO     | backend.core.trading_engine | [ATR] BTCUSDT 15m: 190.29 (Слабый)
+2025-07-23 09:30:44 | INFO     | backend.core.trading_engine.clean | [ATR] BTCUSDT 15m: 190.29 (Слабый)
+2025-07-23 09:30:44 | INFO     | backend.core.trading_engine | BTCUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:44 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:30:44 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:45 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:45 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.2599999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:45 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.8, supertrend=3714.2599999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:45 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 15m
+2025-07-23 09:30:45 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15m
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:45 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:45 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.2599999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:45 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.81, supertrend=3714.2599999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:45 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3700.81, supertrend=3714.2599999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:45 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15m
+2025-07-23 09:30:45 | INFO     | backend.core.trading_engine | [ATR] ETHUSDT 15m: 15.01 (Слабый)
+2025-07-23 09:30:45 | INFO     | backend.core.trading_engine.clean | [ATR] ETHUSDT 15m: 15.01 (Слабый)
+2025-07-23 09:30:45 | INFO     | backend.core.trading_engine | ETHUSDT: Buy: 5, Sell: 3, Hold: 3
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:45 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:30:45 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:46 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:46 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:46 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:46 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.91, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:46 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 15m
+2025-07-23 09:30:46 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15m
+2025-07-23 09:30:46 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:30:46 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:46 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:46 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:46 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:46 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.91, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:46 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.91, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:46 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15m
+2025-07-23 09:30:46 | INFO     | backend.core.trading_engine | [ATR] SOLUSDT 15m: 0.89 (Слабый)
+2025-07-23 09:30:46 | INFO     | backend.core.trading_engine.clean | [ATR] SOLUSDT 15m: 0.89 (Слабый)
+2025-07-23 09:30:46 | INFO     | backend.core.trading_engine | SOLUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:30:46 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:30:46 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:30:47 | INFO     | backend.core.signal_processor | 📊 Generating signals for DOGEUSDT 15m
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:30:47 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:47 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.2639377076726395, 0.2637037356304441, 0.26306340945605733, 0.26449200991101135, 0.26390932494479913] direction: [1.0, 1.0, 1.0, -1.0, -1.0] multiplier: 1.0046596340961833
+2025-07-23 09:30:47 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.26221, supertrend=0.26390932494479913, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:30:47 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for DOGEUSDT 15m
+2025-07-23 09:30:47 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for DOGEUSDT 15m
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:30:47 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:47 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.2639377076726395, 0.2637037356304441, 0.26306340945605733, 0.26449200991101135, 0.26390932494479913] direction: [1.0, 1.0, 1.0, -1.0, -1.0] multiplier: 1.0046596340961833
+2025-07-23 09:30:47 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.26222, supertrend=0.26390932494479913, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:30:47 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=0.26222, supertrend=0.26390932494479913, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:30:47 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for DOGEUSDT 15m
+2025-07-23 09:30:47 | INFO     | backend.core.trading_engine | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-23 09:30:47 | INFO     | backend.core.trading_engine.clean | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-23 09:30:47 | INFO     | backend.core.trading_engine | DOGEUSDT: Buy: 4, Sell: 4, Hold: 3
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:30:47 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:48 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:30:48 | INFO     | backend.core.signal_processor | 📊 Generating signals for XRPUSDT 15m
+2025-07-23 09:30:48 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:30:48 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:48 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:30:48 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:48 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.5161000000000002, 3.50983, 3.49989, 3.4913299999999996, 3.49557] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:48 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4832, supertrend=3.49557, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:48 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for XRPUSDT 15m
+2025-07-23 09:30:48 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for XRPUSDT 15m
+2025-07-23 09:30:48 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:30:48 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:48 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:30:48 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.5161000000000002, 3.50983, 3.49989, 3.4913299999999996, 3.49557] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4832, supertrend=3.49557, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:49 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3.4832, supertrend=3.49557, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:49 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for XRPUSDT 15m
+2025-07-23 09:30:49 | INFO     | backend.core.trading_engine | [ATR] XRPUSDT 15m: 0.01 (Слабый)
+2025-07-23 09:30:49 | INFO     | backend.core.trading_engine.clean | [ATR] XRPUSDT 15m: 0.01 (Слабый)
+2025-07-23 09:30:49 | INFO     | backend.core.trading_engine | XRPUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:30:49 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:30:49 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118855.98999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118685.1, supertrend=118855.98999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:49 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118685.1, supertrend=118855.98999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:49 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:30:49 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:30:49 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:30:49 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:50 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:50 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118855.98999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:50 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118685.0, supertrend=118855.98999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:50 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 15m
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:50 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BTCUSDT: breakout
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:30:50 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BTCUSDT: breakout
+2025-07-23 09:30:50 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:30:50 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.2599999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3701.03, supertrend=3714.2599999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:51 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3701.03, supertrend=3714.2599999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:51 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:30:51 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:30:51 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.2599999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3701.02, supertrend=3714.2599999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:51 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 15m
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:51 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for ETHUSDT: high_volatility
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:30:51 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:52 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:30:52 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for ETHUSDT: high_volatility
+2025-07-23 09:30:52 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:30:52 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:30:52 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:30:52 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:52 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:52 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:52 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.91, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:52 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.91, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:52 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:30:52 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:30:52 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:30:52 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:30:52 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:52 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:52 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:53 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:30:53 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.89, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:30:53 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 15m
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:53 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for SOLUSDT: breakout
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:30:53 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for SOLUSDT: breakout
+2025-07-23 09:30:53 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:30:53 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:53 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:54 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.01] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:54 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.4, supertrend=794.01, signal=1.0, multiplier=1.0
+2025-07-23 09:30:54 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.4, supertrend=794.01, signal=1.0, multiplier=1.0
+2025-07-23 09:30:54 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:30:54 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:30:54 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:30:54 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:54 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:54 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:54 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.01] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:54 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.4, supertrend=794.01, signal=1.0, multiplier=1.0
+2025-07-23 09:30:54 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 15m
+2025-07-23 09:30:54 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:30:54 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:30:54 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:54 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:55 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:30:55 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.01] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:30:55 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.4, supertrend=794.01, signal=1.0, multiplier=1.0
+2025-07-23 09:30:55 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 15m
+2025-07-23 09:30:55 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:30:55 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:55 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:55 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BNBUSDT: breakout
+2025-07-23 09:30:55 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:30:55 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:30:55 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:30:55 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BNBUSDT: breakout
+2025-07-23 09:31:00 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:31:00 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:31:00 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:01 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:01 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:31:01 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:31:01 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:31:01 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:01 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:01 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:01 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118857.01] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:01 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118675.0, supertrend=118857.01, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:01 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118675.0, supertrend=118857.01, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:01 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:31:01 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:01 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:01 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:31:01 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:31:01 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:01 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:01 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.662] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3702.06, supertrend=3714.662, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3702.06, supertrend=3714.662, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:31:02 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:31:02 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:02 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.95, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.95, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:02 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:31:02 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:31:02 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:02 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:03 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.09] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:03 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.7, supertrend=794.09, signal=1.0, multiplier=1.0
+2025-07-23 09:31:03 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.7, supertrend=794.09, signal=1.0, multiplier=1.0
+2025-07-23 09:31:03 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:31:03 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:03 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:08 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:31:08 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:31:08 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:08 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:08 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:31:08 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:31:08 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:31:08 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:09 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:09 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:09 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118857.01] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:09 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118679.7, supertrend=118857.01, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:09 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118679.7, supertrend=118857.01, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:09 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:31:09 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:09 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:09 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:31:09 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:31:09 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:10 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:10 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:10 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.6919999999996] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:10 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3702.49, supertrend=3714.6919999999996, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3702.49, supertrend=3714.6919999999996, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:31:10 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:31:10 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:10 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:10 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:10 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:10 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.93, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.93, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:10 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:31:10 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:31:10 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:10 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:10 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:11 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.09] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:11 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.7, supertrend=794.09, signal=1.0, multiplier=1.0
+2025-07-23 09:31:11 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.7, supertrend=794.09, signal=1.0, multiplier=1.0
+2025-07-23 09:31:11 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:31:11 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:11 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:16 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:31:16 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:16 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:16 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118857.01] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:16 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118685.0, supertrend=118857.01, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:16 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118685.0, supertrend=118857.01, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:16 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:31:16 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:31:16 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:17 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118865.53] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118701.0, supertrend=118865.53, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:17 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 15m
+2025-07-23 09:31:17 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:17 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:31:17 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:31:17 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:17 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.866] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:17 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3702.78, supertrend=3714.866, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:17 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3702.78, supertrend=3714.866, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:17 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:31:17 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:17 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:31:17 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:18 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3714.866] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3702.78, supertrend=3714.866, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:18 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 15m
+2025-07-23 09:31:18 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:18 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:31:18 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:31:18 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:18 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:18 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.97, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:18 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.97, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:18 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:31:18 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:18 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:31:18 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:19 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.96, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:19 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 15m
+2025-07-23 09:31:19 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:19 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:31:19 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:31:19 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:19 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.13] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:19 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.9, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:19 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.9, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:19 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:31:19 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:19 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:19 | INFO     | backend.core.trading_engine | 🔧 [LOOP] Корректируем размеры существующих позиций...
+2025-07-23 09:31:19 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:19 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:19 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:20 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:20 | INFO     | backend.core.trading_engine | 🔍 [correct_position_sizes] Проверяем ETHUSDT: размер=0.27, цена=3704.65, стоимость=1000.26 USDT
+2025-07-23 09:31:20 | INFO     | backend.core.trading_engine.clean | 🔍 [correct_position_sizes] Проверяем ETHUSDT: размер=0.27, цена=3704.65, стоимость=1000.26 USDT
+2025-07-23 09:31:20 | INFO     | backend.core.trading_engine | ✅ ETHUSDT: Размер позиции в норме (1000.26 USDT)
+2025-07-23 09:31:20 | INFO     | backend.core.trading_engine.clean | ✅ ETHUSDT: Размер позиции в норме (1000.26 USDT)
+2025-07-23 09:31:20 | INFO     | backend.core.trading_engine | 🔄 [LOOP] Current trading pairs: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-23 09:31:20 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:31:20 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:20 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:20 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:20 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15m
+2025-07-23 09:31:20 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:31:20 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:20 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118707.6, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118707.6, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.core.trading_engine | [ATR] BTCUSDT 15m: 191.91 (Слабый)
+2025-07-23 09:31:21 | INFO     | backend.core.trading_engine.clean | [ATR] BTCUSDT 15m: 191.91 (Слабый)
+2025-07-23 09:31:21 | INFO     | backend.core.trading_engine | BTCUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:21 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3703.17, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3703.17, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.core.trading_engine | [ATR] ETHUSDT 15m: 15.28 (Слабый)
+2025-07-23 09:31:21 | INFO     | backend.core.trading_engine.clean | [ATR] ETHUSDT 15m: 15.28 (Слабый)
+2025-07-23 09:31:21 | INFO     | backend.core.trading_engine | ETHUSDT: Buy: 4, Sell: 3, Hold: 4
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:31:21 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:22 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.88099999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.95, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:22 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.95, supertrend=201.88099999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:22 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15m
+2025-07-23 09:31:22 | INFO     | backend.core.trading_engine | [ATR] SOLUSDT 15m: 0.89 (Слабый)
+2025-07-23 09:31:22 | INFO     | backend.core.trading_engine.clean | [ATR] SOLUSDT 15m: 0.89 (Слабый)
+2025-07-23 09:31:22 | INFO     | backend.core.trading_engine | SOLUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:31:22 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:31:22 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:22 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:31:22 | INFO     | backend.core.signal_processor | 📊 Generating signals for DOGEUSDT 15m
+2025-07-23 09:31:22 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:31:22 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:22 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:31:22 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:23 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.2639377076726395, 0.2637037356304441, 0.26306340945605733, 0.26449200991101135, 0.26390932494479913] direction: [1.0, 1.0, 1.0, -1.0, -1.0] multiplier: 1.0046596340961833
+2025-07-23 09:31:23 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.26226, supertrend=0.26390932494479913, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:31:23 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for DOGEUSDT 15m
+2025-07-23 09:31:23 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for DOGEUSDT 15m
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:31:23 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:23 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.2639377076726395, 0.2637037356304441, 0.26306340945605733, 0.26449200991101135, 0.26390932494479913] direction: [1.0, 1.0, 1.0, -1.0, -1.0] multiplier: 1.0046596340961833
+2025-07-23 09:31:23 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.26226, supertrend=0.26390932494479913, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:31:23 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=0.26226, supertrend=0.26390932494479913, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:31:23 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for DOGEUSDT 15m
+2025-07-23 09:31:23 | INFO     | backend.core.trading_engine | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-23 09:31:23 | INFO     | backend.core.trading_engine.clean | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-23 09:31:23 | INFO     | backend.core.trading_engine | DOGEUSDT: Buy: 4, Sell: 4, Hold: 3
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:31:23 | INFO     | backend.core.signal_processor | 📊 Generating signals for XRPUSDT 15m
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:31:23 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:24 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:31:24 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:24 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.5161000000000002, 3.50983, 3.49989, 3.4913299999999996, 3.49569] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:24 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4841, supertrend=3.49569, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:24 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for XRPUSDT 15m
+2025-07-23 09:31:24 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for XRPUSDT 15m
+2025-07-23 09:31:24 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:31:24 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:24 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:31:24 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:24 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.5161000000000002, 3.50983, 3.49989, 3.4913299999999996, 3.49569] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:24 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4841, supertrend=3.49569, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:24 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3.4841, supertrend=3.49569, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:24 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for XRPUSDT 15m
+2025-07-23 09:31:24 | INFO     | backend.core.trading_engine | [ATR] XRPUSDT 15m: 0.01 (Слабый)
+2025-07-23 09:31:24 | INFO     | backend.core.trading_engine.clean | [ATR] XRPUSDT 15m: 0.01 (Слабый)
+2025-07-23 09:31:24 | INFO     | backend.core.trading_engine | XRPUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:31:24 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:31:24 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:31:24 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:25 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:25 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:31:25 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:31:25 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:31:25 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:25 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118685.5, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:25 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118685.5, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:25 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:31:25 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:25 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:25 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:31:25 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:25 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:25 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118685.5, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 15m
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3702.45, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3702.45, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:26 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3702.45, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 15m
+2025-07-23 09:31:26 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:31:26 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:27 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.87699999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.88, supertrend=201.87699999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:27 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.88, supertrend=201.87699999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:27 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:31:27 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:27 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:27 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:31:27 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:27 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.87699999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:27 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.88, supertrend=201.87699999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:27 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 15m
+2025-07-23 09:31:27 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:31:27 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:31:27 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:28 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.13] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.7, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:28 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.7, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:28 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:31:28 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:28 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:31:28 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:28 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.13] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.7, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:28 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 15m
+2025-07-23 09:31:28 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:28 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:31:28 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:28 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:28 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.13] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:29 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.7, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:29 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 15m
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:34 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:31:34 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:34 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:34 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:34 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118685.5, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:34 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118685.5, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:34 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:31:34 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:34 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:34 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:31:34 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:35 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:35 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:35 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:35 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3701.24, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3701.24, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:31:35 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:31:35 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:35 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:35 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:35 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.86100000000002] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:35 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.84, supertrend=201.86100000000002, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.84, supertrend=201.86100000000002, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:35 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:31:35 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:31:35 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:36 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:36 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:36 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.13] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:36 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.7, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:36 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.7, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:36 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:31:36 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:36 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:41 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:31:41 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:31:41 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:41 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:41 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:31:41 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:31:41 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:31:41 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:42 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:42 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:42 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:42 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118685.5, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118685.5, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:31:42 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:31:42 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:42 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:42 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:42 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:42 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3701.42, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3701.42, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:42 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:31:42 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:31:42 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:42 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:42 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:43 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.821] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:43 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.74, supertrend=201.821, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.74, supertrend=201.821, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:31:43 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:31:43 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:43 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:43 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:43 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.13] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:43 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.9, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.9, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:43 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:48 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:31:48 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:31:48 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:48 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:48 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:31:48 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:31:48 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:31:48 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:49 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118671.4, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:49 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118671.4, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:49 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:31:49 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:49 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:31:49 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:49 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:49 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118671.4, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:49 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 15m
+2025-07-23 09:31:49 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:49 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:31:49 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:31:49 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:50 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:50 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:50 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:50 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.3, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:50 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3700.3, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:50 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:31:50 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:50 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:31:50 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:50 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:50 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.33, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 15m
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.78099999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.67, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.67, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.78099999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:51 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.67, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 15m
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:51 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:31:51 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:31:52 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:31:52 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:52 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.13] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:31:52 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=797.8, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:52 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=797.8, supertrend=794.13, signal=1.0, multiplier=1.0
+2025-07-23 09:31:52 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:31:52 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:52 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:31:54 | INFO     | backend.core.trading_engine | 🔧 [LOOP] Корректируем размеры существующих позиций...
+2025-07-23 09:31:54 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:54 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:54 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:31:55 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:31:55 | INFO     | backend.core.trading_engine | 🔍 [correct_position_sizes] Проверяем ETHUSDT: размер=0.27, цена=3700.14, стоимость=999.04 USDT
+2025-07-23 09:31:55 | INFO     | backend.core.trading_engine.clean | 🔍 [correct_position_sizes] Проверяем ETHUSDT: размер=0.27, цена=3700.14, стоимость=999.04 USDT
+2025-07-23 09:31:55 | INFO     | backend.core.trading_engine | ✅ ETHUSDT: Размер позиции в норме (999.04 USDT)
+2025-07-23 09:31:55 | INFO     | backend.core.trading_engine.clean | ✅ ETHUSDT: Размер позиции в норме (999.04 USDT)
+2025-07-23 09:31:55 | INFO     | backend.core.trading_engine | 🔄 [LOOP] Current trading pairs: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-23 09:31:55 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:31:55 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:55 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:55 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:31:55 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15m
+2025-07-23 09:31:55 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:31:55 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:55 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:31:56 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:56 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:56 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118671.3, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:56 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118671.3, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:56 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15m
+2025-07-23 09:31:56 | INFO     | backend.core.trading_engine | [ATR] BTCUSDT 15m: 191.91 (Слабый)
+2025-07-23 09:31:56 | INFO     | backend.core.trading_engine.clean | [ATR] BTCUSDT 15m: 191.91 (Слабый)
+2025-07-23 09:31:56 | INFO     | backend.core.trading_engine | BTCUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:56 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:31:56 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15m
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:31:56 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:56 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:56 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.14, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:56 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3700.14, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:56 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15m
+2025-07-23 09:31:56 | INFO     | backend.core.trading_engine | [ATR] ETHUSDT 15m: 15.28 (Слабый)
+2025-07-23 09:31:56 | INFO     | backend.core.trading_engine.clean | [ATR] ETHUSDT 15m: 15.28 (Слабый)
+2025-07-23 09:31:56 | INFO     | backend.core.trading_engine | ETHUSDT: Buy: 5, Sell: 3, Hold: 3
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:31:56 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:57 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:31:57 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15m
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:31:57 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:57 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.78099999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:57 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.68, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:57 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.68, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:57 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15m
+2025-07-23 09:31:57 | INFO     | backend.core.trading_engine | [ATR] SOLUSDT 15m: 0.91 (Слабый)
+2025-07-23 09:31:57 | INFO     | backend.core.trading_engine.clean | [ATR] SOLUSDT 15m: 0.91 (Слабый)
+2025-07-23 09:31:57 | INFO     | backend.core.trading_engine | SOLUSDT: Buy: 2, Sell: 4, Hold: 5
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:31:57 | INFO     | backend.core.signal_processor | 📊 Generating signals for DOGEUSDT 15m
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:31:57 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:58 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:31:58 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:58 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.2639377076726395, 0.2637037356304441, 0.26306340945605733, 0.26449200991101135, 0.2638214274567493] direction: [1.0, 1.0, 1.0, -1.0, -1.0] multiplier: 1.0046596340961833
+2025-07-23 09:31:58 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.262, supertrend=0.2638214274567493, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:31:58 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for DOGEUSDT 15m
+2025-07-23 09:31:58 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for DOGEUSDT 15m
+2025-07-23 09:31:58 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for DOGEUSDT 15m
+2025-07-23 09:31:58 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:58 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for DOGEUSDT
+2025-07-23 09:31:58 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:58 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [0.2639377076726395, 0.2637037356304441, 0.26306340945605733, 0.26449200991101135, 0.2638214274567493] direction: [1.0, 1.0, 1.0, -1.0, -1.0] multiplier: 1.0046596340961833
+2025-07-23 09:31:58 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=0.26202, supertrend=0.2638214274567493, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:31:58 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=0.26202, supertrend=0.2638214274567493, signal=-1.0, multiplier=1.0046596340961833
+2025-07-23 09:31:58 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for DOGEUSDT 15m
+2025-07-23 09:31:58 | INFO     | backend.core.trading_engine | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-23 09:31:58 | INFO     | backend.core.trading_engine.clean | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-23 09:31:58 | INFO     | backend.core.trading_engine | DOGEUSDT: Buy: 4, Sell: 4, Hold: 3
+2025-07-23 09:31:58 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:31:58 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:31:59 | INFO     | backend.core.signal_processor | 📊 Generating signals for XRPUSDT 15m
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:31:59 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:59 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.5161000000000002, 3.50983, 3.49989, 3.4913299999999996, 3.49569] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:59 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4829, supertrend=3.49569, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:59 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for XRPUSDT 15m
+2025-07-23 09:31:59 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for XRPUSDT 15m
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for XRPUSDT 15m
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for XRPUSDT
+2025-07-23 09:31:59 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:31:59 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3.5161000000000002, 3.50983, 3.49989, 3.4913299999999996, 3.49569] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:31:59 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3.4829, supertrend=3.49569, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:59 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3.4829, supertrend=3.49569, signal=-1.0, multiplier=1.0
+2025-07-23 09:31:59 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for XRPUSDT 15m
+2025-07-23 09:31:59 | INFO     | backend.core.trading_engine | [ATR] XRPUSDT 15m: 0.01 (Слабый)
+2025-07-23 09:31:59 | INFO     | backend.core.trading_engine.clean | [ATR] XRPUSDT 15m: 0.01 (Слабый)
+2025-07-23 09:31:59 | INFO     | backend.core.trading_engine | XRPUSDT: Buy: 1, Sell: 4, Hold: 6
+2025-07-23 09:31:59 | INFO     | backend.integrations.bybit_client | 💰 Fetching real wallet balance...
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | ✅ Retrieved real balance: {'USDT': {'available': 0.0, 'locked': 0.0, 'total': 9842.2571828}}
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-23 09:32:00 | INFO     | backend.main | 🎯 Используем таймфрейм режима: 15m → API: 15
+2025-07-23 09:32:00 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BTCUSDT 15
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:32:00 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:00 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:32:00 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118671.4, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:00 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=118671.4, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:00 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BTCUSDT 15
+2025-07-23 09:32:00 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:32:00 | INFO     | backend.core.signal_processor | 📊 Generating signals for BTCUSDT 15m
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:32:00 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:32:01 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:01 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [119004.66, 118941.2, 118879.5, 118761.87, 118869.48999999999] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:32:01 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=118671.4, supertrend=118869.48999999999, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:01 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BTCUSDT 15m
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:32:01 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BTCUSDT: breakout
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BTCUSDT 15m
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BTCUSDT
+2025-07-23 09:32:01 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BTCUSDT: breakout
+2025-07-23 09:32:01 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for ETHUSDT 15
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15
+2025-07-23 09:32:01 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:32:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:32:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.8, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:02 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=3700.8, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:02 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for ETHUSDT 15
+2025-07-23 09:32:02 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:32:02 | INFO     | backend.core.signal_processor | 📊 Generating signals for ETHUSDT 15m
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:32:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [3727.4579999999996, 3728.641, 3724.743, 3713.791, 3716.5519999999997] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:32:02 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=3700.84, supertrend=3716.5519999999997, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:02 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for ETHUSDT 15m
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:32:02 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for ETHUSDT: high_volatility
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for ETHUSDT 15m
+2025-07-23 09:32:02 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:03 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for ETHUSDT
+2025-07-23 09:32:03 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for ETHUSDT: high_volatility
+2025-07-23 09:32:03 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for SOLUSDT 15
+2025-07-23 09:32:03 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15
+2025-07-23 09:32:03 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:32:03 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:32:03 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:03 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.78099999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:32:03 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.78, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:03 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=200.78, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:03 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for SOLUSDT 15
+2025-07-23 09:32:03 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:32:03 | INFO     | backend.core.signal_processor | 📊 Generating signals for SOLUSDT 15m
+2025-07-23 09:32:03 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:32:03 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:03 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:32:03 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:04 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [202.598, 202.354, 202.548, 202.095, 201.78099999999998] direction: [-1.0, -1.0, -1.0, -1.0, -1.0] multiplier: 1.0
+2025-07-23 09:32:04 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=200.78, supertrend=201.78099999999998, signal=-1.0, multiplier=1.0
+2025-07-23 09:32:04 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for SOLUSDT 15m
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:32:04 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for SOLUSDT: breakout
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for SOLUSDT 15m
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for SOLUSDT
+2025-07-23 09:32:04 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for SOLUSDT: breakout
+2025-07-23 09:32:04 | INFO     | backend.core.signal_processor | 📊 Generating detailed signals for BNBUSDT 15
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15 → 15
+2025-07-23 09:32:04 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:32:04 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:05 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.21] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:32:05 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=798.1, supertrend=794.21, signal=1.0, multiplier=1.0
+2025-07-23 09:32:05 | INFO     | backend.core.signal_processor | [SuperTrendAI] UI: close=798.1, supertrend=794.21, signal=1.0, multiplier=1.0
+2025-07-23 09:32:05 | INFO     | backend.core.signal_processor | ✅ Generated 12 detailed signals for BNBUSDT 15
+2025-07-23 09:32:05 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:32:05 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:32:05 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:05 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:32:05 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:05 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.21] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:32:05 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=798.0, supertrend=794.21, signal=1.0, multiplier=1.0
+2025-07-23 09:32:05 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 15m
+2025-07-23 09:32:05 | INFO     | backend.core.signal_processor | 📊 Generating signals for BNBUSDT 15m
+2025-07-23 09:32:05 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:32:05 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:05 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:32:05 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] fit_transform: df.shape=(200, 5)
+2025-07-23 09:32:06 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] supertrend: [795.1999999999999, 794.32, 792.9699999999999, 791.74, 794.21] direction: [1.0, 1.0, 1.0, 1.0, 1.0] multiplier: 1.0
+2025-07-23 09:32:06 | INFO     | backend.core.supertrend_ai | [SuperTrendAI] Последние: close=798.0, supertrend=794.21, signal=1.0, multiplier=1.0
+2025-07-23 09:32:06 | INFO     | backend.core.signal_processor | ✅ Generated 12 signals for BNBUSDT 15m
+2025-07-23 09:32:06 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:32:06 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:06 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:32:06 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BNBUSDT: breakout
+2025-07-23 09:32:06 | INFO     | backend.integrations.bybit_client | 📊 Fetching real kline data for BNBUSDT 15m
+2025-07-23 09:32:06 | INFO     | backend.integrations.bybit_client | 🔄 Converted interval 15m → 15
+2025-07-23 09:32:06 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 200 real candles for BNBUSDT
+2025-07-23 09:32:06 | INFO     | backend.core.market_analyzer | ✅ Market analysis completed for BNBUSDT: breakout
