@@ -1503,6 +1503,10 @@
                         if (st && st !== 'N/A') tooltip += `, supertrend: ${st}`;
                         if (stsig && stsig !== 'N/A') tooltip += `, signal: ${stsig}`;
                     }
+                    // --- CMF: показываем простое объяснение ---
+                    if (signalName === 'CMF') {
+                        tooltip = 'Chaikin Money Flow (CMF): Показывает, кто сильнее — покупатели или продавцы.\nCMF > 0.05: Покупатели доминируют (BUY).\nCMF < -0.05: Продавцы доминируют (SELL).\nМежду — рынок нейтрален.';
+                    }
                     const signalClass = signalValue === 'BUY' ? 'indicator-buy' : 
                                        signalValue === 'SELL' ? 'indicator-sell' : 'indicator-hold';
                     const icon = signalValue === 'BUY' ? '↗️' : 

@@ -331,6 +331,19 @@ class SignalProcessor:
             else:
                 signals["OBV"] = "HOLD"
             
+            # CMF (Chaikin Money Flow)
+            cmf = self._calculate_cmf(high, low, close, volume, 20)
+            if len(cmf) > 1 and not pd.isna(cmf.iloc[-1]):
+                cmf_val = cmf.iloc[-1]
+                if cmf_val > 0.05:
+                    signals["CMF"] = "BUY"
+                elif cmf_val < -0.05:
+                    signals["CMF"] = "SELL"
+                else:
+                    signals["CMF"] = "HOLD"
+            else:
+                signals["CMF"] = "HOLD"
+            
             # --- SuperTrend AI (Clustering) ---
             try:
                 st_ai = SuperTrendAI(window=10, n_clusters=3)
@@ -419,6 +432,14 @@ class SignalProcessor:
                 obv.iloc[i] = obv.iloc[i-1]
         
         return obv
+    
+    def _calculate_cmf(self, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series, period: int = 20) -> pd.Series:
+        """Вычисление Chaikin Money Flow (CMF)"""
+        mf_multiplier = ((close - low) - (high - close)) / (high - low)
+        mf_multiplier = mf_multiplier.replace([np.inf, -np.inf], 0).fillna(0)
+        mf_volume = mf_multiplier * volume
+        cmf = mf_volume.rolling(window=period).sum() / volume.rolling(window=period).sum()
+        return cmf
     
     def _generate_mock_signals(self) -> Dict[str, str]:
         """
@@ -681,6 +702,23 @@ class SignalProcessor:
             else:
                 detailed_signals["OBV"] = {"value": "N/A", "signal": "HOLD"}
             
+            # CMF (Chaikin Money Flow)
+            cmf = self._calculate_cmf(high, low, close, volume, 20)
+            if len(cmf) > 1 and not pd.isna(cmf.iloc[-1]):
+                cmf_val = cmf.iloc[-1]
+                if cmf_val > 0.05:
+                    signal = "BUY"
+                elif cmf_val < -0.05:
+                    signal = "SELL"
+                else:
+                    signal = "HOLD"
+                detailed_signals["CMF"] = {
+                    "value": f"{cmf_val:.4f}",
+                    "signal": signal
+                }
+            else:
+                detailed_signals["CMF"] = {"value": "N/A", "signal": "HOLD"}
+            
             # --- SuperTrend AI (Clustering) ---
             try:
                 st_ai = SuperTrendAI(window=10, n_clusters=3)
@@ -731,13 +769,14 @@ class SignalProcessor:
     
     def should_trade(self, signals: Dict[str, str], min_confirmation: int = 5) -> Optional[str]:
         """
-        Determine if we should trade based on signal confirmation
+        Determine if we should trade based on signal confirmation и фильтра по CMF
         """
         strength = self.get_signal_strength(signals)
-        
-        if strength["BUY"] >= min_confirmation:
+        cmf_signal = signals.get("CMF", "HOLD")
+        # Для BUY CMF должен быть BUY, для SELL — SELL
+        if strength["BUY"] >= min_confirmation and cmf_signal == "BUY":
             return "BUY"
-        elif strength["SELL"] >= min_confirmation:
+        elif strength["SELL"] >= min_confirmation and cmf_signal == "SELL":
             return "SELL"
         else:
             return None 
