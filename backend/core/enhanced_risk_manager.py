@@ -16,6 +16,13 @@ from .market_analyzer import MarketAnalyzer, MarketRegime
 from ..utils.config import settings, get_risk_config
 
 logger = logging.getLogger(__name__)
+# Новый логгер для стопов
+stop_logger = logging.getLogger("stop_logger")
+stop_handler = logging.FileHandler("logs/stop.log", encoding="utf-8")
+stop_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+if not any(isinstance(h, logging.FileHandler) and h.baseFilename.endswith("stop.log") for h in stop_logger.handlers):
+    stop_logger.addHandler(stop_handler)
+stop_logger.setLevel(logging.INFO)
 
 
 class StopLossType(Enum):
@@ -79,6 +86,7 @@ class TrailingStopOrder:
                     if new_stop > self.current_stop:
                         self.current_stop = new_stop
                         updated = True
+                        stop_logger.info(f"[TrailingSL][BUY] {self.symbol}: SL={self.current_stop:.4f}")
             
             else:  # Шорт позиция
                 if current_price < self.best_price:
@@ -96,15 +104,16 @@ class TrailingStopOrder:
                     if new_stop < self.current_stop:
                         self.current_stop = new_stop
                         updated = True
+                        stop_logger.info(f"[TrailingSL][SELL] {self.symbol}: SL={self.current_stop:.4f}")
             
             if updated:
                 self.last_update = datetime.now()
-                logger.info(f"🔄 Trailing stop updated for {self.symbol}: {self.current_stop:.4f}")
+                stop_logger.info(f"🔄 Trailing stop updated for {self.symbol}: {self.current_stop:.4f}")
             
             return updated
             
         except Exception as e:
-            logger.error(f"Error updating trailing stop: {e}")
+            stop_logger.error(f"Error updating trailing stop: {e}")
             return False
     
     def should_trigger(self, current_price: float) -> bool:
@@ -166,7 +175,7 @@ class StepwiseStopOrder(TrailingStopOrder):
                 if new_stop > self.current_stop:
                     self.current_stop = new_stop
                     updated = True
-                    logger.info(f"[StepwiseSL][BUY] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
+                    stop_logger.info(f"[StepwiseSL][BUY] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
                 self.current_step += 1
             # Новая логика: ступенчатое подтягивание SL в гарантированную прибыль
             for i in range(1, 6):
@@ -175,7 +184,7 @@ class StepwiseStopOrder(TrailingStopOrder):
                     if new_stop > self.current_stop:
                         self.current_stop = new_stop
                         updated = True
-                        logger.info(f"[StepwiseSL][BUY][TP>{i}%] SL подтянут к entry+{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
+                        stop_logger.info(f"[StepwiseSL][BUY][TP>{i}%] SL подтянут к entry+{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
         elif self.side.upper() == "SELL":
             price_from_entry = (self.entry_price - current_price) / self.entry_price
             while self.current_step < len(self.steps) and price_from_entry >= self.steps[self.current_step][0]:
@@ -184,7 +193,7 @@ class StepwiseStopOrder(TrailingStopOrder):
                 if new_stop < self.current_stop:
                     self.current_stop = new_stop
                     updated = True
-                    logger.info(f"[StepwiseSL][SELL] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
+                    stop_logger.info(f"[StepwiseSL][SELL] {self.symbol}: step={self.current_step}, SL={self.current_stop:.4f}")
                 self.current_step += 1
             # Новая логика: ступенчатое подтягивание SL в гарантированную прибыль
             for i in range(1, 6):
@@ -193,7 +202,7 @@ class StepwiseStopOrder(TrailingStopOrder):
                     if new_stop < self.current_stop:
                         self.current_stop = new_stop
                         updated = True
-                        logger.info(f"[StepwiseSL][SELL][TP>{i}%] SL подтянут к entry-{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
+                        stop_logger.info(f"[StepwiseSL][SELL][TP>{i}%] SL подтянут к entry-{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
         return updated
 
 
@@ -375,7 +384,7 @@ class EnhancedRiskManager(RiskManager):
                 if trailing_stop.stop_type == StopLossType.STEPWISE:
                     updated = trailing_stop.update_stepwise_stop(current_price)
                     if updated:
-                        logger.info(f"🔄 Stepwise stop updated for {symbol}: {trailing_stop.current_stop:.4f}")
+                        stop_logger.info(f"[StepwiseSL][UPDATE] {symbol}: SL={trailing_stop.current_stop:.4f}")
                 else:
                     # Получаем ATR для ATR-based стопов
                     atr = None
@@ -387,7 +396,7 @@ class EnhancedRiskManager(RiskManager):
                                 if df is not None and len(df) > 14:
                                     atr = self._calculate_atr(df['high'], df['low'], df['close'])
                         except Exception as e:
-                            logger.warning(f"Could not get ATR for {symbol}: {e}")
+                            stop_logger.warning(f"Could not get ATR for {symbol}: {e}")
                     
                     # Обновляем трейлинг-стоп
                     trailing_stop.update_trailing_stop(current_price, atr)
@@ -396,12 +405,12 @@ class EnhancedRiskManager(RiskManager):
                 if trailing_stop.should_trigger(current_price):
                     triggered_stops.append(stop_key)
                     trailing_stop.is_active = False
-                    logger.warning(f"🚨 Trailing stop triggered for {symbol}: {current_price:.4f}")
+                    stop_logger.warning(f"[STOP_TRIGGERED] {symbol}: {current_price:.4f}")
             
             return triggered_stops
             
         except Exception as e:
-            logger.error(f"Error updating trailing stops: {e}")
+            stop_logger.error(f"Error updating trailing stops: {e}")
             return []
     
     def _calculate_risk_multiplier(self, market_analysis: Dict, signals: Dict[str, Any]) -> float:
