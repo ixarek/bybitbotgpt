@@ -91,8 +91,6 @@ class BybitClient:
         Get kline/candlestick data for technical analysis
         """
         try:
-            logger.info(f"📊 Fetching real kline data for {symbol} {interval}")
-            
             # Конвертируем интервал в формат Bybit API
             # Bybit поддерживает: 1, 3, 5, 15, 30, 60, 120, 240, 360, 720, D, W, M
             interval_map = {
@@ -113,7 +111,6 @@ class BybitClient:
             
             # Используем маппинг или оставляем как есть
             bybit_interval = interval_map.get(interval, interval)
-            logger.info(f"🔄 Converted interval {interval} → {bybit_interval}")
             
             # Get real kline data from Bybit
             response = self.session.get_kline(
@@ -150,7 +147,6 @@ class BybitClient:
             df = pd.DataFrame(data)
             df.set_index('timestamp', inplace=True)
             
-            logger.info(f"✅ Retrieved {len(df)} real candles for {symbol}")
             return df
             
         except Exception as e:

@@ -194,7 +194,7 @@ class TradingEngine:
             elif current_mode.value == "medium":
                 min_confirmation = 4  # Средний баланс между скоростью и надежностью
             else:  # conservative
-                min_confirmation = 6  # Консервативно - больше подтверждений
+                min_confirmation = 5  # Консервативно - больше подтверждений
             
             trading_decision = self.signal_processor.should_trade(
                 signals, 

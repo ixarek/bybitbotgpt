@@ -1507,6 +1507,59 @@
                     if (signalName === 'CMF') {
                         tooltip = 'Chaikin Money Flow (CMF): Показывает, кто сильнее — покупатели или продавцы.\nCMF > 0.05: Покупатели доминируют (BUY).\nCMF < -0.05: Продавцы доминируют (SELL).\nМежду — рынок нейтрален.';
                     }
+                    // --- Divergence: объяснение для пользователя ---
+                    if (signalName === 'Divergence') {
+                        tooltip = 'Дивергенция — расхождение между движением цены и индикатора (RSI/MACD).\nБычья: цена обновила минимум, индикатор — нет (сигнал на рост).\nМедвежья: цена обновила максимум, индикатор — нет (сигнал на падение).\nЭто сильный разворотный сигнал.';
+                        if (signal.desc) tooltip += `\n${signal.desc}`;
+                    }
+                    // --- RSI ---
+                    if (signalName === 'RSI') {
+                        tooltip = 'RSI (Relative Strength Index): Показывает перекупленность/перепроданность.\nRSI < 30: Перепродан (BUY).\nRSI > 70: Перекуплен (SELL).';
+                    }
+                    // --- MACD ---
+                    if (signalName === 'MACD') {
+                        tooltip = 'MACD: Сигнализирует о смене тренда.\nЛиния MACD пересекает сигнальную снизу вверх — BUY, сверху вниз — SELL.';
+                    }
+                    // --- SMA ---
+                    if (signalName === 'SMA') {
+                        tooltip = 'SMA (Simple Moving Average): Простая скользящая средняя.\nSMA(20) > SMA(50): BUY, ниже — SELL.';
+                    }
+                    // --- EMA ---
+                    if (signalName === 'EMA') {
+                        tooltip = 'EMA (Exponential Moving Average): Быстрая скользящая средняя.\nEMA(12) > EMA(26): BUY, ниже — SELL.';
+                    }
+                    // --- BB ---
+                    if (signalName === 'BB') {
+                        tooltip = 'Bollinger Bands: Показывает волатильность и границы цены.\nЦена ниже нижней полосы — BUY, выше верхней — SELL.';
+                    }
+                    // --- STOCH ---
+                    if (signalName === 'STOCH') {
+                        tooltip = 'Stochastic Oscillator: Показывает перекупленность/перепроданность.\n< 20: BUY, > 80: SELL.';
+                    }
+                    // --- WILLIAMS ---
+                    if (signalName === 'WILLIAMS') {
+                        tooltip = 'Williams %R: Осциллятор для поиска разворотов.\n< -80: BUY, > -20: SELL.';
+                    }
+                    // --- ATR ---
+                    if (signalName === 'ATR') {
+                        tooltip = 'ATR (Average True Range): Показывает волатильность.\nЧем выше ATR, тем больше движение цены.';
+                    }
+                    // --- ADX ---
+                    if (signalName === 'ADX') {
+                        tooltip = 'ADX: Сила тренда.\n> 2%: Сильный тренд (BUY/SELL по направлению), < 2%: Флэт.';
+                    }
+                    // --- MFI ---
+                    if (signalName === 'MFI') {
+                        tooltip = 'MFI (Money Flow Index): Денежный поток.\n< 20: BUY, > 80: SELL.';
+                    }
+                    // --- OBV ---
+                    if (signalName === 'OBV') {
+                        tooltip = 'OBV (On Balance Volume): Объём, подтверждающий тренд.\nOBV растёт — BUY, падает — SELL.';
+                    }
+                    // --- SuperTrendAI ---
+                    if (signalName === 'SuperTrendAI') {
+                        tooltip = 'SuperTrendAI: Индикатор тренда с AI кластеризацией ATR.\nBUY — цена выше линии, SELL — ниже.';
+                    }
                     const signalClass = signalValue === 'BUY' ? 'indicator-buy' : 
                                        signalValue === 'SELL' ? 'indicator-sell' : 'indicator-hold';
                     const icon = signalValue === 'BUY' ? '↗️' : 

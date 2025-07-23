@@ -90,7 +90,7 @@ class SuperTrendAI:
                     supertrend.iloc[i] = upperband.iloc[i]
                     direction.iloc[i] = -1
             # Лог последних значений
-            logger.info(f"[SuperTrendAI] supertrend: {supertrend.iloc[-5:].to_list()} direction: {direction.iloc[-5:].to_list()} multiplier: {multiplier}")
+            # logger.info(f"[SuperTrendAI] supertrend: {supertrend.iloc[-5:].to_list()} direction: {direction.iloc[-5:].to_list()} multiplier: {multiplier}")
             return supertrend, direction, multiplier
         except Exception as e:
             logger.error(f"[SuperTrendAI] Ошибка в supertrend: {e}")
@@ -101,14 +101,14 @@ class SuperTrendAI:
         Добавляет в DataFrame колонки: supertrend, supertrend_signal, supertrend_multiplier
         """
         try:
-            logger.info(f"[SuperTrendAI] fit_transform: df.shape={df.shape}")
+            # logger.info(f"[SuperTrendAI] fit_transform: df.shape={df.shape}")
             multiplier = self._find_best_multiplier(df)
             st, signal, _ = self.supertrend(df, multiplier)
             df = df.copy()
             df['supertrend'] = st
             df['supertrend_signal'] = signal
             df['supertrend_multiplier'] = multiplier
-            logger.info(f"[SuperTrendAI] Последние: close={df['close'].iloc[-1]}, supertrend={st.iloc[-1]}, signal={signal.iloc[-1]}, multiplier={multiplier}")
+            # logger.info(f"[SuperTrendAI] Последние: close={df['close'].iloc[-1]}, supertrend={st.iloc[-1]}, signal={signal.iloc[-1]}, multiplier={multiplier}")
             return df
         except Exception as e:
             logger.error(f"[SuperTrendAI] Ошибка в fit_transform: {e}")

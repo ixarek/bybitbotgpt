@@ -33,13 +33,13 @@ class SignalProcessor:
         Get trading signals for a specific symbol and timeframe
         """
         try:
-            logger.info(f"📊 Generating signals for {symbol} {timeframe}")
+            # logger.info(f"📊 Generating signals for {symbol} {timeframe}")
             cache_key = f"{symbol}_{timeframe}"
             now = datetime.now()
             if (cache_key in self.signal_cache and 
                 cache_key in self.last_update and 
                 (now - self.last_update[cache_key]).seconds < 30):
-                logger.debug(f"Using cached signals for {symbol} {timeframe}")
+                # logger.debug(f"Using cached signals for {symbol} {timeframe}")
                 return self.signal_cache[cache_key]
             
             # Получаем bybit_client из main.py вместо прямого импорта
@@ -56,7 +56,7 @@ class SignalProcessor:
             signals = self._calculate_indicators(df)
             self.signal_cache[cache_key] = signals
             self.last_update[cache_key] = now
-            logger.info(f"✅ Generated {len(signals)} signals for {symbol} {timeframe}")
+            # logger.info(f"✅ Generated {len(signals)} signals for {symbol} {timeframe}")
             return signals
         except Exception as e:
             logger.error(f"❌ Error generating signals for {symbol} {timeframe}: {e}")
@@ -147,7 +147,7 @@ class SignalProcessor:
         Get detailed trading signals with both numeric values and signals
         """
         try:
-            logger.info(f"📊 Generating detailed signals for {symbol} {timeframe}")
+            # logger.info(f"📊 Generating detailed signals for {symbol} {timeframe}")
             
             # Получаем bybit_client из main.py вместо прямого импорта
             from backend.main import bybit_client
@@ -161,7 +161,7 @@ class SignalProcessor:
                 return self._generate_mock_detailed_signals()
             
             detailed_signals = self._calculate_detailed_indicators(df)
-            logger.info(f"✅ Generated {len(detailed_signals)} detailed signals for {symbol} {timeframe}")
+            # logger.info(f"✅ Generated {len(detailed_signals)} detailed signals for {symbol} {timeframe}")
             return detailed_signals
         except Exception as e:
             logger.error(f"❌ Error generating detailed signals for {symbol} {timeframe}: {e}")
@@ -484,6 +484,29 @@ class SignalProcessor:
             "OBV": {"value": "12345678", "signal": "SELL"}
         }
     
+    def _detect_divergence(self, close: pd.Series, indicator: pd.Series, lookback: int = 30) -> (str, str):
+        """Детектирование дивергенций между ценой и индикатором (RSI/MACD)"""
+        # Проверка типа и длины
+        if not isinstance(close, pd.Series) or not isinstance(indicator, pd.Series):
+            return "none", "Дивергенция не обнаружена (недостаточно данных)"
+        if len(close) < 3 or len(indicator) < 3:
+            return "none", "Дивергенция не обнаружена (недостаточно данных)"
+        # Берём последние lookback точек
+        price = close[-lookback:]
+        ind = indicator[-lookback:]
+        # Ищем экстремумы
+        price_max_idx = price.idxmax()
+        price_min_idx = price.idxmin()
+        ind_max_idx = ind.idxmax()
+        ind_min_idx = ind.idxmin()
+        # Бычья дивергенция: цена обновляет минимум, индикатор — нет
+        if price_min_idx > price.index[0] and ind[price_min_idx] > ind[ind_min_idx]:
+            return "bullish", "Бычья дивергенция: цена обновила минимум, индикатор — нет"
+        # Медвежья дивергенция: цена обновляет максимум, индикатор — нет
+        if price_max_idx > price.index[0] and ind[price_max_idx] < ind[ind_max_idx]:
+            return "bearish", "Медвежья дивергенция: цена обновила максимум, индикатор — нет"
+        return "none", "Дивергенция не обнаружена"
+    
     def _calculate_detailed_indicators(self, df: pd.DataFrame) -> Dict[str, Dict[str, str]]:
         """
         Calculate technical indicators with both numeric values and signals
@@ -718,7 +741,21 @@ class SignalProcessor:
                 }
             else:
                 detailed_signals["CMF"] = {"value": "N/A", "signal": "HOLD"}
-            
+
+            # Дивергенции по RSI
+            rsi = self._calculate_rsi(close, 14)
+            div_rsi_type, div_rsi_desc = self._detect_divergence(close, rsi)
+            # Дивергенции по MACD
+            macd_line, _, _ = self._calculate_macd(close, 12, 26, 9)
+            div_macd_type, div_macd_desc = self._detect_divergence(close, macd_line)
+            # Итоговый сигнал
+            if div_rsi_type == "bullish" or div_macd_type == "bullish":
+                detailed_signals["Divergence"] = {"value": "bullish", "signal": "BUY", "desc": f"RSI: {div_rsi_desc}; MACD: {div_macd_desc}"}
+            elif div_rsi_type == "bearish" or div_macd_type == "bearish":
+                detailed_signals["Divergence"] = {"value": "bearish", "signal": "SELL", "desc": f"RSI: {div_rsi_desc}; MACD: {div_macd_desc}"}
+            else:
+                detailed_signals["Divergence"] = {"value": "none", "signal": "HOLD", "desc": "Дивергенция не обнаружена"}
+
             # --- SuperTrend AI (Clustering) ---
             try:
                 st_ai = SuperTrendAI(window=10, n_clusters=3)
@@ -727,7 +764,7 @@ class SignalProcessor:
                 st_value = df_st['supertrend'].iloc[-1]
                 st_mult = df_st['supertrend_multiplier'].iloc[-1]
                 close = df['close'].iloc[-1]
-                logger.info(f"[SuperTrendAI] UI: close={close}, supertrend={st_value}, signal={st_signal}, multiplier={st_mult}")
+                # logger.info(f"[SuperTrendAI] UI: close={close}, supertrend={st_value}, signal={st_signal}, multiplier={st_mult}")
                 if st_signal == 1 and close > st_value:
                     signal = "BUY"
                 elif st_signal == -1 and close < st_value:
@@ -754,29 +791,39 @@ class SignalProcessor:
 
     def get_signal_strength(self, signals: Dict[str, str]) -> Dict[str, int]:
         """
-        Calculate signal strength based on indicator consensus
+        Calculate signal strength based on indicator consensus, учитывая Divergence
         """
-        buy_count = sum(1 for signal in signals.values() if signal == "BUY")
-        sell_count = sum(1 for signal in signals.values() if signal == "SELL")
+        buy_count = sum(1 for k, signal in signals.items() if signal == "BUY" or (k == "Divergence" and signal == "BUY"))
+        sell_count = sum(1 for k, signal in signals.items() if signal == "SELL" or (k == "Divergence" and signal == "SELL"))
         hold_count = sum(1 for signal in signals.values() if signal == "HOLD")
-        
         return {
             "BUY": buy_count,
             "SELL": sell_count,
             "HOLD": hold_count,
             "total": len(signals)
         }
-    
-    def should_trade(self, signals: Dict[str, str], min_confirmation: int = 5) -> Optional[str]:
+
+    def should_trade(self, signals: Dict[str, str], min_confirmation: int = 6) -> Optional[str]:
         """
-        Determine if we should trade based on signal confirmation и фильтра по CMF
+        Determine if we should trade based on signal confirmation, CMF и Divergence как фильтры
         """
+        import logging
+        logger = logging.getLogger("backend.core.signal_processor")
         strength = self.get_signal_strength(signals)
         cmf_signal = signals.get("CMF", "HOLD")
-        # Для BUY CMF должен быть BUY, для SELL — SELL
-        if strength["BUY"] >= min_confirmation and cmf_signal == "BUY":
+        div_signal = signals.get("Divergence", "HOLD")
+        cmf_signal = str(cmf_signal).upper()
+        div_signal = str(div_signal).upper()
+        # logger.info(f"[should_trade] Сигналы: {signals}")
+        # logger.info(f"[should_trade] BUY: {strength['BUY']}, SELL: {strength['SELL']}, min_confirmation: {min_confirmation}, CMF: {cmf_signal}, Divergence: {div_signal}")
+        # Для BUY: CMF==BUY и Divergence==BUY или HOLD
+        if strength["BUY"] >= min_confirmation and cmf_signal == "BUY" and div_signal in ["BUY", "HOLD"]:
+            # logger.info(f"[should_trade] BUY подтверждён: BUY={strength['BUY']}, CMF={cmf_signal}, Divergence={div_signal}")
             return "BUY"
-        elif strength["SELL"] >= min_confirmation and cmf_signal == "SELL":
+        # Для SELL: CMF==SELL и Divergence==SELL или HOLD
+        elif strength["SELL"] >= min_confirmation and cmf_signal == "SELL" and div_signal in ["SELL", "HOLD"]:
+            # logger.info(f"[should_trade] SELL подтверждён: SELL={strength['SELL']}, CMF={cmf_signal}, Divergence={div_signal}")
             return "SELL"
         else:
+            # logger.info(f"[should_trade] Сделка не открыта: BUY={strength['BUY']}, SELL={strength['SELL']}, CMF={cmf_signal}, Divergence={div_signal}")
             return None 
