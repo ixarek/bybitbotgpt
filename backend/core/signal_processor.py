@@ -54,6 +54,32 @@ class SignalProcessor:
                 return self._generate_mock_signals()
             
             signals = self._calculate_indicators(df)
+            # --- Multi-timeframe CMF ---
+            df_5m = bybit_client.get_kline(symbol, "5", limit=200)
+            df_15m = bybit_client.get_kline(symbol, "15", limit=200)
+            cmf_5m = self._calculate_cmf(df_5m['high'], df_5m['low'], df_5m['close'], df_5m['volume'], 20) if df_5m is not None and not df_5m.empty else None
+            cmf_15m = self._calculate_cmf(df_15m['high'], df_15m['low'], df_15m['close'], df_15m['volume'], 20) if df_15m is not None and not df_15m.empty else None
+            cmf_5m_signal = "HOLD"
+            cmf_15m_signal = "HOLD"
+            if cmf_5m is not None and len(cmf_5m) > 1 and not pd.isna(cmf_5m.iloc[-1]):
+                if cmf_5m.iloc[-1] > 0.05:
+                    cmf_5m_signal = "BUY"
+                elif cmf_5m.iloc[-1] < -0.05:
+                    cmf_5m_signal = "SELL"
+            if cmf_15m is not None and len(cmf_15m) > 1 and not pd.isna(cmf_15m.iloc[-1]):
+                if cmf_15m.iloc[-1] > 0.05:
+                    cmf_15m_signal = "BUY"
+                elif cmf_15m.iloc[-1] < -0.05:
+                    cmf_15m_signal = "SELL"
+            signals["CMF_5m"] = cmf_5m_signal
+            signals["CMF_15m"] = cmf_15m_signal
+            # Итоговый мульти-CMF фильтр
+            if cmf_5m_signal == "BUY" and cmf_15m_signal == "BUY":
+                signals["CMF"] = "BUY"
+            elif cmf_5m_signal == "SELL" and cmf_15m_signal == "SELL":
+                signals["CMF"] = "SELL"
+            else:
+                signals["CMF"] = "HOLD"
             self.signal_cache[cache_key] = signals
             self.last_update[cache_key] = now
             # logger.info(f"✅ Generated {len(signals)} signals for {symbol} {timeframe}")
@@ -161,6 +187,34 @@ class SignalProcessor:
                 return self._generate_mock_detailed_signals()
             
             detailed_signals = self._calculate_detailed_indicators(df)
+            # --- Multi-timeframe CMF detailed ---
+            df_5m = bybit_client.get_kline(symbol, "5", limit=200)
+            df_15m = bybit_client.get_kline(symbol, "15", limit=200)
+            cmf_5m = self._calculate_cmf(df_5m['high'], df_5m['low'], df_5m['close'], df_5m['volume'], 20) if df_5m is not None and not df_5m.empty else None
+            cmf_15m = self._calculate_cmf(df_15m['high'], df_15m['low'], df_15m['close'], df_15m['volume'], 20) if df_15m is not None and not df_15m.empty else None
+            cmf_5m_val = cmf_5m.iloc[-1] if cmf_5m is not None and len(cmf_5m) > 1 and not pd.isna(cmf_5m.iloc[-1]) else None
+            cmf_15m_val = cmf_15m.iloc[-1] if cmf_15m is not None and len(cmf_15m) > 1 and not pd.isna(cmf_15m.iloc[-1]) else None
+            cmf_5m_signal = "HOLD"
+            cmf_15m_signal = "HOLD"
+            if cmf_5m_val is not None:
+                if cmf_5m_val > 0.05:
+                    cmf_5m_signal = "BUY"
+                elif cmf_5m_val < -0.05:
+                    cmf_5m_signal = "SELL"
+            if cmf_15m_val is not None:
+                if cmf_15m_val > 0.05:
+                    cmf_15m_signal = "BUY"
+                elif cmf_15m_val < -0.05:
+                    cmf_15m_signal = "SELL"
+            detailed_signals["CMF_5m"] = {"value": f"{cmf_5m_val:.4f}" if cmf_5m_val is not None else "N/A", "signal": cmf_5m_signal}
+            detailed_signals["CMF_15m"] = {"value": f"{cmf_15m_val:.4f}" if cmf_15m_val is not None else "N/A", "signal": cmf_15m_signal}
+            # Итоговый мульти-CMF фильтр
+            if cmf_5m_signal == "BUY" and cmf_15m_signal == "BUY":
+                detailed_signals["CMF"] = {"value": f"{cmf_5m_val:.4f}/{cmf_15m_val:.4f}", "signal": "BUY"}
+            elif cmf_5m_signal == "SELL" and cmf_15m_signal == "SELL":
+                detailed_signals["CMF"] = {"value": f"{cmf_5m_val:.4f}/{cmf_15m_val:.4f}", "signal": "SELL"}
+            else:
+                detailed_signals["CMF"] = {"value": f"{cmf_5m_val if cmf_5m_val is not None else 'N/A'}/{cmf_15m_val if cmf_15m_val is not None else 'N/A'}", "signal": "HOLD"}
             # logger.info(f"✅ Generated {len(detailed_signals)} detailed signals for {symbol} {timeframe}")
             return detailed_signals
         except Exception as e:

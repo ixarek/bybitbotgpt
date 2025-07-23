@@ -1488,8 +1488,7 @@
                 grid.innerHTML = signalsArray.map(signal => {
                     const signalValue = signal.signal || 'HOLD';
                     const signalName = signal.name || 'Unknown';
-                    const signalPrice = signal.value || 'N/A';
-                    let displayValue = signalPrice;
+                    let displayValue = signal.value || 'N/A';
                     let tooltip = '';
                     // --- SuperTrendAI: показываем tooltip с множителем ---
                     if (signalName === 'SuperTrendAI') {
@@ -1503,9 +1502,17 @@
                         if (st && st !== 'N/A') tooltip += `, supertrend: ${st}`;
                         if (stsig && stsig !== 'N/A') tooltip += `, signal: ${stsig}`;
                     }
-                    // --- CMF: показываем простое объяснение ---
+                    // --- CMF: мульти-таймфреймные подсказки ---
+                    if (signalName === 'CMF_5m') {
+                        tooltip = 'CMF (5m): Chaikin Money Flow на 5-минутном таймфрейме.\n> 0.05: Покупатели доминируют (BUY). < -0.05: Продавцы доминируют (SELL). Между — нейтрально.';
+                    }
+                    if (signalName === 'CMF_15m') {
+                        tooltip = 'CMF (15m): Chaikin Money Flow на 15-минутном таймфрейме.\n> 0.05: Покупатели доминируют (BUY). < -0.05: Продавцы доминируют (SELL). Между — нейтрально.';
+                    }
+                    // --- CMF: итоговый фильтр только статус ---
                     if (signalName === 'CMF') {
-                        tooltip = 'Chaikin Money Flow (CMF): Показывает, кто сильнее — покупатели или продавцы.\nCMF > 0.05: Покупатели доминируют (BUY).\nCMF < -0.05: Продавцы доминируют (SELL).\nМежду — рынок нейтрален.';
+                        displayValue = '';
+                        tooltip = 'Итоговый фильтр: сделка разрешена только если оба CMF (5m и 15m) совпадают.\nBUY — оба CMF показывают BUY, SELL — оба SELL, иначе HOLD.';
                     }
                     // --- Divergence: объяснение для пользователя ---
                     if (signalName === 'Divergence') {
