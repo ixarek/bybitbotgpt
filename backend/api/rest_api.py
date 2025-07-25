@@ -8,6 +8,9 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 import asyncio
 import logging
+import os
+import csv
+from fastapi.responses import StreamingResponse
 
 logger = logging.getLogger(__name__)
 
@@ -538,4 +541,125 @@ async def get_btcusdt_signals_1m(trading_engine = Depends(get_trading_engine)):
             detailed_signals['BB_lower'] = {"value": f"{lower_bb.iloc[-1]:.2f}", "signal": "BB_lower"}
         return {"symbol": symbol, "timeframe": "1m", "signals": detailed_signals}
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) 
+
+@router.get("/api/trade-history")
+async def get_trade_history(symbol: str = "", limit: int = 50, trading_engine = Depends(get_trading_engine)):
+    """
+    Получить историю исполненных сделок (trade history, fills) через Bybit API
+    """
+    try:
+        if not trading_engine.bybit_client:
+            raise HTTPException(status_code=503, detail="Bybit client not initialized")
+        trades = trading_engine.bybit_client.get_trade_history(symbol=symbol, limit=limit)
+        return {"symbol": symbol, "trades": trades or []}
+    except Exception as e:
+        logger.error(f"Error getting trade history: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/api/closed-pnl")
+async def get_closed_pnl(symbol: str = "", limit: int = 50, trading_engine = Depends(get_trading_engine)):
+    """
+    Получить историю закрытых позиций (PNL history) через Bybit API
+    """
+    try:
+        if not trading_engine.bybit_client:
+            raise HTTPException(status_code=503, detail="Bybit client not initialized")
+        closed = trading_engine.bybit_client.get_closed_pnl(symbol=symbol, limit=limit)
+        return {"symbol": symbol, "closed": closed or []}
+    except Exception as e:
+        logger.error(f"Error getting closed pnl: {e}")
+        raise HTTPException(status_code=500, detail=str(e)) 
+
+from backend.core.trade_analyzer import TradeAnalyzer
+
+@router.get("/api/trade-analysis")
+async def get_trade_analysis(symbol: str = "", limit: int = 50, trading_engine = Depends(get_trading_engine)):
+    """
+    Получить summary-анализ истории закрытых позиций через TradeAnalyzer
+    """
+    try:
+        if not trading_engine.bybit_client:
+            raise HTTPException(status_code=503, detail="Bybit client not initialized")
+        closed = trading_engine.bybit_client.get_closed_pnl(symbol=symbol, limit=limit)
+        analyzer = TradeAnalyzer(closed=closed)
+        summary = analyzer.summary()
+        return {"symbol": symbol, "summary": summary}
+    except Exception as e:
+        logger.error(f"Error in trade analysis: {e}")
+        raise HTTPException(status_code=500, detail=str(e)) 
+
+from backend.core.auto_param_adjuster import adjust_params
+
+@router.post("/api/auto-adjust-params")
+async def auto_adjust_params(symbol: str = "", limit: int = 50, trading_engine = Depends(get_trading_engine)):
+    """
+    Автоматически скорректировать параметры торговли на основе анализа истории сделок
+    """
+    try:
+        if not trading_engine.bybit_client:
+            raise HTTPException(status_code=503, detail="Bybit client not initialized")
+        closed = trading_engine.bybit_client.get_closed_pnl(symbol=symbol, limit=limit)
+        from backend.core.trade_analyzer import TradeAnalyzer
+        analyzer = TradeAnalyzer(closed=closed)
+        summary = analyzer.summary()
+        # Получаем текущие параметры (пример: из strategy_manager)
+        current_params = getattr(trading_engine.strategy_manager, 'current_params', {
+            'position_size': 1.0,
+            'take_profit': 0.03,
+            'stop_loss': 0.01
+        })
+        new_params, log = adjust_params(summary, current_params)
+        # (Опционально) применить новые параметры к strategy_manager
+        # trading_engine.strategy_manager.current_params = new_params
+        return {
+            "symbol": symbol,
+            "old_params": current_params,
+            "new_params": new_params,
+            "log": log,
+            "summary": summary
+        }
+    except Exception as e:
+        logger.error(f"Error in auto adjust params: {e}")
+        raise HTTPException(status_code=500, detail=str(e)) 
+
+import os
+
+@router.get("/api/param-adjust-log")
+async def get_param_adjust_log(limit: int = 20):
+    """
+    Получить последние записи истории изменений параметров
+    """
+    log_file = os.path.join("logs", "param_adjustments.log")
+    if not os.path.exists(log_file):
+        return {"log": []}
+    with open(log_file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    # Разбиваем по разделителю ---
+    entries = "".join(lines).split("---\n")
+    entries = [e.strip() for e in entries if e.strip()]
+    return {"log": entries[-limit:]} 
+
+@router.get("/api/export-closed-pnl")
+async def export_closed_pnl(symbol: str = "", limit: int = 1000, trading_engine = Depends(get_trading_engine)):
+    """
+    Экспорт истории закрытых сделок в CSV для ML/AI анализа
+    """
+    try:
+        if not trading_engine.bybit_client:
+            raise HTTPException(status_code=503, detail="Bybit client not initialized")
+        closed = trading_engine.bybit_client.get_closed_pnl(symbol=symbol, limit=limit) or []
+        if not closed:
+            raise HTTPException(status_code=404, detail="No closed trades found")
+        # Определяем поля для экспорта
+        fields = list({k for trade in closed for k in trade.keys()})
+        def iter_csv():
+            yield ','.join(fields) + '\n'
+            for trade in closed:
+                row = [str(trade.get(f, '')) for f in fields]
+                yield ','.join(row) + '\n'
+        filename = f"closed_pnl_{symbol or 'all'}.csv"
+        return StreamingResponse(iter_csv(), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename={filename}"})
+    except Exception as e:
+        logger.error(f"Error exporting closed pnl: {e}")
         raise HTTPException(status_code=500, detail=str(e)) 

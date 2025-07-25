@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Dict, List, Optional
 import json
+import aiohttp
 
 from backend.core.trading_engine import TradingEngine
 from backend.core.signal_processor import SignalProcessor
@@ -131,6 +132,10 @@ async def lifespan(app: FastAPI):
         # Запускаем фоновую задачу для live данных
         broadcast_task = asyncio.create_task(broadcast_live_data())
         logger.info("[TASK] Фоновая задача broadcast_live_data запущена")
+        
+        # Запускаем планировщик автокоррекции параметров
+        asyncio.create_task(auto_param_adjuster_scheduler())
+        logger.info("[TASK] Фоновая задача auto_param_adjuster_scheduler запущена")
         
         logger.info("[OK] Trading Bot with Phase 1 Enhancements initialized successfully")
         
@@ -791,6 +796,30 @@ async def btc_reversal_watcher_scheduler(watcher):
         except Exception as e:
             logger.error(f"[BTCReversalWatcher] Ошибка в цикле: {e}")
         await asyncio.sleep(60)
+
+async def auto_param_adjuster_scheduler():
+    """
+    Планировщик: раз в сутки вызывает автокоррекцию параметров и применяет их к strategy_manager
+    """
+    global strategy_manager, trading_engine
+    await asyncio.sleep(10)  # Дать серверу стартовать!
+    while True:
+        try:
+            logger.info("[AutoParamAdjuster] Запуск автоматической автокоррекции параметров...")
+            # Можно вызвать через внутреннюю функцию или через API (пример через API):
+            async with aiohttp.ClientSession() as session:
+                url = "http://localhost:8000/api/auto-adjust-params?symbol=BTCUSDT&limit=50"
+                async with session.post(url) as resp:
+                    result = await resp.json()
+                    logger.info(f"[AutoParamAdjuster] Результат автокоррекции: {result.get('log')}")
+                    # Применяем новые параметры к strategy_manager
+                    if strategy_manager and hasattr(strategy_manager, 'current_params'):
+                        strategy_manager.current_params = result.get('new_params', {})
+            # Ждём сутки (86400 секунд)
+            await asyncio.sleep(86400)
+        except Exception as e:
+            logger.error(f"[AutoParamAdjuster] Ошибка автокоррекции: {e}")
+            await asyncio.sleep(3600)  # Повторить через час при ошибке
 
 if __name__ == "__main__":
     logger.info("[START] Starting Bybit Trading Bot server...")

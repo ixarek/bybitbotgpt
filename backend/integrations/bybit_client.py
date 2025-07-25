@@ -557,6 +557,60 @@ class BybitClient:
             logger.error(f"❌ Ошибка получения баланса: {e}")
             return 0.0
 
+    def get_trade_history(self, symbol: str = "", limit: int = 50) -> Optional[List[Dict]]:
+        """
+        Получить историю исполненных сделок (trade history, fills) через Bybit API v5
+        https://bybit-exchange.github.io/docs/v5/execution/trade
+        """
+        try:
+            logger.info(f"📜 Получение истории сделок для {symbol} (limit={limit})")
+            params = {
+                "category": "linear",
+                "limit": limit
+            }
+            if symbol:
+                params["symbol"] = symbol
+            response = self.session.get_execution_list(**params)
+            if isinstance(response, tuple):
+                response = response[0]
+            if response.get('retCode') == 0:
+                trades = response.get('result', {}).get('list', [])
+                logger.info(f"✅ Получено сделок: {len(trades)}")
+                return trades
+            else:
+                logger.error(f"❌ Ошибка получения истории сделок: {response.get('retMsg')}")
+                return None
+        except Exception as e:
+            logger.error(f"❌ Исключение при получении истории сделок: {e}")
+            return None
+
+    def get_closed_pnl(self, symbol: str = "", limit: int = 50) -> Optional[List[Dict]]:
+        """
+        Получить историю закрытых позиций (PNL history) через Bybit API v5
+        https://bybit-exchange.github.io/docs/v5/position/close-pnl
+        """
+        try:
+            logger.info(f"📜 Получение истории закрытых позиций для {symbol} (limit={limit})")
+            params = {
+                "category": "linear",
+                "limit": limit
+            }
+            if symbol:
+                params["symbol"] = symbol
+            response = self.session.get_closed_pnl(**params)
+            if isinstance(response, tuple):
+                response = response[0]
+            if response.get('retCode') == 0:
+                closed = response.get('result', {}).get('list', [])
+                logger.info(f"✅ Получено закрытых позиций: {len(closed)}")
+                return closed
+            else:
+                logger.error(f"❌ Ошибка получения истории закрытых позиций: {response.get('retMsg')}")
+                return None
+        except Exception as e:
+            logger.error(f"❌ Исключение при получении истории закрытых позиций: {e}")
+            return None
+
 
 # Global client instance
 bybit_client = None

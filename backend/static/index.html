@@ -486,6 +486,48 @@
         <div id="btcReversalDebug" style="font-size:0.8em; color:#dc2626; margin-top:8px; display:none;"></div>
     </div>
 
+    <!-- АНАЛИТИКА: summary и история автокоррекции -->
+    <div class="status-card" id="analyticsCard">
+        <h5><i class="fas fa-chart-bar me-2"></i>Аналитика и автокоррекция</h5>
+        <div class="mb-2">
+            <label for="analyticsSymbol" class="form-label">Символ:</label>
+            <select id="analyticsSymbol" class="form-select form-select-sm" style="width:auto;display:inline-block">
+                <option value="BTCUSDT">BTC/USDT</option>
+                <option value="ETHUSDT">ETH/USDT</option>
+                <option value="SOLUSDT">SOL/USDT</option>
+                <option value="BNBUSDT">BNB/USDT</option>
+                <option value="DOGEUSDT">DOGE/USDT</option>
+                <option value="XRPUSDT">XRP/USDT</option>
+            </select>
+        </div>
+        <div id="tradeSummary" class="mb-3">
+            <div class="text-muted">Загрузка статистики...</div>
+        </div>
+        <button class="btn btn-outline-primary btn-sm mb-3" onclick="runAutoAdjustParams()">
+            <i class="fas fa-magic me-1"></i>Запустить автокоррекцию вручную
+        </button>
+        <h6>Winrate и PNL по времени</h6>
+        <div class="mb-3"><canvas id="analyticsWinrateChart" height="120"></canvas></div>
+        <h6>Изменения параметров (TP, SL, размер позиции)</h6>
+        <div class="mb-3"><canvas id="analyticsParamChart" height="120"></canvas></div>
+        <h6>Последние закрытые сделки</h6>
+        <div class="table-responsive mb-3">
+            <table class="table table-sm table-bordered" id="closedTradesTable">
+                <thead>
+                    <tr>
+                        <th>Дата</th><th>PNL</th><th>Причина</th><th>Время удержания (мин)</th>
+                    </tr>
+                </thead>
+                <tbody><tr><td colspan="4" class="text-center text-muted">Загрузка...</td></tr></tbody>
+            </table>
+        </div>
+
+        
+        <h6>История изменений параметров</h6>
+        <div class="log-container" id="paramAdjustLog" style="max-height:180px;"></div>
+        <div id="analyticsAlerts" class="mt-2"></div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -682,7 +724,46 @@
                 addLogEntry('error', `❌ Ошибка запуска торговли: ${error.message}`);
             }
         }
-
+        async function loadClosedTradesTable() {
+            try {
+                const resp = await fetch(`/api/closed-pnl?symbol=${analyticsSymbol}&limit=50`);
+                const data = await resp.json();
+                const closed = data.closed || [];
+                const tbody = document.querySelector('#closedTradesTable tbody');
+                if (!closed.length) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Нет данных</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = closed.map(tr => {
+                    const date = new Date(Number(tr.updatedTime)).toLocaleString();
+                    const pnl = Number(tr.closedPnl).toFixed(2);
+                    const reason = tr.reason || '';
+                    const hold = tr.holding_minutes || '';
+                    return `<tr><td>${date}</td><td class="${pnl>=0?'text-success':'text-danger'}">${pnl}</td><td>${reason}</td><td>${hold}</td></tr>`;
+                }).join('');
+            } catch(e) {
+                const tbody = document.querySelector('#closedTradesTable tbody');
+                tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Ошибка загрузки: ${e.message}</td></tr>`;
+            }
+        }
+        
+        document.getElementById('downloadCsvBtn').addEventListener('click', async function() {
+            try {
+                const resp = await fetch(`/api/export-closed-pnl?symbol=${analyticsSymbol}&limit=1000`);
+                if (!resp.ok) throw new Error('Ошибка скачивания CSV');
+                const blob = await resp.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `closed_pnl_${analyticsSymbol}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch(e) {
+                alert('Ошибка скачивания CSV: ' + e.message);
+            }
+        });
         async function stopBot() {
             try {
                 addLogEntry('info', '⏳ Остановка торговли...');
@@ -1739,6 +1820,229 @@
         // Также обновляем при загрузке страницы
         refreshTradingSignals();
         refreshBtcReversalIndicators();
+
+        // Загрузка summary-статистики
+        async function loadTradeSummary() {
+            try {
+                const resp = await fetch(`/api/trade-analysis?symbol=${analyticsSymbol}&limit=50`);
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const s = data.summary;
+                    document.getElementById('tradeSummary').innerHTML = `
+                        <ul class='list-group'>
+                          <li class='list-group-item'>Winrate: <b>${(s.winrate*100).toFixed(1)}%</b></li>
+                          <li class='list-group-item'>Средний PNL: <b>${s.avg_pnl.toFixed(3)}</b></li>
+                          <li class='list-group-item'>Среднее время удержания: <b>${s.avg_holding_time_min.toFixed(1)} мин</b></li>
+                          <li class='list-group-item'>SL/TP: <b>SL ${s.sl_tp_stats.sl}, TP ${s.sl_tp_stats.tp}, Другое ${s.sl_tp_stats.other}</b></li>
+                          <li class='list-group-item'>Макс. серия убытков: <b>${s.max_loss_streak}</b></li>
+                          <li class='list-group-item'>Макс. серия профита: <b>${s.max_profit_streak}</b></li>
+                          <li class='list-group-item'>Всего сделок: <b>${s.total_trades}</b></li>
+                        </ul>
+                    `;
+                    setTimeout(addSummaryTooltips, 100);
+                } else {
+                    document.getElementById('tradeSummary').innerHTML = '<span class="text-danger">Ошибка загрузки статистики</span>';
+                }
+            } catch(e) {
+                document.getElementById('tradeSummary').innerHTML = '<span class="text-danger">Ошибка: '+e.message+'</span>';
+            }
+        }
+        // Визуальные уведомления по истории автокоррекции
+        function highlightParamLogEntry(entry) {
+            let cls = 'log-info';
+            let icon = '';
+            let tooltip = '';
+            if (/серия убытков/i.test(entry) || /max_loss_streak/i.test(entry)) {
+                cls = 'log-warning';
+                icon = '⚠️ ';
+                tooltip = 'Обнаружена серия убытков — параметры снижены для защиты депозита';
+            }
+            if (/уменьшен размер позиции/i.test(entry) && /0\.1/.test(entry)) {
+                cls = 'log-error';
+                icon = '🛑 ';
+                tooltip = 'Размер позиции достиг минимума!';
+            }
+            if (/TP уменьшен/i.test(entry)) {
+                cls = 'log-warning';
+                icon = '🔻 ';
+                tooltip = 'TP уменьшен из-за частых срабатываний SL';
+            }
+            if (/Изменения не требуются/i.test(entry)) {
+                cls = 'log-success';
+                icon = '✅ ';
+                tooltip = 'Параметры стабильны, изменений не требуется';
+            }
+            return {cls, icon, tooltip};
+        }
+        async function loadParamAdjustLog() {
+            try {
+                const resp = await fetch('/api/param-adjust-log?limit=20');
+                if (resp.ok) {
+                    const data = await resp.json();
+                    let alerts = [];
+                    document.getElementById('paramAdjustLog').innerHTML = data.log.map(e => {
+                        const {cls, icon, tooltip} = highlightParamLogEntry(e);
+                        if (cls==='log-error'||cls==='log-warning') alerts.push(icon+e.split('\n')[0]);
+                        return `<div class='log-entry ${cls}' title='${tooltip}'>${icon}${e.replace(/\n/g,'<br>')}</div>`;
+                    }).reverse().join('');
+                    // Показываем алерты
+                    if (alerts.length) {
+                        document.getElementById('analyticsAlerts').innerHTML = alerts.map(a=>`<div class='alert alert-warning py-1 my-1'>${a}</div>`).join('');
+                    } else {
+                        document.getElementById('analyticsAlerts').innerHTML = '';
+                    }
+                }
+            } catch(e) {
+                document.getElementById('paramAdjustLog').innerHTML = '<span class="text-danger">Ошибка: '+e.message+'</span>';
+            }
+        }
+        // Tooltip-ы для метрик summary
+        function addSummaryTooltips() {
+            const tips = {
+                'Winrate': 'Процент прибыльных сделок за последние 50 закрытий',
+                'Средний PNL': 'Средний профит/убыток на сделку',
+                'Среднее время удержания': 'Среднее время между открытием и закрытием позиции',
+                'SL/TP': 'Сколько раз сработал стоп-лосс (SL), тейк-профит (TP), другое',
+                'Макс. серия убытков': 'Максимальное количество убыточных сделок подряд',
+                'Макс. серия профита': 'Максимальное количество прибыльных сделок подряд',
+                'Всего сделок': 'Количество закрытых сделок в выборке'
+            };
+            document.querySelectorAll('#tradeSummary li').forEach(li=>{
+                const key = li.textContent.split(':')[0];
+                if (tips[key]) li.title = tips[key];
+            });
+        }
+        // Ручной запуск автокоррекции
+        async function runAutoAdjustParams() {
+            try {
+                const btn = event.target.closest('button');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Запуск...';
+                const resp = await fetch(`/api/auto-adjust-params?symbol=${analyticsSymbol}&limit=50`, {method:'POST'});
+                if (resp.ok) {
+                    const data = await resp.json();
+                    alert('Автокоррекция завершена!\n'+data.log);
+                    loadParamAdjustLog();
+                } else {
+                    alert('Ошибка автокоррекции');
+                }
+            } catch(e) {
+                alert('Ошибка: '+e.message);
+            } finally {
+                event.target.closest('button').disabled = false;
+                event.target.closest('button').innerHTML = '<i class="fas fa-magic me-1"></i>Запустить автокоррекцию вручную';
+            }
+        }
+        // Автозагрузка аналитики при старте
+        window.addEventListener('DOMContentLoaded', function() {
+            loadTradeSummary();
+            loadParamAdjustLog();
+            loadClosedTradesTable();
+            setInterval(loadTradeSummary, 60000);
+            setInterval(loadParamAdjustLog, 60000);
+            setInterval(loadClosedTradesTable, 60000);
+        });
+
+        let analyticsSymbol = 'BTCUSDT';
+        let winrateChart = null;
+        let paramChart = null;
+        document.getElementById('analyticsSymbol').addEventListener('change', function() {
+            analyticsSymbol = this.value;
+            loadTradeSummary();
+            loadParamAdjustLog();
+            loadClosedTradesTable();
+            drawWinrateChart();
+            drawParamChart();
+        });
+        // График winrate и PNL по времени
+        async function drawWinrateChart() {
+            try {
+                const resp = await fetch(`/api/closed-pnl?symbol=${analyticsSymbol}&limit=100`);
+                if (!resp.ok) return;
+                const data = await resp.json();
+                const closed = data.closed || [];
+                if (!closed.length) return;
+                // Сортируем по времени
+                closed.sort((a,b)=>Number(a.updatedTime)-Number(b.updatedTime));
+                // Скользящее окно winrate и avg pnl
+                const windowSize = 10;
+                let winrateArr = [], avgPnlArr = [], labels = [];
+                for (let i = 0; i < closed.length; ++i) {
+                    const slice = closed.slice(Math.max(0,i-windowSize+1), i+1);
+                    const wins = slice.filter(tr => Number(tr.closedPnl)>0).length;
+                    const wr = wins/slice.length;
+                    const avgPnl = slice.reduce((s,tr)=>s+Number(tr.closedPnl||0),0)/slice.length;
+                    winrateArr.push((wr*100).toFixed(1));
+                    avgPnlArr.push(avgPnl.toFixed(3));
+                    labels.push(new Date(Number(closed[i].updatedTime)).toLocaleDateString());
+                }
+                if (winrateChart) winrateChart.destroy();
+                winrateChart = new Chart(document.getElementById('analyticsWinrateChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {label:'Winrate %', data: winrateArr, borderColor:'#2563eb', yAxisID:'y1', fill:false},
+                            {label:'Avg PNL', data: avgPnlArr, borderColor:'#16a34a', yAxisID:'y2', fill:false}
+                        ]
+                    },
+                    options: {
+                        responsive:true,
+                        plugins:{legend:{display:true}},
+                        scales:{
+                            y1:{type:'linear', position:'left', title:{display:true,text:'Winrate %'}},
+                            y2:{type:'linear', position:'right', title:{display:true,text:'Avg PNL'}, grid:{drawOnChartArea:false}}
+                        }
+                    }
+                });
+            } catch(e) {}
+        }
+        // График изменений параметров
+        async function drawParamChart() {
+            try {
+                const resp = await fetch('/api/param-adjust-log?limit=100');
+                if (!resp.ok) return;
+                const data = await resp.json();
+                const log = data.log || [];
+                // Парсим даты и параметры
+                let labels=[], tp=[], sl=[], pos=[];
+                log.forEach(entry=>{
+                    const m = entry.match(/^\[(.*?)\] (.*?)\nOLD:.*?\nNEW: (.*?)\nLOG:/s);
+                    if (m) {
+                        labels.push(m[1]);
+                        try {
+                            const newParams = JSON.parse(m[3].replace(/'/g,'"'));
+                            tp.push(Number(newParams.take_profit)||null);
+                            sl.push(Number(newParams.stop_loss)||null);
+                            pos.push(Number(newParams.position_size)||null);
+                        } catch(e) {tp.push(null);sl.push(null);pos.push(null);}
+                    }
+                });
+                if (paramChart) paramChart.destroy();
+                paramChart = new Chart(document.getElementById('analyticsParamChart').getContext('2d'), {
+                    type:'line',
+                    data:{labels:labels,datasets:[
+                        {label:'TP',data:tp,borderColor:'#ffa500',fill:false},
+                        {label:'SL',data:sl,borderColor:'#dc2626',fill:false},
+                        {label:'Размер позиции',data:pos,borderColor:'#2563eb',fill:false}
+                    ]},
+                    options:{responsive:true,plugins:{legend:{display:true}},scales:{y:{beginAtZero:true}}}
+                });
+            } catch(e) {}
+        }
+        // Автозагрузка аналитики при старте
+        window.addEventListener('DOMContentLoaded', function() {
+            loadTradeSummary();
+            loadParamAdjustLog();
+            loadClosedTradesTable();
+            drawWinrateChart();
+            drawParamChart();
+            setInterval(loadTradeSummary, 60000);
+            setInterval(loadParamAdjustLog, 60000);
+            setInterval(loadClosedTradesTable, 60000);
+            setInterval(drawWinrateChart, 60000);
+            setInterval(drawParamChart, 60000);
+        });
     </script>
 </body>
 </html> 
