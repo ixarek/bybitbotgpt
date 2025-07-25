@@ -208,8 +208,11 @@ class ConnectionManager:
             try:
                 await connection.send_text(message)
             except:
-                # Удаляем отключенные соединения
-                self.active_connections.remove(connection)
+                # Удаляем отключенные соединения безопасно
+                try:
+                    self.active_connections.remove(connection)
+                except ValueError:
+                    pass  # Уже удалён, ничего страшного
 
 manager = ConnectionManager()
 
