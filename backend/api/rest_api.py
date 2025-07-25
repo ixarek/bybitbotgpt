@@ -517,3 +517,25 @@ async def get_enhanced_statistics(trading_engine = Depends(get_trading_engine)):
     except Exception as e:
         logger.error(f"Error getting enhanced statistics: {e}")
         raise HTTPException(status_code=500, detail=str(e)) 
+
+@router.get("/api/signals/btcusdt/1m")
+async def get_btcusdt_signals_1m(trading_engine = Depends(get_trading_engine)):
+    """
+    Получить detailed_signals для BTCUSDT по минутному таймфрейму (1m) + BB
+    """
+    if not trading_engine:
+        raise HTTPException(status_code=500, detail="Trading engine not initialized")
+    try:
+        symbol = "BTCUSDT"
+        timeframe = "1"  # 1m
+        detailed_signals = trading_engine.signal_processor.get_detailed_signals(symbol, timeframe)
+        # Добавляем BB
+        df = trading_engine.bybit_client.get_kline(symbol, timeframe, limit=200)
+        if df is not None and not df.empty:
+            from backend.core.btc_reversal_watcher import BTCReversalWatcher
+            upper_bb, lower_bb = BTCReversalWatcher.calc_bollinger_bands(df['close'])
+            detailed_signals['BB_upper'] = {"value": f"{upper_bb.iloc[-1]:.2f}", "signal": "BB_upper"}
+            detailed_signals['BB_lower'] = {"value": f"{lower_bb.iloc[-1]:.2f}", "signal": "BB_lower"}
+        return {"symbol": symbol, "timeframe": "1m", "signals": detailed_signals}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) 
