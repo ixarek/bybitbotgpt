@@ -7,6 +7,8 @@
         let currentSymbol = 'BTCUSDT';
         let allSignalsData = {};
         let signalCache = {};
+        let reversals = {};
+        let lastPositions = [];
 
         // WebSocket подключение
         function connectWebSocket() {
@@ -76,6 +78,12 @@
                     break;
                 case 'price':
                     updateChart(data.data);
+                    break;
+                case 'reversal':
+                    if (data.data && data.data.symbol) {
+                        reversals[data.data.symbol] = data.data.direction;
+                        updatePositions(lastPositions);
+                    }
                     break;
                 case 'mode_changed':
                     // Специальная обработка смены режима
@@ -486,16 +494,19 @@
             
             // ✅ ИСПРАВЛЕНИЕ: Проверяем что positions является массивом
             if (!positions || !Array.isArray(positions) || positions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Нет активных позиций</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Нет активных позиций</td></tr>';
                 return;
             }
-            
+
+            lastPositions = positions;
             tbody.innerHTML = positions.map(pos => {
                 // ✅ ИСПРАВЛЕНИЕ: Безопасная проверка значений
                 const pnl = (pos && typeof pos.pnl === 'number') ? pos.pnl : 0;
                 const symbol = pos?.symbol || 'N/A';
                 const size = pos?.size || 'N/A';
-                
+                const trend = reversals[symbol] || '';
+                const trendIcon = trend === 'long' ? '↗️' : trend === 'short' ? '↘️' : '';
+
                 return `
                     <tr>
                         <td>${symbol}</td>
@@ -503,6 +514,7 @@
                         <td class="${pnl >= 0 ? 'text-success' : 'text-danger'}">
                             $${pnl.toFixed(2)}
                         </td>
+                        <td>${trendIcon}</td>
                     </tr>
                 `;
             }).join('');

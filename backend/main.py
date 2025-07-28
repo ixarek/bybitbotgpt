@@ -31,6 +31,7 @@ from backend.integrations.bybit_client import BybitClient, get_bybit_client
 from backend.utils.logger import setup_logging
 from backend.api import rest_api
 from backend.core.btc_reversal_watcher import BTCReversalWatcher
+from backend.core.pair_reversal_watcher import PairReversalWatcher
 
 # Configure logging
 setup_logging()
@@ -117,6 +118,19 @@ async def lifespan(app: FastAPI):
         )
         reversal_task = asyncio.create_task(btc_reversal_watcher_scheduler(watcher))
         logger.info("[TASK] Фоновая задача btc_reversal_watcher_scheduler запущена")
+
+        pair_watcher = PairReversalWatcher(
+            symbols=settings.trading_pairs,
+            get_ohlcv_func=lambda symbol: bybit_client.get_kline(symbol, '1', limit=200),
+            get_open_positions_func=lambda: trading_engine.bybit_client.get_positions(),
+            close_position_func=lambda pos: asyncio.create_task(trading_engine.close_position(pos['symbol'], pos.get('side'))),
+            logger=logger,
+            broadcast_func=lambda data: asyncio.create_task(manager.broadcast(
+                json.dumps({"type": "reversal", "data": data}))
+            )
+        )
+        pair_reversal_task = asyncio.create_task(pair_reversal_watcher_scheduler(pair_watcher))
+        logger.info("[TASK] Фоновая задача pair_reversal_watcher_scheduler запущена")
         
         # Делаем компоненты доступными через app.state
         app.state.trading_engine = trading_engine
@@ -152,6 +166,11 @@ async def lifespan(app: FastAPI):
             await reversal_task
         except asyncio.CancelledError:
             logger.info("[TASK] Фоновая задача btc_reversal_watcher_scheduler остановлена")
+        pair_reversal_task.cancel()
+        try:
+            await pair_reversal_task
+        except asyncio.CancelledError:
+            logger.info("[TASK] Фоновая задача pair_reversal_watcher_scheduler остановлена")
 
     except Exception as e:
         logger.error(f"[ERROR] Error during startup: {e}")
@@ -795,6 +814,14 @@ async def btc_reversal_watcher_scheduler(watcher):
             await watcher.check_reversal_and_close()
         except Exception as e:
             logger.error(f"[BTCReversalWatcher] Ошибка в цикле: {e}")
+        await asyncio.sleep(60)
+
+async def pair_reversal_watcher_scheduler(watcher):
+    while True:
+        try:
+            await watcher.check_reversals_and_close()
+        except Exception as e:
+            logger.error(f"[PairReversalWatcher] Ошибка в цикле: {e}")
         await asyncio.sleep(60)
 
 async def auto_param_adjuster_scheduler():
