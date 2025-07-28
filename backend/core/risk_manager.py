@@ -138,9 +138,9 @@ class RiskManager:
     
     def set_mode(self, mode: str):
         """Set trading risk mode"""
-        if mode in ["conservative", "moderate", "risky"]:
+        if mode == "conservative":
             self.mode = mode
             settings.risk_mode = mode
             print(f"📊 Risk mode changed to: {mode}")
         else:
-            print(f"⚠️ Invalid risk mode: {mode}") 
+            print(f"⚠️ Invalid risk mode: {mode}")

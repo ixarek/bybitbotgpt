@@ -6,6 +6,7 @@
         const maxRetries = 5;
         let currentSymbol = 'BTCUSDT';
         let allSignalsData = {};
+        let signalCache = {};
 
         // WebSocket подключение
         function connectWebSocket() {
@@ -240,9 +241,7 @@
             
             // Обновляем описание режима
             const descriptions = {
-                'aggressive': 'Агрессивный режим: Скальпинг + Event-driven торговля (1-5м, 10-20x плечо)',
-                'medium': 'Средний режим: Moving Average Crossover + Trend Following (15м-1ч, 3-5x плечо)',
-                'conservative': 'Консервативный режим: DCA + Long-term Trend (4ч-1д, без плеча)'
+                'conservative': 'Консервативный режим: Торговля на 15-минутных свечах с 6 индикаторами'
             };
             modeDescription.textContent = descriptions[mode] || '';
             
@@ -406,6 +405,8 @@
         // Обновление всех сигналов для всех валютных пар
         function updateAllSignals(allSignals, timeframe, mode) {
             if (!allSignals) return;
+
+            signalCache = allSignals;
             
             // Получаем текущую выбранную пару
             const currentPair = getCurrentSelectedPair();
@@ -824,20 +825,22 @@
         // Загрузка данных для конкретной валютной пары
         async function loadDataForSymbol(symbol) {
             try {
-                // ✅ ИСПРАВЛЕНИЕ: Загружаем все сигналы сразу
-                const signalsResponse = await fetch('/api/signals');
-                if (signalsResponse.ok) {
-                    const result = await signalsResponse.json();
-                    console.log('API Response:', result);
-                    
-                    if (result && result.signals) {
-                        updateSignalsForSymbol(result);
-                        addLogEntry('info', `📊 Загружены сигналы для ${symbol}`);
-                    } else {
-                        addLogEntry('warning', `⚠️ Нет данных сигналов для ${symbol}`);
-                    }
+                if (signalCache[symbol]) {
+                    updateSignalsForSymbol({ signals: signalCache });
                 } else {
-                    addLogEntry('error', `❌ Ошибка API: ${signalsResponse.status}`);
+                    const signalsResponse = await fetch('/api/signals');
+                    if (signalsResponse.ok) {
+                        const result = await signalsResponse.json();
+                        if (result && result.signals) {
+                            signalCache = result.signals;
+                            updateSignalsForSymbol(result);
+                            addLogEntry('info', `📊 Загружены сигналы для ${symbol}`);
+                        } else {
+                            addLogEntry('warning', `⚠️ Нет данных сигналов для ${symbol}`);
+                        }
+                    } else {
+                        addLogEntry('error', `❌ Ошибка API: ${signalsResponse.status}`);
+                    }
                 }
                 
                 // Загружаем данные графика для символа
@@ -947,7 +950,8 @@
                     // Если это числовое значение, показываем его с единицей измерения
                     let displayValue = signalPrice;
                     if (typeof signal.value === 'string' && signal.value !== 'N/A' && signal.value !== signalValue) {
-                        displayValue = signal.value; // Числовое значение индикатора
+                        const num = parseFloat(signal.value);
+                        displayValue = isNaN(num) ? signal.value : num.toFixed(4);
                     }
                     
                     const signalClass = signalValue === 'BUY' ? 'indicator-buy' : 
