@@ -244,7 +244,7 @@ async def health_check():
 @app.get("/api/status")
 async def get_status():
     """Получить текущий статус системы."""
-    current_mode = "moderate"
+    current_mode = "conservative"
     current_timeframe = "5m"
     
     if trading_engine and trading_engine.risk_manager:

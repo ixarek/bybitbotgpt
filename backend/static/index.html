@@ -77,13 +77,11 @@
                         <div class="mt-3">
                             <label class="form-label">Торговые стратегии</label>
                             <select class="form-select" id="tradingMode" onchange="changeTradingMode()">
-                                <option value="aggressive">🔥 Агрессивный (Скальпинг, 1-5м, 10-20x плечо)</option>
-                                <option value="medium" selected>⚖️ Средний (Тренд, 15м-1ч, 3-5x плечо)</option>
-                                <option value="conservative">🛡️ Консервативный (DCA, 4ч-1д, без плеча)</option>
+                                <option value="conservative" selected>🛡️ Консервативный (15м, 6 индикаторов, 10-20x плечо)</option>
                             </select>
                             <div class="mt-2">
                                 <small class="text-muted" id="modeDescription">
-                                    Средний режим: Moving Average Crossover + Trend Following
+                                    Консервативный режим: Торговля на 15-минутных свечах с 6 индикаторами
                                 </small>
                             </div>
                         </div>

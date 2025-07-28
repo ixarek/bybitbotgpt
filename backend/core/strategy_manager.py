@@ -27,7 +27,7 @@ class StrategyManager:
         self.market_analyzer = MarketAnalyzer()
         self.enhanced_risk_manager = EnhancedRiskManager()
         
-        self.current_mode = TradingMode.MEDIUM  # По умолчанию средний режим
+        self.current_mode = TradingMode.CONSERVATIVE  # По умолчанию консервативный режим
         self.mode_configs = TRADING_MODE_CONFIGS
         self.mode_switch_time = datetime.now()
         self._active_indicators = {}

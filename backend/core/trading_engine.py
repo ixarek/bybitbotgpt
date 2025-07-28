@@ -178,8 +178,7 @@ class TradingEngine:
                             except Exception as e:
                                 logger.warning(f"[TrailingSL][main_loop] Не удалось создать стоп для {symbol} {side}: {e}")
 
-                wait_time = 15 if current_mode.value == "aggressive" else 30
-                await asyncio.sleep(wait_time)
+                await asyncio.sleep(30)
             except Exception as e:
                 logger.error(f"❌ Error in trading loop iteration: {e}")
                 await asyncio.sleep(60)
@@ -228,13 +227,7 @@ class TradingEngine:
             # ✅ ИСПРАВЛЕНИЕ: Адаптивное количество подтверждений для разных режимов
             current_mode = self.strategy_manager.get_current_mode()
             
-            # Агрессивный режим требует меньше подтверждений для быстрой торговли
-            if current_mode.value == "aggressive":
-                min_confirmation = 3  # Для скальпинга нужно быстро реагировать
-            elif current_mode.value == "medium":
-                min_confirmation = 4  # Средний баланс между скоростью и надежностью
-            else:  # conservative
-                min_confirmation = 5  # Консервативно - больше подтверждений
+            min_confirmation = 5  # Для консервативного режима
             
             trading_decision = self.signal_processor.should_trade(
                 signals, 
@@ -329,39 +322,6 @@ class TradingEngine:
     def calc_tp_sl(self, entry_price, side, mode, market_data=None, symbol=None, timeframe=None):
         logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
         clean_logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
-        
-        # Исправление: если режим moderate, заменяем на medium
-        if mode == "moderate":
-            logger.warning("[TP/SL] Режим 'moderate' заменён на 'medium'")
-            mode = "medium"
-        
-        # ATR-основанный SL для агрессивного режима
-        if mode == "aggressive" and market_data is not None:
-            try:
-                atr_period = 14
-                if 'high' in market_data and 'low' in market_data and 'close' in market_data:
-                    high = market_data['high']
-                    low = market_data['low']
-                    close = market_data['close']
-                    import numpy as np
-                    high_low = high - low
-                    high_close = np.abs(high - close.shift())
-                    low_close = np.abs(low - close.shift())
-                    true_range = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
-                    atr = true_range.rolling(window=atr_period).mean().iloc[-1]
-                    atr_mult = 1.5
-                    if side.lower() in ['buy', 'long']:
-                        stop_loss = entry_price - atr * atr_mult
-                        take_profit = entry_price * 1.03
-                    else:
-                        stop_loss = entry_price + atr * atr_mult
-                        take_profit = entry_price * 0.97
-                    logger.info(f"[TP/SL][ATR] SL={stop_loss:.4f}, TP={take_profit:.4f}, ATR={atr:.4f}")
-                    clean_logger.info(f"[TP/SL][ATR] SL={stop_loss:.4f}, TP={take_profit:.4f}, ATR={atr:.4f}")
-                    return round(stop_loss, 4), round(take_profit, 4)
-            except Exception as e:
-                logger.error(f"[TP/SL][ATR] Ошибка расчёта ATR: {e}")
-                clean_logger.error(f"[TP/SL][ATR] Ошибка расчёта ATR: {e}")
         # Новая стратегия для консервативного режима
         if mode == "conservative" and market_data is not None:
             try:
@@ -402,10 +362,7 @@ class TradingEngine:
             except Exception as e:
                 logger.error(f"[TP/SL][ATR_CONS_NEW] Ошибка расчёта ATR: {e}")
                 clean_logger.error(f"[TP/SL][ATR_CONS_NEW] Ошибка расчёта ATR: {e}")
-        # Старый способ для остальных режимов
         params = {
-            'aggressive': {'sl': 0.01, 'tp': 0.03},
-            'medium':     {'sl': 0.02, 'tp': 0.04},
             'conservative': {'sl': 0.03, 'tp': 0.05}
         }
         if mode not in params:
@@ -625,7 +582,7 @@ class TradingEngine:
         """Возвращает текущий режим торговли (строка)"""
         if hasattr(self.risk_manager, 'mode'):
             return self.risk_manager.mode
-        return 'medium'
+        return 'conservative'
 
     def set_mode(self, mode):
         """Устанавливает режим торговли"""
@@ -823,11 +780,11 @@ class TradingEngine:
                 return {"success": False, "error": "Не удалось получить цену для расчёта суммы ордера"}
             # Получаем параметры режима для расчёта плеча
             if mode is None:
-                mode = self.risk_manager.mode if hasattr(self.risk_manager, 'mode') else 'medium'
+                mode = self.risk_manager.mode if hasattr(self.risk_manager, 'mode') else 'conservative'
             try:
                 mode_enum = TradingMode(mode)
             except Exception:
-                mode_enum = TradingMode.MEDIUM
+                mode_enum = TradingMode.CONSERVATIVE
             mode_config = get_mode_config(mode_enum)
             leverage = 1
             if hasattr(mode_config, 'leverage_range') and isinstance(mode_config.leverage_range, tuple):

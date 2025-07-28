@@ -9,9 +9,7 @@ from typing import List, Dict, Any, Tuple
 
 
 class TradingMode(Enum):
-    """Торговые режимы с разными уровнями риска"""
-    AGGRESSIVE = "aggressive"
-    MEDIUM = "medium"
+    """Единственный поддерживаемый торговый режим"""
     CONSERVATIVE = "conservative"
 
 
@@ -32,45 +30,8 @@ class ModeConfig:
 
 # Конфигурации для каждого режима
 TRADING_MODE_CONFIGS = {
-    TradingMode.AGGRESSIVE: ModeConfig(
-        name="Агрессивный",
-        description="Скальпинг на 1-минутных свечах с 4 индикаторами",
-        timeframes=["1m"],
-        indicators={
-            "rsi": [{"period": 7}, {"period": 14}],
-            "ema": [{"period": 9}, {"period": 21}],
-            "macd": [{"fast": 12, "slow": 26, "signal": 9}],
-            "volume": [{"period": 20}]
-        },
-        leverage_range=(10.0, 20.0),
-        tp_range=(3.0, 3.0),  # 3%
-        sl_range=(1.0, 1.0),  # 1%
-        trading_pairs=["BTC/USDT", "ETH/USDT", "BNB/USDT", "SOL/USDT", "DOGE/USDT", "XRP/USDT"],
-        risk_level="HIGH",
-        strategy_type="SCALPING"
-    ),
-    
-    TradingMode.MEDIUM: ModeConfig(
-        name="Умеренный",
-        description="Торговля на 5-минутных свечах с 5 индикаторами",
-        timeframes=["5m"],
-        indicators={
-            "ema": [{"period": 20}, {"period": 50}],
-            "rsi": [{"period": 14}],
-            "bollinger_bands": [{"period": 20, "std": 2}],
-            "stochastic": [{"k_period": 14, "d_period": 3, "smooth": 3}],
-            "volume": [{"period": 20}]
-        },
-        leverage_range=(10.0, 20.0),
-        tp_range=(4.0, 4.0),  # 4%
-        sl_range=(2.0, 2.0),  # 2%
-        trading_pairs=["BTC/USDT", "ETH/USDT", "BNB/USDT", "SOL/USDT", "DOGE/USDT", "XRP/USDT"],
-        risk_level="MEDIUM",
-        strategy_type="TREND_FOLLOWING"
-    ),
-    
     TradingMode.CONSERVATIVE: ModeConfig(
-        name="Консервативный", 
+        name="Консервативный",
         description="Торговля на 15-минутных свечах с 6 индикаторами",
         timeframes=["15m"],
         indicators={

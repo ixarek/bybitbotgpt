@@ -37,8 +37,8 @@ class Settings(BaseSettings):
     
     # Risk Management
     risk_mode: str = Field(
-        default="moderate", 
-        description="Risk mode: risky, moderate, conservative"
+        default="conservative",
+        description="Risk mode: conservative"
     )
     max_position_size: float = Field(
         default=100.0,
@@ -107,20 +107,6 @@ except Exception as e:
 
 # Risk mode configurations
 RISK_MODES = {
-    "risky": {
-        "timeframe": "1",
-        "min_signals": 5,
-        "position_size_multiplier": 1.0,
-        "stop_loss_pct": 2.0,
-        "take_profit_pct": 4.0
-    },
-    "moderate": {
-        "timeframe": "5", 
-        "min_signals": 5,
-        "position_size_multiplier": 0.7,
-        "stop_loss_pct": 1.5,
-        "take_profit_pct": 3.0
-    },
     "conservative": {
         "timeframe": "5",
         "min_signals": 6,
@@ -134,4 +120,4 @@ RISK_MODES = {
 def get_risk_config(mode: str = None) -> dict:
     """Get risk configuration for the specified mode"""
     mode = mode or settings.risk_mode
-    return RISK_MODES.get(mode, RISK_MODES["moderate"]) 
+    return RISK_MODES.get(mode, RISK_MODES["conservative"]) 
