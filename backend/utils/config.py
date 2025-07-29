@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     
     # Server
     host: str = "0.0.0.0"
-    port: int = 8000
+    port: int = 5000
     
     # Bybit API Configuration
     bybit_api_key: Optional[str] = Field(None, description="Bybit API Key")
