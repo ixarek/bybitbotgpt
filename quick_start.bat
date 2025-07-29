@@ -11,6 +11,6 @@ set PYTHONPATH=%CD%
 
 :: Запускаем бот
 echo 🌐 Запуск на http://localhost:5000
-python backend/main.py
+python cli.py web
 
 pause 

@@ -12,6 +12,6 @@ set PYTHONPATH=%CD%
 
 REM Запускаем веб-сервер
 echo 🌐 Запуск веб-сервера на http://localhost:5000
-python backend/main.py
+python cli.py web
 
 pause 

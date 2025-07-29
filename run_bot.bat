@@ -91,7 +91,7 @@ echo ╚════════════════════════
 echo.
 
 :: Запуск веб-сервера
-python -m backend.main
+python cli.py web
 
 echo.
 if %errorlevel% neq 0 (

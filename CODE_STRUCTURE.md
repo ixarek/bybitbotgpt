@@ -75,9 +75,9 @@ The dashboard UI lives in `backend/static/`. The main page is `index.html` which
 To run the server locally:
 
 ```bash
-python -m backend.main
+python cli.py web
 ```
-(or run `start_web.bat` on Windows). The web UI then becomes available at `http://localhost:8000/` (or whichever port is configured).
+(or run `start_web.bat` on Windows). The web UI then becomes available at `http://localhost:5000/` (or whichever port is configured).
 
 ## Documentation folders
 
