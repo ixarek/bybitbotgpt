@@ -14,8 +14,29 @@ copy config.example config.env
 
 ### 2. Запуск веб-сервера
 ```bash
-# Двойной клик по файлу или в командной строке:
+# Windows
 start_web.bat
+
+# Linux/macOS
+python cli.py web
+```
+
+### 🐧 Установка на Ubuntu 22.04 LTS
+```bash
+sudo apt update && sudo apt install -y git python3 python3-venv python3-pip
+git clone <repo_url> bybitbotgpt
+cd bybitbotgpt
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp config.example config.env
+# отредактируйте config.env и внесите свои ключи
+
+# запуск веб-интерфейса
+python cli.py web
+
+# или запуск торговли в консоли без веба
+python cli.py console
 ```
 
 ### 3. Откройте браузер
@@ -148,31 +169,38 @@ LOG_LEVEL=INFO
 
 ### Локальная разработка
 ```bash
-# Активация виртуального окружения
+# Создание и активация виртуального окружения
+python -m venv venv
+# Windows
 venv\Scripts\activate
+# Linux/macOS
+source venv/bin/activate
 
 # Установка зависимостей
 pip install -r requirements.txt
 
-# Запуск
-start_web.bat
+# Запуск веб-интерфейса
+python cli.py web
 ```
 
 ### Продакшн
 ```bash
-# Создание виртуального окружения
+# Создание и активация виртуального окружения
 python -m venv venv
+# Windows
 venv\Scripts\activate
+# Linux/macOS
+source venv/bin/activate
 
 # Установка зависимостей
 pip install -r requirements.txt
 
 # Настройка config.env
-copy config.example config.env
+cp config.example config.env
 # Отредактируйте config.env
 
-# Запуск
-python -m backend.main
+# Запуск сервера
+python cli.py web
 ```
 
 ## 📋 Логирование
@@ -192,7 +220,7 @@ python -m backend.main
 
 ### Системные требования
 - Python 3.8+
-- Windows 10/11
+- Windows 10/11 или Linux (Ubuntu 22.04+)
 - 2GB RAM
 - Интернет соединение
 
