@@ -13,7 +13,7 @@ TRADING_PAIRS=BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT
 
 # Server Configuration
 HOST=0.0.0.0
-PORT=8000
+PORT=5000
 DEBUG=true
 
 # Database Configuration (optional)

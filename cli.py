@@ -40,7 +40,7 @@ def run_web() -> None:
     uvicorn.run(
         "backend.main:app",
         host=settings.host,
-        port=5000,
+        port=settings.port,
         reload=False,
         log_level="info",
     )

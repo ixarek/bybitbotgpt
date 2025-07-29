@@ -40,9 +40,9 @@ python cli.py console
 ```
 
 ### 3. Откройте браузер
-- 🌐 **Веб-интерфейс**: http://localhost:8000
-- 📚 **API документация**: http://localhost:8000/docs
-- 🔧 **ReDoc**: http://localhost:8000/redoc
+- 🌐 **Веб-интерфейс**: http://localhost:5000
+- 📚 **API документация**: http://localhost:5000/docs
+- 🔧 **ReDoc**: http://localhost:5000/redoc
 
 ## 🎯 Новые торговые режимы
 
@@ -159,7 +159,7 @@ DEFAULT_TRADING_MODE=medium
 
 # Веб-сервер
 HOST=localhost
-PORT=8000
+PORT=5000
 
 # Логирование
 LOG_LEVEL=INFO
