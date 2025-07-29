@@ -110,13 +110,16 @@ async def lifespan(app: FastAPI):
 
         pair_watcher = PairReversalWatcher(
             symbols=settings.trading_pairs,
-            get_ohlcv_func=lambda symbol: bybit_client.get_kline(symbol, '1', limit=200),
+            get_ohlcv_func=lambda symbol, tf: bybit_client.get_kline(symbol, tf, limit=200),
             get_open_positions_func=lambda: trading_engine.bybit_client.get_positions(),
             close_position_func=lambda pos: asyncio.create_task(trading_engine.close_position(pos['symbol'], pos.get('side'))),
             logger=logger,
             broadcast_func=lambda data: asyncio.create_task(manager.broadcast(
                 json.dumps({"type": "reversal", "data": data}))
-            )
+            ),
+            timeframe='1',
+            confirm_timeframe='5',
+            close_losing=False,
         )
         pair_reversal_task = asyncio.create_task(pair_reversal_watcher_scheduler(pair_watcher))
         logger.info("[TASK] Фоновая задача pair_reversal_watcher_scheduler запущена")

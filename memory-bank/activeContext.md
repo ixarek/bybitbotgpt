@@ -13,6 +13,8 @@
 - 2025-01-17: **ENHANCED RISK MANAGER CREATED** - Трейлинг-стопы и адаптивные риски
 - 2025-01-17: **STRATEGY MANAGER INTEGRATION** - Интеграция всех новых компонентов
 - 2025-01-17: **API ENDPOINTS ADDED** - 8 новых эндпоинтов для улучшенных функций
+- 2025-07-29: **PAIR REVERSAL WATCHER ENHANCED** - Добавлены уровни поддержки/сопротивления,
+  свечные модели и подтверждение по старшему таймфрейму
 - 2025-01-17: **CRITICAL BUG FIXED** - Удален TESTNET WORKAROUND для ETHUSDT/SOLUSDT
 - 2025-01-17: **POSITION SIZE CORRECTED** - ETHUSDT теперь ~$100 вместо $3000
 - 2025-06-24: **QA RESOLUTION COMPLETED** - Все критические проблемы решены
