@@ -1,0 +1,36 @@
+2025-07-29 10:19:10 | INFO     | root | [INIT] Logging system initialized
+2025-07-29 10:19:10 | INFO     | backend.main | [START] Bybit Trading Bot starting up...
+2025-07-29 10:19:10 | INFO     | backend.integrations.bybit_client | 🔗 Initializing Bybit client...
+2025-07-29 10:19:11 | INFO     | backend.integrations.bybit_client | ✅ Connected to Bybit demo account (real prices, virtual money)
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-29 10:19:11 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: conservative
+2025-07-29 10:19:11 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-29 10:19:11 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-29 10:19:11 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: conservative
+2025-07-29 10:19:11 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-29 10:19:11 | INFO     | backend.main | [TASK] Фоновая задача pair_reversal_watcher_scheduler запущена
+2025-07-29 10:19:11 | INFO     | backend.main | [WS] WebSocket логирование настроено
+2025-07-29 10:19:11 | INFO     | backend.main | [TASK] Фоновая задача broadcast_live_data запущена
+2025-07-29 10:19:11 | INFO     | backend.main | [TASK] Фоновая задача auto_param_adjuster_scheduler запущена
+2025-07-29 10:19:11 | INFO     | backend.main | [OK] Trading Bot with Phase 1 Enhancements initialized successfully
+2025-07-29 10:19:11 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-29 10:19:12 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 4 active positions
+2025-07-29 10:19:14 | INFO     | backend.main | [SHUTDOWN] Shutting down Trading Bot...
+2025-07-29 10:19:14 | INFO     | backend.core.trading_engine | 🔄 Shutting down trading engine...
+2025-07-29 10:19:14 | INFO     | backend.core.trading_engine.clean | 🔄 Shutting down trading engine...
+2025-07-29 10:19:14 | INFO     | backend.core.trading_engine | 🛑 Stopping trading engine...
+2025-07-29 10:19:14 | INFO     | backend.core.trading_engine | ✅ Trading engine shutdown complete
+2025-07-29 10:19:14 | INFO     | backend.core.trading_engine.clean | ✅ Trading engine shutdown complete
