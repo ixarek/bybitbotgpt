@@ -535,8 +535,8 @@ async def get_btcusdt_signals_1m(trading_engine = Depends(get_trading_engine)):
         # Добавляем BB
         df = trading_engine.bybit_client.get_kline(symbol, timeframe, limit=200)
         if df is not None and not df.empty:
-            from backend.core.btc_reversal_watcher import BTCReversalWatcher
-            upper_bb, lower_bb = BTCReversalWatcher.calc_bollinger_bands(df['close'])
+            from backend.core.pair_reversal_watcher import PairReversalWatcher
+            upper_bb, lower_bb = PairReversalWatcher.calc_bollinger_bands(df['close'])
             detailed_signals['BB_upper'] = {"value": f"{upper_bb.iloc[-1]:.2f}", "signal": "BB_upper"}
             detailed_signals['BB_lower'] = {"value": f"{lower_bb.iloc[-1]:.2f}", "signal": "BB_lower"}
         return {"symbol": symbol, "timeframe": "1m", "signals": detailed_signals}
