@@ -28,6 +28,7 @@ class PairReversalWatcher:
         self.last_direction: Dict[str, Optional[str]] = {s: None for s in symbols}
 
     async def check_reversals_and_close(self):
+        positions = self.get_open_positions() or []
         for symbol in self.symbols:
             df = self.get_ohlcv(symbol)
             if df is None or len(df) < 50:
@@ -47,7 +48,6 @@ class PairReversalWatcher:
                     self.broadcast({"symbol": symbol, "direction": direction})
                 except Exception:
                     pass
-                positions = self.get_open_positions() or []
                 for pos in positions:
                     if pos.get("symbol") != symbol:
                         continue
