@@ -57,7 +57,8 @@ class PairReversalWatcher:
                         or pos.get("unrealized_pnl")
                         or 0
                     )
-                    side = pos.get("side", "").lower()
+                    raw_side = pos.get("side", "").lower()  # 'buy' или 'sell'
+                    side = "long" if raw_side == "buy" else "short" if raw_side == "sell" else raw_side
                     if profit > 0 and (
                         (direction == "long" and side == "short")
                         or (direction == "short" and side == "long")
