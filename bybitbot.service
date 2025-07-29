@@ -4,10 +4,9 @@ After=network.target
 
 [Service]
 Type=simple
-# Update the user and paths below to match your system
-User=ubuntu
-WorkingDirectory=/opt/bybitbotgpt
-ExecStart=/opt/bybitbotgpt/venv/bin/python cli.py web
+User=root
+WorkingDirectory=/root/bybitbotgpt
+ExecStart=/usr/bin/python3 /root/bybitbotgpt/cli.py web
 Restart=always
 
 [Install]
