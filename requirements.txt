@@ -24,6 +24,7 @@ python-dotenv==1.0.0
 # Pandas и numpy
 pandas>=2.2.0
 numpy>=1.26.0
+pycryptodome
 
 # HTTP/WS клиенты
 requests>=2.22.0
@@ -56,4 +57,9 @@ pycryptodome>=3.20.0
 # ❌ python-socketio - не используется
 # ❌ marshmallow - не используется
 # ❌ celery - не используется
+
 # ❌ websocket-client - заменен на websockets
+=======
+# ❌ websocket-client - заменен на websockets
+# ❌ pycryptodome - не используется напрямую 
+

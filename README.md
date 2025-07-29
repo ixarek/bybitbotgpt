@@ -37,6 +37,7 @@ python cli.py web
 
 # или запуск торговли в консоли без веба
 python cli.py console
+
 ```
 
 ### ⏲️ Запуск как сервис (systemd)
@@ -47,6 +48,8 @@ python cli.py console
 sudo cp bybitbot.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now bybitbot.service
+=======
+
 ```
 
 ### 3. Откройте браузер
