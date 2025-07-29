@@ -44,7 +44,8 @@ class BTCReversalWatcher:
                 self.logger.info(f"Открытые позиции: {positions}")
             for pos in positions:
                 profit = pos.get('profit') or pos.get('pnl') or pos.get('unrealized_pnl') or 0
-                side = pos.get('side', '').lower()  # 'long' или 'short'
+                raw_side = pos.get('side', '').lower()  # 'buy' или 'sell'
+                side = 'long' if raw_side == 'buy' else 'short' if raw_side == 'sell' else raw_side
                 if self.logger:
                     self.logger.info(f"Проверка позиции: {pos}, прибыль: {profit}, side: {side}")
                 # Закрываем только противоположные позиции
