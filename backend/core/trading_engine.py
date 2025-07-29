@@ -957,7 +957,7 @@ class TradingEngine:
                     qty=qty_str
                 )
                 order_result = await self.bybit_client.place_order(**order_kwargs)
-                if order_result:
+                if order_result and (order_result.get("success") or order_result.get("retCode") == 0):
                     del self.active_positions[key]
                     logger.info(f"✅ Position closed for {symbol} {side}")
                     clean_logger.info(f"✅ Position closed for {symbol} {side}")
@@ -985,7 +985,7 @@ class TradingEngine:
                             qty=qty_str
                         )
                         order_result = await self.bybit_client.place_order(**order_kwargs)
-                        if order_result:
+                        if order_result and (order_result.get("success") or order_result.get("retCode") == 0):
                             del self.active_positions[key]
                             logger.info(f"✅ Position closed for {symbol} {s}")
                             clean_logger.info(f"✅ Position closed for {symbol} {s}")
