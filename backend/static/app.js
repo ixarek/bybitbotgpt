@@ -597,8 +597,36 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
             const icon = document.getElementById('themeIcon');
-            icon.className = document.body.classList.contains('dark-theme') 
+            icon.className = document.body.classList.contains('dark-theme')
                 ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        async function toggleAutoClose() {
+            const enabled = document.getElementById('autoCloseToggle').checked;
+            try {
+                const response = await fetch('/api/auto-close', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled })
+                });
+                if (response.ok) {
+                    addLogEntry('info', `Автозакрытие ${enabled ? 'включено' : 'выключено'}`);
+                }
+            } catch (error) {
+                addLogEntry('error', `Ошибка автозакрытия: ${error.message}`);
+            }
+        }
+
+        async function loadAutoCloseState() {
+            try {
+                const resp = await fetch('/api/auto-close');
+                if (resp.ok) {
+                    const data = await resp.json();
+                    document.getElementById('autoCloseToggle').checked = data.enabled;
+                }
+            } catch (error) {
+                console.log('Auto-close API not available:', error);
+            }
         }
 
         // Инициализация графика
@@ -751,7 +779,9 @@
                     console.log('Chart API not available:', chartError);
                     addLogEntry('warning', '⚠️ График API недоступен');
                 }
-                
+
+                await loadAutoCloseState();
+
                 addLogEntry('success', '✅ Данные загружены');
                 
             } catch (error) {

@@ -31,6 +31,9 @@ class TradingControlRequest(BaseModel):
 class EnhancedFeaturesRequest(BaseModel):
     enabled: bool
 
+class AutoCloseRequest(BaseModel):
+    enabled: bool
+
 class TrailingStopRequest(BaseModel):
     symbol: str
     side: str  # "BUY" or "SELL"
@@ -65,6 +68,10 @@ async def get_enhanced_signal_processor():
 async def get_enhanced_risk_manager():
     from ..main import app
     return app.state.enhanced_risk_manager
+
+async def get_pair_watcher():
+    from ..main import app
+    return getattr(app.state, 'pair_reversal_watcher', None)
 
 @router.get("/balance")
 async def get_balance(trading_engine = Depends(get_trading_engine)):
@@ -496,6 +503,21 @@ async def toggle_enhanced_features(request: EnhancedFeaturesRequest, trading_eng
     except Exception as e:
         logger.error(f"Error toggling enhanced features: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/auto-close")
+async def get_auto_close_status(pair_watcher = Depends(get_pair_watcher)):
+    """Получить статус автозакрытия позиций."""
+    if pair_watcher is None:
+        raise HTTPException(status_code=503, detail="Pair reversal watcher not initialized")
+    return {"enabled": pair_watcher.enabled}
+
+@router.post("/auto-close")
+async def toggle_auto_close(request: AutoCloseRequest, pair_watcher = Depends(get_pair_watcher)):
+    """Включить или отключить автозакрытие позиций."""
+    if pair_watcher is None:
+        raise HTTPException(status_code=503, detail="Pair reversal watcher not initialized")
+    result = pair_watcher.set_enabled(request.enabled)
+    return result
 
 @router.get("/enhanced-stats")
 async def get_enhanced_statistics(trading_engine = Depends(get_trading_engine)):
