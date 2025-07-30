@@ -35,8 +35,22 @@ class PairReversalWatcher:
         self.confirm_timeframe = confirm_timeframe
         self.close_losing = close_losing
         self.market_analyzer = MarketAnalyzer()
+        self.enabled = True
+
+    def set_enabled(self, enabled: bool) -> Dict[str, Any]:
+        """Enable or disable auto-closing positions."""
+        old_state = self.enabled
+        self.enabled = enabled
+        if self.logger:
+            self.logger.info(
+                f"[PairReversalWatcher] Auto-close {'ON' if enabled else 'OFF'}"
+            )
+        return {"success": True, "old_state": old_state, "new_state": enabled}
 
     async def check_reversals_and_close(self):
+        if not self.enabled:
+            return
+
         positions = self.get_open_positions() or []
         for symbol in self.symbols:
             df = self.get_ohlcv(symbol, self.timeframe)

@@ -130,6 +130,7 @@ async def lifespan(app: FastAPI):
         app.state.market_analyzer = market_analyzer
         app.state.enhanced_signal_processor = enhanced_signal_processor
         app.state.enhanced_risk_manager = enhanced_risk_manager
+        app.state.pair_reversal_watcher = pair_watcher
         
         # Настраиваем WebSocket логирование
         setup_websocket_logging()
