@@ -337,8 +337,8 @@ class TradingEngine:
                         np.abs(low - close.shift())
                     ], axis=1).max(axis=1)).rolling(window=atr_period).mean().iloc[-1]
                     atr_pct = round(atr / entry_price, 4)
-                    # Ограничиваем ATR в диапазоне 1-5%
-                    atr_pct = min(max(atr_pct, 0.01), 0.05)
+                    # Ограничиваем ATR в диапазоне 0.5-5%
+                    atr_pct = min(max(atr_pct, 0.005), 0.05)
                     sl_pct = tp_pct = atr_pct
                     # Для ATR >= 3% — особые правила подтягивания SL
                     if atr_pct >= 0.03:
