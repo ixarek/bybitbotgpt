@@ -145,17 +145,25 @@ class TradingEngine:
                     trailing_symbols = set()
                     if hasattr(self.risk_manager, 'trailing_stops'):
                         trailing_symbols = set(stop.symbol for stop in getattr(self.risk_manager, 'trailing_stops', {}).values() if stop.is_active)
-                    # Получаем close последней свечи для каждого символа
+                    # Получаем текущую цену для каждого символа (не дожидаясь закрытия свечи)
                     trailing_market_data = {}
                     for symbol in trailing_symbols:
                         try:
-                            klines = self.bybit_client.get_kline(symbol, timeframe, limit=1)
-                            if klines is not None and len(klines) > 0:
-                                trailing_market_data[symbol] = klines['close'].iloc[-1]
+                            price = self.bybit_client.get_current_price(symbol)
+                            if price:
+                                trailing_market_data[symbol] = price
                         except Exception as e:
                             logger.warning(f"[TrailingSL] Не удалось получить цену для {symbol}: {e}")
                     if trailing_market_data:
-                        await self.risk_manager.update_trailing_stops(trailing_market_data)
+                        triggered = await self.risk_manager.update_trailing_stops(trailing_market_data)
+                        # Закрываем позиции, если стоп сработал
+                        if triggered:
+                            for stop_key in triggered:
+                                try:
+                                    symbol, side = stop_key.split("_", 1)
+                                    await self.close_position(symbol, side)
+                                except Exception as e:
+                                    logger.error(f"[TrailingSL] Ошибка закрытия позиции {stop_key}: {e}")
                 # --- [КОНЕЦ НОВОГО БЛОКА] ---
 
                 # --- [НОВОЕ] Гарантия трейлинг-стопа для всех активных позиций ---
