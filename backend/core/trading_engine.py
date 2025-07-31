@@ -1015,12 +1015,19 @@ class TradingEngine:
         # Stop trading
         self.stop()
         
-      # Close positions only if configured
+        # Debug: выводим значение настройки
+        logger.info(f"🔧 [DEBUG] close_positions_on_shutdown = {settings.close_positions_on_shutdown}")
+        clean_logger.info(f"🔧 [DEBUG] close_positions_on_shutdown = {settings.close_positions_on_shutdown}")
+        
+        # Close positions only if configured
         if settings.close_positions_on_shutdown:
+            logger.info("🔧 [DEBUG] Closing all positions on shutdown")
+            clean_logger.info("🔧 [DEBUG] Closing all positions on shutdown")
             for key in list(self.active_positions.keys()):
                 await self.close_position(key[0], key[1])
         else:
             logger.info("🛑 Positions left open on shutdown")
+            clean_logger.info("🛑 Positions left open on shutdown")
             
         
         logger.info("✅ Trading engine shutdown complete")

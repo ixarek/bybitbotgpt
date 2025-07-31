@@ -91,7 +91,7 @@ class Settings(BaseSettings):
     log_file: Optional[str] = "logs/trading_bot.log"
     
     model_config = {
-        "env_file": ".env",
+        "env_file": "config.env",
         "env_file_encoding": "utf-8",
         "case_sensitive": False,
         "extra": "ignore"
@@ -107,7 +107,7 @@ try:
         # Удаляем пробелы и разбиваем по запятой
         settings.trading_pairs = [p.strip() for p in env_pairs.split(',') if p.strip()]
 except Exception as e:
-    print(f"Warning: Could not load .env file: {e}")
+    print(f"Warning: Could not load config.env file: {e}")
     settings = Settings(_env_file=None)  # Fallback без .env файла
 
 
