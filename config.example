@@ -22,3 +22,5 @@ DATABASE_URL=sqlite:///trading_bot.db
 # Logging Configuration
 LOG_LEVEL=INFO
 LOG_FILE=logs/trading_bot.log 
+# Shutdown Behavior
+CLOSE_POSITIONS_ON_SHUTDOWN=false

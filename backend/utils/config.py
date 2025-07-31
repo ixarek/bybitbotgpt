@@ -80,6 +80,12 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
     redis_db: int = 0
     
+    # Shutdown behavior
+    close_positions_on_shutdown: bool = Field(
+        default=False,
+        description="Close all open positions when the bot shuts down"
+    )
+    
     # Logging
     log_level: str = "INFO"
     log_file: Optional[str] = "logs/trading_bot.log"
