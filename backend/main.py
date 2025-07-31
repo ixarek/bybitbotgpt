@@ -822,7 +822,8 @@ async def auto_param_adjuster_scheduler():
             logger.info("[AutoParamAdjuster] Запуск автоматической автокоррекции параметров...")
             # Можно вызвать через внутреннюю функцию или через API (пример через API):
             async with aiohttp.ClientSession() as session:
-                url = f"http://{settings.host}:{settings.port}/api/auto-adjust-params?symbol=BTCUSDT&limit=50"
+                # Используем localhost для внутренних подключений вместо 0.0.0.0
+                url = f"http://localhost:{settings.port}/api/auto-adjust-params?symbol=BTCUSDT&limit=50"
                 async with session.post(url) as resp:
                     result = await resp.json()
                     logger.info(f"[AutoParamAdjuster] Результат автокоррекции: {result.get('log')}")

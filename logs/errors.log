@@ -1,0 +1,1 @@
+2025-07-31 18:13:29 | ERROR    | backend.main | [AutoParamAdjuster] Ошибка автокоррекции: Cannot connect to host 0.0.0.0:5000 ssl:default [Неверный формат сетевого имени]

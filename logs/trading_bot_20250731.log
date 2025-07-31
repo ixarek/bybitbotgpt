@@ -1,0 +1,197 @@
+2025-07-31 18:13:13 | INFO     | root | [INIT] Logging system initialized
+2025-07-31 18:13:13 | INFO     | backend.main | [START] Bybit Trading Bot starting up...
+2025-07-31 18:13:13 | INFO     | backend.integrations.bybit_client | 🔗 Initializing Bybit client...
+2025-07-31 18:13:13 | INFO     | backend.integrations.bybit_client | ✅ Connected to Bybit demo account (real prices, virtual money)
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-31 18:13:13 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: conservative
+2025-07-31 18:13:13 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-31 18:13:13 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: conservative
+2025-07-31 18:13:13 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-31 18:13:13 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:13:13 | INFO     | backend.main | [TASK] Фоновая задача pair_reversal_watcher_scheduler запущена
+2025-07-31 18:13:13 | INFO     | backend.main | [WS] WebSocket логирование настроено
+2025-07-31 18:13:13 | INFO     | backend.main | [TASK] Фоновая задача broadcast_live_data запущена
+2025-07-31 18:13:13 | INFO     | backend.main | [TASK] Фоновая задача auto_param_adjuster_scheduler запущена
+2025-07-31 18:13:13 | INFO     | backend.main | [OK] Trading Bot with Phase 1 Enhancements initialized successfully
+2025-07-31 18:13:13 | INFO     | backend.core.trading_engine | 🚀 Trading engine started
+2025-07-31 18:13:13 | INFO     | backend.main | [AUTO] Trading started automatically on startup
+2025-07-31 18:13:13 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:13:13 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:13:14 | INFO     | backend.main | [PairReversalWatcher] BTCUSDT reversal -> short
+2025-07-31 18:13:15 | INFO     | backend.main | [PairReversalWatcher] BNBUSDT reversal -> long
+2025-07-31 18:13:15 | INFO     | backend.core.trading_engine | 📊 Trading loop started - Mode: conservative, Timeframe: 15m
+2025-07-31 18:13:15 | INFO     | backend.core.trading_engine | 📊 Trading pairs from mode config: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-31 18:13:15 | INFO     | backend.core.trading_engine | 📊 Settings trading pairs (fallback): ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT']
+2025-07-31 18:13:15 | INFO     | backend.core.trading_engine | 🔧 [LOOP] Корректируем размеры существующих позиций...
+2025-07-31 18:13:15 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:13:16 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:13:16 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:13:16 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:13:16 | INFO     | backend.core.trading_engine | 🔄 [LOOP] Current trading pairs: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-31 18:13:20 | INFO     | backend.core.trading_engine | [ATR] BTCUSDT 15m: 330.71 (Слабый)
+2025-07-31 18:13:20 | INFO     | backend.core.trading_engine.clean | [ATR] BTCUSDT 15m: 330.71 (Слабый)
+2025-07-31 18:13:20 | INFO     | backend.core.trading_engine | BTCUSDT: Buy: 1, Sell: 5, Hold: 8
+2025-07-31 18:13:22 | INFO     | backend.core.trading_engine | [ATR] ETHUSDT 15m: 20.94 (Слабый)
+2025-07-31 18:13:22 | INFO     | backend.core.trading_engine.clean | [ATR] ETHUSDT 15m: 20.94 (Слабый)
+2025-07-31 18:13:22 | INFO     | backend.core.trading_engine | ETHUSDT: Buy: 4, Sell: 5, Hold: 5
+2025-07-31 18:13:25 | INFO     | backend.core.trading_engine | [ATR] SOLUSDT 15m: 1.19 (Слабый)
+2025-07-31 18:13:25 | INFO     | backend.core.trading_engine.clean | [ATR] SOLUSDT 15m: 1.19 (Слабый)
+2025-07-31 18:13:25 | INFO     | backend.core.trading_engine | SOLUSDT: Buy: 4, Sell: 5, Hold: 5
+2025-07-31 18:13:27 | INFO     | backend.core.trading_engine | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-31 18:13:27 | INFO     | backend.core.trading_engine.clean | [ATR] DOGEUSDT 15m: 0.00 (Слабый)
+2025-07-31 18:13:27 | INFO     | backend.core.trading_engine | DOGEUSDT: Buy: 4, Sell: 5, Hold: 5
+2025-07-31 18:13:29 | INFO     | backend.core.trading_engine | [ATR] XRPUSDT 15m: 0.02 (Слабый)
+2025-07-31 18:13:29 | INFO     | backend.core.trading_engine.clean | [ATR] XRPUSDT 15m: 0.02 (Слабый)
+2025-07-31 18:13:29 | INFO     | backend.core.trading_engine | XRPUSDT: Buy: 4, Sell: 5, Hold: 5
+2025-07-31 18:13:29 | INFO     | backend.main | [AutoParamAdjuster] Запуск автоматической автокоррекции параметров...
+2025-07-31 18:13:29 | ERROR    | backend.main | [AutoParamAdjuster] Ошибка автокоррекции: Cannot connect to host 0.0.0.0:5000 ssl:default [Неверный формат сетевого имени]
+2025-07-31 18:13:59 | INFO     | backend.core.trading_engine | 🔧 [LOOP] Корректируем размеры существующих позиций...
+2025-07-31 18:13:59 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:21:57 | INFO     | root | [INIT] Logging system initialized
+2025-07-31 18:21:57 | INFO     | backend.main | [START] Bybit Trading Bot starting up...
+2025-07-31 18:21:57 | INFO     | backend.integrations.bybit_client | 🔗 Initializing Bybit client...
+2025-07-31 18:21:58 | INFO     | backend.integrations.bybit_client | ✅ Connected to Bybit demo account (real prices, virtual money)
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-31 18:21:58 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: conservative
+2025-07-31 18:21:58 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.enhanced_signal_processor | 🔧 Enhanced Signal Processor initialized with weighted filtering
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.core.enhanced_risk_manager | 🛡️ Enhanced Risk Manager initialized with trailing stops
+2025-07-31 18:21:58 | INFO     | backend.core.strategy_manager | 🎯 StrategyManager инициализирован с режимом: conservative
+2025-07-31 18:21:58 | INFO     | backend.core.strategy_manager | 🔧 Улучшенные функции: ВКЛЮЧЕНЫ
+2025-07-31 18:21:58 | INFO     | backend.core.market_analyzer | 🔍 Market Analyzer initialized
+2025-07-31 18:21:58 | INFO     | backend.main | [TASK] Фоновая задача pair_reversal_watcher_scheduler запущена
+2025-07-31 18:21:58 | INFO     | backend.main | [WS] WebSocket логирование настроено
+2025-07-31 18:21:58 | INFO     | backend.main | [TASK] Фоновая задача broadcast_live_data запущена
+2025-07-31 18:21:58 | INFO     | backend.main | [TASK] Фоновая задача auto_param_adjuster_scheduler запущена
+2025-07-31 18:21:58 | INFO     | backend.main | [OK] Trading Bot with Phase 1 Enhancements initialized successfully
+2025-07-31 18:21:58 | INFO     | backend.core.trading_engine | 🚀 Trading engine started
+2025-07-31 18:21:58 | INFO     | backend.main | [AUTO] Trading started automatically on startup
+2025-07-31 18:21:58 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:21:58 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:21:59 | INFO     | backend.main | [PairReversalWatcher] ETHUSDT reversal -> long
+2025-07-31 18:21:59 | INFO     | backend.main | [PairReversalWatcher] SOLUSDT reversal -> long
+2025-07-31 18:22:00 | INFO     | backend.main | [PairReversalWatcher] BNBUSDT reversal -> long
+2025-07-31 18:22:00 | INFO     | backend.core.trading_engine | 📊 Trading loop started - Mode: conservative, Timeframe: 15m
+2025-07-31 18:22:00 | INFO     | backend.core.trading_engine | 📊 Trading pairs from mode config: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-31 18:22:00 | INFO     | backend.core.trading_engine | 📊 Settings trading pairs (fallback): ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT']
+2025-07-31 18:22:00 | INFO     | backend.core.trading_engine | 🔧 [LOOP] Корректируем размеры существующих позиций...
+2025-07-31 18:22:00 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:22:00 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:22:00 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:22:00 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:22:00 | INFO     | backend.core.trading_engine | 🔄 [LOOP] Current trading pairs: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'DOGE/USDT', 'XRP/USDT']
+2025-07-31 18:22:04 | INFO     | backend.core.trading_engine | [ATR] BTCUSDT 15m: 337.50 (Слабый)
+2025-07-31 18:22:04 | INFO     | backend.core.trading_engine.clean | [ATR] BTCUSDT 15m: 337.50 (Слабый)
+2025-07-31 18:22:04 | INFO     | backend.core.trading_engine | BTCUSDT: Buy: 1, Sell: 7, Hold: 6
+2025-07-31 18:22:04 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:22:04 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:22:04 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:22:04 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 0 active positions
+2025-07-31 18:22:04 | INFO     | backend.core.trading_engine | [_execute_trade] Используем плечо из режима: 10.0x (type=<class 'dict'>)
+2025-07-31 18:22:04 | INFO     | backend.core.trading_engine.clean | [_execute_trade] Используем плечо из режима: 10.0x (type=<class 'dict'>)
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine | [_execute_trade] Получен minNotionalValue с биржи: 5.0
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean | [_execute_trade] Получен minNotionalValue с биржи: 5.0
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine | [adjust_qty] Получены параметры с биржи: minOrderQty=0.001, qtyStep=0.001
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean | [adjust_qty] Получены параметры с биржи: minOrderQty=0.001, qtyStep=0.001
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine | 🔢 [adjust_qty] BTCUSDT: 0.008476 → 0.008 (qtyStep=0.001, minOrderQty=0.001)
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean | 🔢 [adjust_qty] BTCUSDT: 0.008476 → 0.008 (qtyStep=0.001, minOrderQty=0.001)
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine | 🔢 [_execute_trade] Рассчитанный размер: 0.008000 BTCUSDT = 943.86 USDT (с плечом 10.0x)
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean | 🔢 [_execute_trade] Рассчитанный размер: 0.008000 BTCUSDT = 943.86 USDT (с плечом 10.0x)
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine | 📝 Выставление ордера: SELL 0.008 BTCUSDT (market)
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean | 📝 Выставление ордера: SELL 0.008 BTCUSDT (market)
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine | 🎯 Параметры ордера:
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine |    Символ: BTCUSDT
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine |    Направление: SELL
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine |    Количество: 0.008
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine |    Тип: market
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine |    Цена: 117982.8
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean | 🎯 Параметры ордера:
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean |    Символ: BTCUSDT
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean |    Направление: SELL
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean |    Количество: 0.008
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean |    Тип: market
+2025-07-31 18:22:05 | INFO     | backend.core.trading_engine.clean |    Цена: 117982.8
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine | [place_order] Получен minNotionalValue с биржи: 5.0
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine.clean | [place_order] Получен minNotionalValue с биржи: 5.0
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine | 📊 [place_order] Размер ордера: 0.008000 BTCUSDT (стоимость: 943.86 USDT)
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine.clean | 📊 [place_order] Размер ордера: 0.008000 BTCUSDT (стоимость: 943.86 USDT)
+2025-07-31 18:22:06 | INFO     | backend.integrations.bybit_client | 💰 Получение баланса...
+2025-07-31 18:22:06 | INFO     | backend.integrations.bybit_client | ✅ Баланс USDT: $9122.92
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine | [TP/SL] entry_price=117982.8, side=Sell, mode=conservative
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine.clean | [TP/SL] entry_price=117982.8, side=Sell, mode=conservative
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine | [TP/SL][ATR_CONS_NEW] ATR=337.5000 (1.50%), SL/TP=1.50%
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine.clean | [TP/SL][ATR_CONS_NEW] ATR=337.5000 (1.50%), SL/TP=1.50%
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine | [TP/SL] Calculated: SL=119752.5420, TP=115328.1870
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine.clean | [TP/SL] Calculated: SL=119752.5420, TP=115328.1870
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine | 🎯 [Попытка 1] Executing Sell order for 0.008 BTCUSDT at 117982.8
+2025-07-31 18:22:06 | INFO     | backend.core.trading_engine.clean | 🎯 [Попытка 1] Executing Sell order for 0.008 BTCUSDT at 117982.8
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [adjust_qty] Получены параметры с биржи: minOrderQty=0.001, qtyStep=0.001
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [adjust_qty] Получены параметры с биржи: minOrderQty=0.001, qtyStep=0.001
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | 🔢 [adjust_qty] BTCUSDT: 0.008000 → 0.008 (qtyStep=0.001, minOrderQty=0.001)
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | 🔢 [adjust_qty] BTCUSDT: 0.008000 → 0.008 (qtyStep=0.001, minOrderQty=0.001)
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [format_qty_for_bybit] symbol=BTCUSDT, qty_in=0.008, price=117982.8
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [format_qty_for_bybit] symbol=BTCUSDT, qty_in=0.008, price=117982.8
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [format_qty_for_bybit] Получены параметры с биржи: minOrderQty=0.001, qtyStep=0.001, minNotionalValue=5
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [format_qty_for_bybit] Получены параметры с биржи: minOrderQty=0.001, qtyStep=0.001, minNotionalValue=5
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [format_qty_for_bybit] qty after qtyStep rounding: 0.008
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [format_qty_for_bybit] qty after qtyStep rounding: 0.008
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [format_qty_for_bybit] min_qty for 5 USDT: 0.000
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [format_qty_for_bybit] min_qty for 5 USDT: 0.000
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [format_qty_for_bybit] qty/qtyStep=8, remainder=0
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [format_qty_for_bybit] qty/qtyStep=8, remainder=0
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [format_qty_for_bybit] qty_str result: 0.008, qty*price=943.86240
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [format_qty_for_bybit] qty_str result: 0.008, qty*price=943.86240
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | 🔢 [lot_size] Итоговое qty для BTCUSDT: 0.008
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | 🔢 [lot_size] Итоговое qty для BTCUSDT: 0.008
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [place_order] Параметры для bybit_client.place_order: {'symbol': 'BTCUSDT', 'side': 'Sell', 'order_type': 'Market', 'qty': '0.008', 'stop_loss': 119752.542, 'take_profit': 115328.187}
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [place_order] Параметры для bybit_client.place_order: {'symbol': 'BTCUSDT', 'side': 'Sell', 'order_type': 'Market', 'qty': '0.008', 'stop_loss': 119752.542, 'take_profit': 115328.187}
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [place_order] type(qty_str)=<class 'str'>, repr(qty_str)='0.008'
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [place_order] type(qty_str)=<class 'str'>, repr(qty_str)='0.008'
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine | [place_order] Полный запрос: {'symbol': 'BTCUSDT', 'side': 'Sell', 'order_type': 'Market', 'qty': '0.008', 'stop_loss': 119752.542, 'take_profit': 115328.187}
+2025-07-31 18:22:07 | INFO     | backend.core.trading_engine.clean | [place_order] Полный запрос: {'symbol': 'BTCUSDT', 'side': 'Sell', 'order_type': 'Market', 'qty': '0.008', 'stop_loss': 119752.542, 'take_profit': 115328.187}
+2025-07-31 18:22:07 | INFO     | backend.integrations.bybit_client | 📋 Placing real Sell Market order for 0.008 BTCUSDT
+2025-07-31 18:22:07 | INFO     | backend.integrations.bybit_client |    ✅ Take Profit: $115328.1870
+2025-07-31 18:22:07 | INFO     | backend.integrations.bybit_client |    ✅ Stop Loss: $119752.5420
+2025-07-31 18:22:07 | INFO     | backend.integrations.bybit_client | 📋 Параметры ордера: {'category': 'linear', 'symbol': 'BTCUSDT', 'side': 'Sell', 'orderType': 'Market', 'qty': '0.008', 'timeInForce': 'GTC', 'tpslMode': 'Full', 'takeProfit': '115328.187', 'tpOrderType': 'Market', 'stopLoss': '119752.542', 'slOrderType': 'Market', 'positionIdx': '0'}
+2025-07-31 18:22:07 | INFO     | backend.integrations.bybit_client | ✅ Real order placed successfully: 7a6f1e0a-bf7e-4f74-bd4e-bcabe6885099
+2025-07-31 18:22:08 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:22:09 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-31 18:22:09 | INFO     | backend.integrations.bybit_client | 🔧 Попытка установить TP/SL отдельно для позиции BTCUSDT
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine | [place_order] Ответ bybit_client.place_order: {'retCode': 0, 'retMsg': 'OK', 'success': True, 'result': {'orderId': '7a6f1e0a-bf7e-4f74-bd4e-bcabe6885099', 'orderLinkId': ''}, 'orderId': '7a6f1e0a-bf7e-4f74-bd4e-bcabe6885099'}
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine.clean | [place_order] Ответ bybit_client.place_order: {'retCode': 0, 'retMsg': 'OK', 'success': True, 'result': {'orderId': '7a6f1e0a-bf7e-4f74-bd4e-bcabe6885099', 'orderLinkId': ''}, 'orderId': '7a6f1e0a-bf7e-4f74-bd4e-bcabe6885099'}
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine | ✅ Ордер успешно выставлен! ID: 7a6f1e0a-bf7e-4f74-bd4e-bcabe6885099
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine.clean | ✅ Ордер успешно выставлен! ID: 7a6f1e0a-bf7e-4f74-bd4e-bcabe6885099
+2025-07-31 18:22:09 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:22:09 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-31 18:22:09 | INFO     | backend.integrations.bybit_client | 📈 Fetching real positions...
+2025-07-31 18:22:09 | INFO     | backend.integrations.bybit_client | ✅ Retrieved 1 active positions
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine | 🔍 [correct_position_sizes] Проверяем BTCUSDT: размер=0.008, цена=117964.9, стоимость=943.72 USDT
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine.clean | 🔍 [correct_position_sizes] Проверяем BTCUSDT: размер=0.008, цена=117964.9, стоимость=943.72 USDT
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine | ✅ BTCUSDT: Размер позиции в норме (943.72 USDT)
+2025-07-31 18:22:09 | INFO     | backend.core.trading_engine.clean | ✅ BTCUSDT: Размер позиции в норме (943.72 USDT)
