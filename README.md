@@ -48,9 +48,8 @@ python cli.py console
 sudo cp bybitbot.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now bybitbot.service
-=======
-
 ```
+После запуска сервиса торговля стартует автоматически, поэтому кнопку **Start** в веб-интерфейсе нажимать не нужно.
 
 ### 3. Откройте браузер
 - 🌐 **Веб-интерфейс**: http://localhost:5000
