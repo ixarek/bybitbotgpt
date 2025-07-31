@@ -160,7 +160,7 @@ class EnhancedRiskManager(RiskManager):
         # Настройки трейлинг-стопов
         self.trailing_config = {
             "default_distance": 0.02,  # 2%
-            "min_distance": 0.005,     # 0.5%
+            "min_distance": 0.015,     # 1.5%
             "max_distance": 0.05,      # 5%
             "atr_multiplier": 2.0,
             "update_frequency": 30     # секунд
