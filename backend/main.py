@@ -145,7 +145,14 @@ async def lifespan(app: FastAPI):
         logger.info("[TASK] Фоновая задача auto_param_adjuster_scheduler запущена")
         
         logger.info("[OK] Trading Bot with Phase 1 Enhancements initialized successfully")
-        
+
+        # Auto-start trading when the service launches
+        try:
+            await trading_engine.start()
+            logger.info("[AUTO] Trading started automatically on startup")
+        except Exception as autostart_error:
+            logger.error(f"[AUTO] Failed to start trading automatically: {autostart_error}")
+
         yield
         
         # Останавливаем фоновые задачи
