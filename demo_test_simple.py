@@ -23,6 +23,7 @@ def test_demo():
             testnet=False,  # ВАЖНО: для demo testnet=False
             demo=True       # Включаем demo режим
         )
+        session.client.verify = False
         
         print("Подключение создано!")
         
