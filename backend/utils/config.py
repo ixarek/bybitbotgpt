@@ -34,6 +34,11 @@ class Settings(BaseSettings):
         default=["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"],
         description="Trading pairs to monitor"
     )
+
+    trailing_stop_enabled: bool = Field(
+        default=False,
+        description="Enable trailing stop functionality"
+    )
     
     # Risk Management
     risk_mode: str = Field(
