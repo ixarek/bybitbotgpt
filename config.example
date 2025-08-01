@@ -11,6 +11,9 @@ RISK_MODE=moderate
 MAX_POSITION_SIZE=100
 TRADING_PAIRS=BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT
 
+# Trailing stop configuration
+TRAILING_STOP_ENABLED=false
+
 # Server Configuration
 HOST=0.0.0.0
 PORT=5000

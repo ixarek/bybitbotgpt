@@ -13,6 +13,7 @@ from .signal_processor import SignalProcessor
 from .enhanced_signal_processor import EnhancedSignalProcessor
 from .market_analyzer import MarketAnalyzer
 from .enhanced_risk_manager import EnhancedRiskManager
+from ..utils.config import settings
 
 
 logger = logging.getLogger(__name__)
@@ -255,6 +256,8 @@ class StrategyManager:
     def _get_trailing_stop_recommendations(self, market_analysis: Dict) -> Dict[str, Any]:
         """Получение рекомендаций по трейлинг-стопам"""
         try:
+            if not settings.trailing_stop_enabled:
+                return {}
             regime = market_analysis.get("regime", "sideways")
             volatility = market_analysis.get("volatility", {})
             vol_level = volatility.get("level", "medium")
