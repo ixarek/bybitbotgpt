@@ -28,7 +28,8 @@ async def test_demo_connection():
             api_key=settings.bybit_api_key,
             api_secret=settings.bybit_api_secret,
             testnet=settings.bybit_testnet,
-            demo=settings.bybit_demo
+            demo=settings.bybit_demo,
+            ignore_ssl=settings.bybit_ignore_ssl
         )
         
         print("🔗 Инициализация клиента...")

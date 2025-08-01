@@ -22,11 +22,12 @@ class BybitClient:
     Supports both REST API and WebSocket connections
     """
     
-    def __init__(self, api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True, demo: bool = False):
+    def __init__(self, api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True, demo: bool = False, ignore_ssl: bool = False):
         self.api_key = api_key
         self.api_secret = api_secret
         self.testnet = testnet
         self.demo = demo
+        self.ignore_ssl = ignore_ssl
         
         # Initialize pybit HTTP client with correct parameters for demo
         if demo:
@@ -44,6 +45,12 @@ class BybitClient:
                 api_secret=api_secret or "",
                 testnet=testnet
             )
+
+        if self.ignore_ssl:
+            try:
+                self.session.client.verify = False
+            except Exception:
+                pass
         
         # Market data cache
         self.market_data = {}
@@ -616,12 +623,12 @@ class BybitClient:
 bybit_client = None
 
 
-async def get_bybit_client(api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True, demo: bool = False) -> BybitClient:
+async def get_bybit_client(api_key: Optional[str] = None, api_secret: Optional[str] = None, testnet: bool = True, demo: bool = False, ignore_ssl: bool = False) -> BybitClient:
     """Get or create Bybit client instance"""
     global bybit_client
     
     if bybit_client is None:
-        bybit_client = BybitClient(api_key, api_secret, testnet, demo)
+        bybit_client = BybitClient(api_key, api_secret, testnet, demo, ignore_ssl)
         await bybit_client.initialize()
     
     return bybit_client 

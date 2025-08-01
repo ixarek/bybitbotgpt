@@ -30,7 +30,8 @@ async def test_demo_direct():
             api_key=api_key,
             api_secret=api_secret,
             testnet=False,  # ВАЖНО: для demo режима testnet=False
-            demo=True       # Включаем demo режим
+            demo=True,      # Включаем demo режим
+            ignore_ssl=True
         )
         
         print("🔗 Инициализация demo клиента...")
