@@ -141,7 +141,7 @@ class TradingEngine:
 
                 # --- [НОВОЕ] Обновление трейлинг-стопов ---
                 # Собираем market_data для всех активных стопов
-                if hasattr(self.risk_manager, 'update_trailing_stops'):
+                if settings.trailing_stop_enabled and hasattr(self.risk_manager, 'update_trailing_stops'):
                     trailing_symbols = set()
                     if hasattr(self.risk_manager, 'trailing_stops'):
                         trailing_symbols = set(stop.symbol for stop in getattr(self.risk_manager, 'trailing_stops', {}).values() if stop.is_active)
@@ -167,7 +167,7 @@ class TradingEngine:
                 # --- [КОНЕЦ НОВОГО БЛОКА] ---
 
                 # --- [НОВОЕ] Гарантия трейлинг-стопа для всех активных позиций ---
-                if hasattr(self, 'active_positions') and hasattr(self.risk_manager, 'trailing_stops'):
+                if settings.trailing_stop_enabled and hasattr(self, 'active_positions') and hasattr(self.risk_manager, 'trailing_stops'):
                     for (symbol, side) in self.active_positions.keys():
                         stop_key = f"{symbol}_{side}"
                         if stop_key not in self.risk_manager.trailing_stops or not self.risk_manager.trailing_stops[stop_key].is_active:
@@ -696,7 +696,7 @@ class TradingEngine:
             )
             if order_result and order_result.get('success') and current_mode.value == "conservative":
                 # Создаём трейлинг-стоп через EnhancedRiskManager только если ордер реально открыт
-                if hasattr(self.risk_manager, 'create_trailing_stop'):
+                if settings.trailing_stop_enabled and hasattr(self.risk_manager, 'create_trailing_stop'):
                     trailing_stop = self.risk_manager.create_trailing_stop(
                         symbol=symbol,
                         side=side,

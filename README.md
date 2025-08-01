@@ -167,6 +167,7 @@ BYBIT_TESTNET=true
 
 # Торговые настройки
 TRADING_PAIRS=BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT,DOGEUSDT,XRPUSDT
+TRAILING_STOP_ENABLED=false
 DEFAULT_TRADING_MODE=medium
 
 # Веб-сервер
@@ -176,6 +177,8 @@ PORT=5000
 # Логирование
 LOG_LEVEL=INFO
 ```
+Trailing stop functionality is **disabled by default**. Set `TRAILING_STOP_ENABLED=true` to enable it.
+
 
 ## 🚀 Развертывание
 
