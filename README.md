@@ -177,6 +177,8 @@ PORT=5000
 # Логирование
 LOG_LEVEL=INFO
 ```
+Trailing stop functionality is **disabled by default**. Set `TRAILING_STOP_ENABLED=true` to enable it.
+
 
 ## 🚀 Развертывание
 
