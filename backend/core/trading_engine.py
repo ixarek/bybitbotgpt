@@ -140,9 +140,12 @@ class TradingEngine:
                     bybit_symbol = symbol.replace("/", "")
                     await self._process_symbol(bybit_symbol, timeframe)
 
+                risk_cfg = get_risk_config(current_mode.value)
+                tp_pct = risk_cfg.get('take_profit_pct', settings.take_profit_pct)
+
                 # --- [НОВОЕ] Обновление трейлинг-стопов ---
                 # Собираем market_data для всех активных стопов
-                if settings.trailing_stop_enabled and hasattr(self.risk_manager, 'update_trailing_stops'):
+                if settings.trailing_stop_enabled and tp_pct > 2 and hasattr(self.risk_manager, 'update_trailing_stops'):
                     trailing_symbols = set()
                     if hasattr(self.risk_manager, 'trailing_stops'):
                         trailing_symbols = set(stop.symbol for stop in getattr(self.risk_manager, 'trailing_stops', {}).values() if stop.is_active)
@@ -167,25 +170,38 @@ class TradingEngine:
                                     logger.error(f"[TrailingSL] Ошибка закрытия позиции {stop_key}: {e}")
                 # --- [КОНЕЦ НОВОГО БЛОКА] ---
 
-                # --- [НОВОЕ] Гарантия трейлинг-стопа для всех активных позиций ---
-                if settings.trailing_stop_enabled and hasattr(self, 'active_positions') and hasattr(self.risk_manager, 'trailing_stops'):
-                    for (symbol, side) in self.active_positions.keys():
+                # --- [НОВОЕ] Создание трейлинг-стопа после достижения >2% прибыли ---
+                if (
+                    settings.trailing_stop_enabled
+                    and tp_pct > 2
+                    and hasattr(self, 'active_positions')
+                    and hasattr(self.risk_manager, 'trailing_stops')
+                ):
+                    for (symbol, side), pos in list(self.active_positions.items()):
                         stop_key = f"{symbol}_{side}"
-                        if stop_key not in self.risk_manager.trailing_stops or not self.risk_manager.trailing_stops[stop_key].is_active:
-                            # Получаем цену последней сделки или текущую цену
-                            try:
-                                current_price = self.bybit_client.get_current_price(symbol)
-                                if current_price:
-                                    trailing_stop = self.risk_manager.create_trailing_stop(
-                                        symbol=symbol,
-                                        side=side,
-                                        entry_price=current_price,
-                                        stop_type=getattr(self.risk_manager, 'StopLossType', None).TRAILING if hasattr(self.risk_manager, 'StopLossType') else None
-                                    )
-                                    from backend.core.enhanced_risk_manager import stop_logger
-                                    stop_logger.info(f"[CREATE][main_loop] Trailing stop auto-created for {symbol} {side}: entry={current_price:.4f}")
-                            except Exception as e:
-                                logger.warning(f"[TrailingSL][main_loop] Не удалось создать стоп для {symbol} {side}: {e}")
+                        if stop_key in self.risk_manager.trailing_stops and self.risk_manager.trailing_stops[stop_key].is_active:
+                            continue
+                        try:
+                            entry_price = float(pos.get('entryPrice') or pos.get('avgPrice') or 0)
+                            current_price = self.bybit_client.get_current_price(symbol)
+                            if not entry_price or not current_price:
+                                continue
+                            move = (current_price - entry_price) / entry_price if side.upper() == "BUY" else (entry_price - current_price) / entry_price
+                            if move > 0.02:
+                                initial_stop = entry_price * (1.02 if side.upper() == "BUY" else 0.98)
+                                trailing_stop = self.risk_manager.create_trailing_stop(
+                                    symbol=symbol,
+                                    side=side,
+                                    entry_price=entry_price,
+                                    initial_stop=initial_stop,
+                                    stop_type=getattr(self.risk_manager, 'StopLossType', None).TRAILING if hasattr(self.risk_manager, 'StopLossType') else None,
+                                )
+                                from backend.core.enhanced_risk_manager import stop_logger
+                                stop_logger.info(
+                                    f"[CREATE][main_loop] Trailing stop activated for {symbol} {side}: entry={entry_price:.4f}, stop={initial_stop:.4f}"
+                                )
+                        except Exception as e:
+                            logger.warning(f"[TrailingSL][main_loop] Не удалось создать стоп для {symbol} {side}: {e}")
 
                 await asyncio.sleep(30)
             except Exception as e:
@@ -628,20 +644,7 @@ class TradingEngine:
                 mode=current_mode.value,
                 timeframe=mode_config.get('timeframes', ['5m'])[0] if mode_config and 'timeframes' in mode_config and mode_config['timeframes'] else "5m"
             )
-            if order_result and order_result.get('success') and current_mode.value == "conservative":
-                # Создаём трейлинг-стоп через EnhancedRiskManager только если ордер реально открыт
-                if settings.trailing_stop_enabled and hasattr(self.risk_manager, 'create_trailing_stop'):
-                    trailing_stop = self.risk_manager.create_trailing_stop(
-                        symbol=symbol,
-                        side=side,
-                        entry_price=current_price,
-                        stop_type=getattr(self.risk_manager, 'StopLossType', None).TRAILING if hasattr(self.risk_manager, 'StopLossType') else None
-                    )
-                    try:
-                        from backend.core.enhanced_risk_manager import stop_logger
-                        stop_logger.info(f"[CREATE][_execute_trade] Trailing stop created for {symbol} {side}: entry={current_price:.4f}")
-                    except Exception:
-                        pass
+            # Трейлинг-стоп создаётся позже, когда цена пройдёт более 2% в сторону прибыли
         except Exception as e:
             import traceback
             logger.error(f"❌ Error executing trade for {symbol}: {e}")

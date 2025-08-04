@@ -63,48 +63,36 @@ class TrailingStopOrder:
         self.is_active = True
         
     def update_trailing_stop(self, current_price: float, atr: Optional[float] = None) -> bool:
-        """Обновление трейлинг-стопа с логикой ступенчатого подтягивания"""
+        """Подтягивание SL к +/−2% после достижения прибыли >2%"""
         try:
             if not self.is_active:
                 return False
             if settings.fixed_stop_loss:
                 return False
+
+            # Проверяем, разрешён ли трейлинг по текущему TP
+            tp_pct = get_risk_config().get("take_profit_pct", settings.take_profit_pct)
+            if tp_pct <= 2:
+                return False
+
             updated = False
-            # Stepwise trailing logic
             if self.side.upper() == "BUY":
                 price_from_entry = (current_price - self.entry_price) / self.entry_price
-                # Ступенчатое подтягивание: на 1% — SL=entry, на 2% — SL=entry+1%, на 3% — SL=entry+2% и т.д.
-                for i in range(1, 6):
-                    if price_from_entry >= i * 0.01:
-                        new_stop = self.entry_price * (1 + max(0, (i-1)*0.01))
-                        if new_stop > self.current_stop:
-                            self.current_stop = new_stop
-                            updated = True
-                            stop_logger.info(f"[StepwiseTrailing][BUY][TP>{i}%] SL подтянут к entry+{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
-                # Классический трейлинг-стоп (если цена обновила максимум)
-                if current_price > self.best_price:
-                    self.best_price = current_price
-                    new_stop = current_price - self.trailing_distance
+                if price_from_entry > 0.02:
+                    new_stop = self.entry_price * 1.02
                     if new_stop > self.current_stop:
                         self.current_stop = new_stop
                         updated = True
-                        stop_logger.info(f"[TrailingSL][BUY][SHIFT] {self.symbol}: SL смещён на {self.current_stop:.4f} (классический trailing)")
-            elif self.side.upper() == "SELL":
+                        stop_logger.info(f"[TrailingActivation][BUY][>2%] SL подтянут к entry+2%: {self.current_stop:.4f}")
+            else:
                 price_from_entry = (self.entry_price - current_price) / self.entry_price
-                for i in range(1, 6):
-                    if price_from_entry >= i * 0.01:
-                        new_stop = self.entry_price * (1 - max(0, (i-1)*0.01))
-                        if new_stop < self.current_stop:
-                            self.current_stop = new_stop
-                            updated = True
-                            stop_logger.info(f"[StepwiseTrailing][SELL][TP>{i}%] SL подтянут к entry-{max(0, (i-1)*0.01)*100:.0f}%: {self.current_stop:.4f}")
-                if current_price < self.best_price:
-                    self.best_price = current_price
-                    new_stop = current_price + self.trailing_distance
+                if price_from_entry > 0.02:
+                    new_stop = self.entry_price * 0.98
                     if new_stop < self.current_stop:
                         self.current_stop = new_stop
                         updated = True
-                        stop_logger.info(f"[TrailingSL][SELL][SHIFT] {self.symbol}: SL смещён на {self.current_stop:.4f} (классический trailing)")
+                        stop_logger.info(f"[TrailingActivation][SELL][>2%] SL подтянут к entry-2%: {self.current_stop:.4f}")
+
             if updated:
                 self.last_update = datetime.now()
                 stop_logger.info(f"🔄 Trailing stop updated for {self.symbol}: {self.current_stop:.4f}")
@@ -257,28 +245,32 @@ class EnhancedRiskManager(RiskManager):
             return await self.calculate_position_size(symbol, signals, current_price)
     
     def create_trailing_stop(
-        self, 
-        symbol: str, 
-        side: str, 
+        self,
+        symbol: str,
+        side: str,
         entry_price: float,
         market_analysis: Optional[Dict] = None,
-        stop_type: StopLossType = StopLossType.TRAILING
+        stop_type: StopLossType = StopLossType.TRAILING,
+        initial_stop: Optional[float] = None,
     ) -> TrailingStopOrder:
         """Создание трейлинг-стопа"""
         try:
             # Получаем анализ рынка если не предоставлен
             if market_analysis is None:
                 market_analysis = self.market_analyzer.analyze_market(symbol)
-            
-            # Рассчитываем дистанцию трейлинга
-            trailing_distance = self._calculate_trailing_distance(market_analysis, stop_type)
-            
-            # Рассчитываем начальный стоп
-            if side == "BUY":
-                initial_stop = entry_price - trailing_distance
+
+            if initial_stop is None:
+                # Рассчитываем дистанцию трейлинга
+                trailing_distance = self._calculate_trailing_distance(market_analysis, stop_type)
+
+                # Рассчитываем начальный стоп
+                if side == "BUY":
+                    initial_stop = entry_price - trailing_distance
+                else:
+                    initial_stop = entry_price + trailing_distance
             else:
-                initial_stop = entry_price + trailing_distance
-            
+                trailing_distance = abs(entry_price - initial_stop)
+
             # Создаем трейлинг-стоп
             trailing_stop = TrailingStopOrder(
                 symbol=symbol,
@@ -288,14 +280,16 @@ class EnhancedRiskManager(RiskManager):
                 trailing_distance=trailing_distance,
                 stop_type=stop_type
             )
-            
+
             # Сохраняем в активные стопы
             self.trailing_stops[f"{symbol}_{side}"] = trailing_stop
-            
+
             logger.info(f"✅ Trailing stop created for {symbol} {side}: {initial_stop:.4f}")
-            stop_logger.info(f"[CREATE] Trailing stop created for {symbol} {side}: entry={entry_price:.4f}, initial_stop={initial_stop:.4f}, trailing_distance={trailing_distance:.4f}, stop_type={stop_type}")
+            stop_logger.info(
+                f"[CREATE] Trailing stop created for {symbol} {side}: entry={entry_price:.4f}, initial_stop={initial_stop:.4f}, trailing_distance={trailing_distance:.4f}, stop_type={stop_type}"
+            )
             return trailing_stop
-            
+
         except Exception as e:
             logger.error(f"Error creating trailing stop: {e}")
             # Возвращаем простой стоп
@@ -304,7 +298,7 @@ class EnhancedRiskManager(RiskManager):
                 initial_stop = entry_price * (1 - distance)
             else:
                 initial_stop = entry_price * (1 + distance)
-            
+
             return TrailingStopOrder(symbol, side, entry_price, initial_stop, distance)
     
     async def update_trailing_stops(self, market_data: Dict[str, float]) -> List[str]:
