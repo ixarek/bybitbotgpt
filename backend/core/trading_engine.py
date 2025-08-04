@@ -331,86 +331,19 @@ class TradingEngine:
     def calc_tp_sl(self, entry_price, side, mode, market_data=None, symbol=None, timeframe=None):
         logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
         clean_logger.info(f"[TP/SL] entry_price={entry_price}, side={side}, mode={mode}")
-        # Новая стратегия для консервативного режима
-        if mode == "conservative" and market_data is not None:
-            try:
-                atr_period = 14
-                if 'high' in market_data and 'low' in market_data and 'close' in market_data:
-                    high = market_data['high']
-                    low = market_data['low']
-                    close = market_data['close']
-                    import numpy as np
-                    atr = (pd.concat([
-                        high - low,
-                        np.abs(high - close.shift()),
-                        np.abs(low - close.shift())
-                    ], axis=1).max(axis=1)).rolling(window=atr_period).mean().iloc[-1]
-                    atr_pct = round(atr / entry_price, 4)
-                    # Ограничиваем ATR в диапазоне 1.5-5%
-                    atr_pct = min(max(atr_pct, 0.015), 0.05)
-                    sl_pct = atr_pct
-                    gap_pct = atr_pct * 0.5  # доп. разрыв между SL и TP
-                    tp_pct = sl_pct + gap_pct
-                    # Для ATR >= 3% — особые правила подтягивания SL
-                    if atr_pct >= 0.03:
-                        # Если цена ушла в TP на 2%+ — SL = entry
-                        # Если на 3%+ — SL = entry +1%
-                        # (эту логику нужно реализовать в ступенчатом SL, здесь только стартовые значения)
-                        logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}% (динамика подтяжки SL реализуется в StepwiseStopOrder)")
-                        clean_logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}% (динамика подтяжки SL реализуется в StepwiseStopOrder)")
-                    else:
-                        logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}%")
-                        clean_logger.info(f"[TP/SL][ATR_CONS_NEW] ATR={atr:.4f} ({atr_pct*100:.2f}%), SL/TP={sl_pct*100:.2f}%")
-                    if side.lower() in ['buy', 'long']:
-                        stop_loss = entry_price * (1 - sl_pct)
-                        take_profit = entry_price * (1 + tp_pct)
-                    else:
-                        stop_loss = entry_price * (1 + sl_pct)
-                        take_profit = entry_price * (1 - tp_pct)
-                    logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
-                    clean_logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
-                    return round(stop_loss, 4), round(take_profit, 4)
-            except Exception as e:
-                logger.error(f"[TP/SL][ATR_CONS_NEW] Ошибка расчёта ATR: {e}")
-                clean_logger.error(f"[TP/SL][ATR_CONS_NEW] Ошибка расчёта ATR: {e}")
-        params = {
-            'conservative': {'sl': 0.03, 'tp': 0.05}
-        }
-        if mode not in params:
-            logger.error(f"Неизвестный режим торговли: {mode}")
-            clean_logger.error(f"Неизвестный режим торговли: {mode}")
-            return None, None
-        sl_pct = params[mode]['sl']
-        tp_pct = params[mode]['tp']
-        if side.lower() in ['buy', 'long']:
+        risk_cfg = get_risk_config(mode)
+        sl_pct = max(1.0, min(risk_cfg.get("stop_loss_pct", settings.stop_loss_pct), 5.0)) / 100
+        tp_pct = max(1.0, min(risk_cfg.get("take_profit_pct", settings.take_profit_pct), 5.0)) / 100
+        if side.lower() in ["buy", "long"]:
             stop_loss = entry_price * (1 - sl_pct)
             take_profit = entry_price * (1 + tp_pct)
         else:
             stop_loss = entry_price * (1 + sl_pct)
             take_profit = entry_price * (1 - tp_pct)
-        # Проверяем разумность цен
-        if side.lower() in ['buy', 'long']:
-            if stop_loss >= entry_price:
-                logger.error(f"❌ Неправильный SL для покупки: {stop_loss} >= {entry_price}")
-                clean_logger.error(f"❌ Неправильный SL для покупки: {stop_loss} >= {entry_price}")
-                return None, None
-            if take_profit <= entry_price:
-                logger.error(f"❌ Неправильный TP для покупки: {take_profit} <= {entry_price}")
-                clean_logger.error(f"❌ Неправильный TP для покупки: {take_profit} <= {entry_price}")
-                return None, None
-        else:
-            if stop_loss <= entry_price:
-                logger.error(f"❌ Неправильный SL для продажи: {stop_loss} <= {entry_price}")
-                clean_logger.error(f"❌ Неправильный SL для продажи: {stop_loss} <= {entry_price}")
-                return None, None
-            if take_profit >= entry_price:
-                logger.error(f"❌ Неправильный TP для продажи: {take_profit} >= {entry_price}")
-                clean_logger.error(f"❌ Неправильный TP для продажи: {take_profit} >= {entry_price}")
-                return None, None
         logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
         clean_logger.info(f"[TP/SL] Calculated: SL={stop_loss:.4f}, TP={take_profit:.4f}")
         return round(stop_loss, 4), round(take_profit, 4)
-    
+
     def round_qty(self, symbol, qty):
         precision = self.LOT_PRECISION.get(symbol, 3)
         if precision == 0:

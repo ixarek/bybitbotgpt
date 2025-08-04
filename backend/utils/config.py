@@ -40,6 +40,11 @@ class Settings(BaseSettings):
         default=False,
         description="Enable trailing stop functionality"
     )
+    fixed_stop_loss: bool = Field(
+        default=True,
+        description="Keep stop-loss fixed without trailing adjustments"
+    )
+
     
     # Risk Management
     risk_mode: str = Field(
@@ -50,7 +55,19 @@ class Settings(BaseSettings):
         default=100.0,
         description="Maximum position size in USDT"
     )
-    
+    stop_loss_pct: float = Field(
+        default=1.0,
+        ge=1,
+        le=5,
+        description="Stop-loss percentage (1-5%)",
+    )
+    take_profit_pct: float = Field(
+        default=2.0,
+        ge=1,
+        le=5,
+        description="Take-profit percentage (1-5%)",
+    )
+
     # Technical Indicators
     rsi_period: int = 14
     macd_fast: int = 12
@@ -123,8 +140,6 @@ RISK_MODES = {
         "timeframe": "5",
         "min_signals": 6,
         "position_size_multiplier": 0.5,
-        "stop_loss_pct": 1.0,
-        "take_profit_pct": 2.0
     }
 }
 
@@ -132,4 +147,7 @@ RISK_MODES = {
 def get_risk_config(mode: str = None) -> dict:
     """Get risk configuration for the specified mode"""
     mode = mode or settings.risk_mode
-    return RISK_MODES.get(mode, RISK_MODES["conservative"]) 
+    cfg = RISK_MODES.get(mode, RISK_MODES["conservative"]).copy()
+    cfg["stop_loss_pct"] = max(1.0, min(settings.stop_loss_pct, 5.0))
+    cfg["take_profit_pct"] = max(1.0, min(settings.take_profit_pct, 5.0))
+    return cfg

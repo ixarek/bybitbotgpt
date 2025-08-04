@@ -67,6 +67,8 @@ class TrailingStopOrder:
         try:
             if not self.is_active:
                 return False
+            if settings.fixed_stop_loss:
+                return False
             updated = False
             # Stepwise trailing logic
             if self.side.upper() == "BUY":
