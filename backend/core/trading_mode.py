@@ -32,8 +32,8 @@ class ModeConfig:
 TRADING_MODE_CONFIGS = {
     TradingMode.CONSERVATIVE: ModeConfig(
         name="Консервативный",
-        description="Торговля на 15-минутных свечах с 6 индикаторами",
-        timeframes=["15m"],
+        description="Торговля на 5-минутных свечах с 6 индикаторами",
+        timeframes=["5m"],
         indicators={
             "sma": [{"period": 50}, {"period": 200}],
             "rsi": [{"period": 14}],
