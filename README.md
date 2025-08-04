@@ -66,9 +66,9 @@ sudo systemctl enable --now bybitbot.service
 - **Пары**: BTC, ETH, SOL, DOGE, XRP
 - **Индикаторы**: RSI, EMA, MACD, Volume, ATR
 
-### ⚖️ Средний режим  
+### ⚖️ Средний режим
 - **Стратегия**: Moving Average Crossover + Trend Following
-- **Таймфреймы**: 15m-1h
+- **Таймфреймы**: 5m-1h
 - **Плечо**: 3-5x  
 - **TP/SL**: 2-4% / 1-2%
 - **Пары**: BTC, ETH, BNB, SOL, ADA
