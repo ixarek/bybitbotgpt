@@ -11,7 +11,7 @@ import logging
 import os
 import csv
 from fastapi.responses import StreamingResponse
-from ..utils.config import settings
+from ..utils.config import settings, get_risk_config
 
 logger = logging.getLogger(__name__)
 
@@ -413,6 +413,8 @@ async def create_trailing_stop(request: TrailingStopRequest, trading_engine = De
     try:
         if not settings.trailing_stop_enabled:
             raise HTTPException(status_code=503, detail="Trailing stops are disabled")
+        if get_risk_config().get('take_profit_pct', settings.take_profit_pct) <= 2:
+            raise HTTPException(status_code=503, detail="Trailing stops require TP >2%")
         if not trading_engine.strategy_manager:
             raise HTTPException(status_code=503, detail="Strategy manager not initialized")
         
@@ -456,6 +458,8 @@ async def get_trailing_stops(trading_engine = Depends(get_trading_engine)):
     try:
         if not settings.trailing_stop_enabled:
             raise HTTPException(status_code=503, detail="Trailing stops are disabled")
+        if get_risk_config().get('take_profit_pct', settings.take_profit_pct) <= 2:
+            raise HTTPException(status_code=503, detail="Trailing stops require TP >2%")
         if not trading_engine.strategy_manager:
             raise HTTPException(status_code=503, detail="Strategy manager not initialized")
         
@@ -479,6 +483,8 @@ async def remove_trailing_stop(symbol: str, side: str, trading_engine = Depends(
     try:
         if not settings.trailing_stop_enabled:
             raise HTTPException(status_code=503, detail="Trailing stops are disabled")
+        if get_risk_config().get('take_profit_pct', settings.take_profit_pct) <= 2:
+            raise HTTPException(status_code=503, detail="Trailing stops require TP >2%")
         if not trading_engine.strategy_manager:
             raise HTTPException(status_code=503, detail="Strategy manager not initialized")
         
